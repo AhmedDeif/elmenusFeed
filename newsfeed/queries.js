@@ -28,3 +28,13 @@ exports.createrAddDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
+
+//18-I can follow another user. TESTED
+exports.createrFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:Follows]->(r)", params = {e1p:FollowerEmail,e2p:FolloweeEmail}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
