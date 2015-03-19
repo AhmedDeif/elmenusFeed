@@ -1,6 +1,7 @@
 var neo4j = require('neo4j');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
+
 //(S5) The function takes the following parameters:
 //UserEmail, the restaurant name, the review title and the body of the review
 //then it matches the user with the restaurant
