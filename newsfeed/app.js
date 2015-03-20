@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes');
 var neo4j = require('neo4j');
+var queries = require('./queries.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 var app = module.exports = express.createServer();
 
@@ -31,6 +32,14 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
+app.get('/add_dish', routes.newDish);
+app.post('/new_dish', function(req, res) {
+	var dishName = req.body.dishName;
+	var restaurant = req.body.restaurant;
+	queries.createDish(dishName);
+	queries.addDishToRestaurant(dishName, restaurant);
+	res.redirect('/add_dish');
+})
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

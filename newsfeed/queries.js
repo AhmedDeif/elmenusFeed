@@ -22,3 +22,21 @@ exports.createResturant  = function (name) {
         else console.log("Done");
     });
 }
+
+//2-I can add a dish to the resturant
+exports.createDish  = function (name) {
+    db.query("CREATE (:Dish { dish_name:{np} })", params = {np:name}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+exports.addDishToRestaurant  = function (dish,restaurant) {
+    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:Has]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
