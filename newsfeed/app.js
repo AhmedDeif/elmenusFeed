@@ -41,5 +41,36 @@ app.post('/new_dish', function(req, res) {
 	res.redirect('/add_dish');
 })
 
+
+app.get('/', routes.index);
+app.get('/add_review', routes.newReview);
+app.post('/new_review', function(req, res) {
+  
+    var Email = req.body.email;
+    var restaurantName = req.body.restaurantName;
+
+  var reviewTitle = req.body.reviewTitle;
+
+  var reviewBody = req.body.reviewBody;
+
+  queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
+  res.redirect('/add_review');
+})
+
+
+app.get('/', routes.index);
+app.get('/unfollow_user', routes.unfollowUser);
+app.post('/unfollow_user', function(req, res) {
+  
+    var userEmail = req.body.useremail;
+    var followerEmail = req.body.followeremail;
+
+
+
+  queries.deleterFollowUserUser(userEmail,followerEmail);
+  res.redirect('/unfollow_user');
+})
+
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
