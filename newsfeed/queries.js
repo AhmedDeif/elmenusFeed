@@ -56,7 +56,7 @@ exports.createDish  = function (name) {
      dish and this restaurant.
 */
 exports.addDishToRestaurant  = function (dish,restaurant) {
-    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:Has]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
+    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:HAS]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
