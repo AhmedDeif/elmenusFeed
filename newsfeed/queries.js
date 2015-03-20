@@ -2,6 +2,18 @@ var neo4j = require('neo4j');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
+//(S3) I can sign up.
+//The function takes the email of the user as an input.
+//and it creates a new user.
+exports.createUser  = function (email) {
+    db.query("CREATE (n:User { email:{ep} })return n", params = {ep:email}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+});
+}
+
 //(S19) I can unfollow another user.
 //This function takes two parameters :
 //the follower email and the current user email
@@ -65,6 +77,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
                 }
         else console.log("Done");
     });
+<<<<<<< HEAD
 }
 /* Sprint #-0-US-2
     createDish(name):
@@ -95,3 +108,6 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
+=======
+}
+>>>>>>> signupPage
