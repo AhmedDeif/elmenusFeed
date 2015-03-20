@@ -41,7 +41,7 @@ app.post('/new_dish', function(req, res) {
 	res.redirect('/add_dish');
 })
 
-app.get('/', routes.index);
+
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
   var email = req.body.email;
@@ -49,5 +49,24 @@ app.post('/sign_up', function(req, res) {
   res.redirect('/signup');
 })
 
+app.get('/add_review', routes.newReview);
+app.post('/new_review', function(req, res) {
+  
+    var Email = req.body.email;
+    var restaurantName = req.body.restaurantName;
+
+  var reviewTitle = req.body.reviewTitle;
+
+  var reviewBody = req.body.reviewBody;
+
+  queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
+  res.redirect('/add_review');
+})
+
+
+
+
+
+>>>>>>> reviewRestaurant
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
