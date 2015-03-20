@@ -10,3 +10,7 @@ exports.index = function(req, res){
 exports.newDish = function(req, res){
 	res.render('add_dish')
 };
+
+exports.signUp = function(req, res){
+	res.render('signup')
+};

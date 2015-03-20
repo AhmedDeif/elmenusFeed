@@ -29,7 +29,6 @@ exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
 exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
     db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} })CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r) ;", params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
         if (err){  console.log('Error');
->>>>>>> d5e49cc80b424eefc518ba9ca336d797925fd724
                  throw err;
                 }
         else console.log("Done");
