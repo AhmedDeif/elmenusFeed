@@ -6,9 +6,13 @@ var db = new neo4j.GraphDatabase('http://localhost:7474');
 //The function takes the email of the user as an input.
 //and it creates a new user.
 exports.createUser  = function (email) {
-    db.query("CREATE (:User { email:{ep} })", params = {ep:email}, function (err, results) {
+    db.query("CREATE (n:User { email:{ep} })return n", params = {ep:email}, function (err, results) {
         if (err){  console.error('Error');
-
+                 throw err;
+                }
+        else console.log("Done");
+});
+}
 
 //(S19) I can unfollow another user.
 //This function takes two parameters :

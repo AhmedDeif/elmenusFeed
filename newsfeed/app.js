@@ -45,8 +45,9 @@ app.get('/', routes.index);
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
   var email = req.body.email;
-  queries.createUser(dishName);
+  queries.createUser(email);
   res.redirect('/signup');
 })
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
