@@ -15,6 +15,3 @@ exports.newReview = function(req, res){
 	res.render('add_review')
 };
 
-exports.unfollowUser = function(req, res){
-	res.render('unfollow_user')
-};

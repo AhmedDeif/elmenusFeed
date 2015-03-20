@@ -58,18 +58,7 @@ app.post('/new_review', function(req, res) {
 })
 
 
-app.get('/', routes.index);
-app.get('/unfollow_user', routes.unfollowUser);
-app.post('/unfollow_user', function(req, res) {
-  
-    var userEmail = req.body.useremail;
-    var followerEmail = req.body.followeremail;
 
-
-
-  queries.deleterFollowUserUser(userEmail,followerEmail);
-  res.redirect('/unfollow_user');
-})
 
 
 app.listen(3000);
