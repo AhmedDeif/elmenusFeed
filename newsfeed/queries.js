@@ -11,12 +11,19 @@ exports.createResturant  = function (name) {
     });
 }
 
-
+var data1;
 exports.Get_restaurant_info  = function (name) {
-    db.query("CREATE (:Restaurant { name:{np} })", params = {np:name}, function (err, results) {
+    db.query("match (Restaurant{name:{na}}) <-[out:Review]- () return out", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
-        else console.log("Done");
+				
+			data1 = results.map(function (result) {
+            return result['out'];
+			});
+			
+         console.log(data1[0]._data.data);
     });
+	
+	return data1[0]._data.data;
 }
