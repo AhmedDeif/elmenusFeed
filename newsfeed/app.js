@@ -32,7 +32,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/Get_restaurant_info', routes.Get_restaurant_info);
+app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
 
 
 app.listen(3000);
