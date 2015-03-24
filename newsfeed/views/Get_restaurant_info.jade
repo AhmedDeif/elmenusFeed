@@ -37,9 +37,11 @@ head
       .row
         .col-lg-12.text-center
           ul.list-unstyled   
-           li #{RestaurantName[0]._data.data.name}
+            h1
+             li #{RestaurantName[0]._data.data.name}
+            li -----------------------------------
             - for (var i = 0; i < myData.length; ++i) {
-               h1 
+               h3 
                 li #{myData[i]._data.data.title}
                li #{myData[i]._data.data.body}
             - }
