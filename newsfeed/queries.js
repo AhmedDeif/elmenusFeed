@@ -11,9 +11,9 @@ exports.createResturant  = function (name) {
     });
 }
 
-var data1;
+var ret;
 exports.Get_restaurant_info  = function (name) {
-    db.query("match (Restaurant{name:{na}}) <-[out:Review]- () return out", params = {na:name}, function (err, results) {
+    db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -21,9 +21,16 @@ exports.Get_restaurant_info  = function (name) {
 			data1 = results.map(function (result) {
             return result['out'];
 			});
-			
-         console.log(data1[0]._data.data);
+
+            data2 = results.map(function (result) {
+            return result['R'];
+            });
+
+			data1 = ' \"myData\":' + JSON.stringify(data1);
+            data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
+            ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            console.log(ret.RestaurantName[0]);
     });
 	
-	return data1[0]._data.data;
+	return ret;
 }
