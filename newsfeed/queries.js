@@ -52,3 +52,19 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
+
+var restaurants;
+exports.getRestaurants = function(callback) {
+    db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        restaurants = results.map(function(result) {
+            return result['r.name'];
+        });
+        restaurants = '{ \"myData\":' + JSON.stringify(restaurants) + ' }';
+        restaurants = JSON.parse(restaurants);
+        callback(restaurants);
+    });
+}

@@ -8,6 +8,7 @@ var express = require('express')
 var neo4j = require('neo4j');
 var queries = require('./queries.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
+var fs = require('fs');
 var app = module.exports = express.createServer();
 
 // Configuration
@@ -21,6 +22,13 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
+/*fs.readdirSync('./controllers').forEach(function (file) {
+  if(file.substr(-3) == '.js') {
+      route = require('./controllers/' + file);
+      route.controller(app);
+  }
+});*/
+
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
@@ -32,7 +40,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.get('/add_dish', routes.newDish);
+app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
 	var restaurant = req.body.restaurant;
