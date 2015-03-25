@@ -59,7 +59,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 
 }
 
-}
+
 
 //2-I can add a dish to the resturant
 exports.createDish  = function (name) {
@@ -77,7 +77,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
                 }
         else console.log("Done");
     });
-<<<<<<< HEAD
+
 }
 /* Sprint #-0-US-2
     createDish(name):
@@ -108,6 +108,5 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
-=======
-}
->>>>>>> signupPage
+
+
