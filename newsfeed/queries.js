@@ -134,6 +134,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
                 }
         else console.log("Done");
     });
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 }
 
@@ -160,11 +161,8 @@ exports.Get_restaurant_info  = function (name) {
 	
 	return ret;
 }
-=======
-<<<<<<< HEAD
-=======
 
->>>>>>> master
+
 }
 
 //14-I can add a restaurant to favourites.
@@ -178,10 +176,5 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
                 }
         else console.log("Done");
     });
-<<<<<<< HEAD
-}
-=======
-}
 
->>>>>>> master
->>>>>>> master
+}
