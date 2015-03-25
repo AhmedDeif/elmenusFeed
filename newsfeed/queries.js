@@ -134,7 +134,10 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
                 }
         else console.log("Done");
     });
+<<<<<<< HEAD
+=======
 
+>>>>>>> master
 }
 
 //14-I can add a restaurant to favourites.
@@ -148,5 +151,9 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
                 }
         else console.log("Done");
     });
+<<<<<<< HEAD
+}
+=======
 }
 
+>>>>>>> master
