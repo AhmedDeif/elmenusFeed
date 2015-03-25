@@ -134,8 +134,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
                 }
         else console.log("Done");
     });
-<<<<<<< Updated upstream
-<<<<<<< HEAD
+
 }
 
 var ret;
