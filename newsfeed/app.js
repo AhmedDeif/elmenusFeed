@@ -5,10 +5,17 @@
 
  var express = require('express')
   , routes = require('./routes');
+<<<<<<< HEAD
+var neo4j = require('neo4j');
+var queries = require('./queries.js');
+var db = new neo4j.GraphDatabase('http://localhost:7474');
+var app = module.exports = express.createServer();
+=======
  var neo4j = require('neo4j');
  var queries = require('./queries.js');
  var db = new neo4j.GraphDatabase('http://localhost:7474');
  var app = module.exports = express.createServer();
+>>>>>>> master
 
 // Configuration
 
@@ -32,6 +39,10 @@
 // Routes
 
 app.get('/', routes.index);
+<<<<<<< HEAD
+app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
+
+=======
 app.get('/add_dish', routes.newDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
@@ -40,6 +51,7 @@ app.post('/new_dish', function(req, res) {
 	queries.addDishToRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
 })
+>>>>>>> master
 
 
 app.get('/signup', routes.signUp);
