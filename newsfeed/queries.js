@@ -118,11 +118,20 @@ exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
     });
 }
 
+/*  Sprint #-1-US-4
+     The user can delete a photo yum in a certain photo.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and deletes the relationship "ADD_YUM" between them.
+*/
 
-
-
-
-
+exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
+    db.query("MATCH (n)-[rel:ADD_YUM]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
 
 
 
