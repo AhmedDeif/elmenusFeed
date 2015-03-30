@@ -56,29 +56,6 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
         console.log('done');
     });
 }
-
-}
-
-}
-
-//2-I can add a dish to the resturant
-exports.createDish  = function (name) {
-    db.query("CREATE (:Dish { dish_name:{np} })", params = {np:name}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
-exports.addDishToRestaurant  = function (dish,restaurant) {
-    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:Has]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-<<<<<<< HEAD
-}
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
@@ -108,6 +85,20 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
-=======
+};
+
+/*  Sprint #-1-US-2
+     The user can add a photo related to a specific restaurant.
+     This function takes the User Email, Restaurant Name and the Photo URL as an input
+     Then the node p of type Photo is created  and a relationship "addPhoto"  is created
+     between the user and the photo. Another relationship "IN" 
+     shows that the photo is in this specific restaurant.
+*/
+exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
+    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
 }
->>>>>>> signupPage
