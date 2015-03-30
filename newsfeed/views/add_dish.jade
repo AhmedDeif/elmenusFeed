@@ -5,9 +5,9 @@ form(action="/new_dish", method="post")
 		br
 	div
 		label Restaurant: 
-		select(name='rests', style='min-width:300px')
-			each rest in rs
-				- var select=null; if (rest == rests.title) select='selected';
-				option(value=rest, selected=select)= rest
+		select(id='restSel', name='rests', style='min-width:300px')
+			each rest in rs				
+				option(value=rest)= rest
 	div
 		input(type="submit", value="Add Dish")
+		//-- var select=null; if (rest == rests.title) select='selected';

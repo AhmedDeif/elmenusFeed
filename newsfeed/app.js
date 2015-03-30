@@ -43,7 +43,8 @@ app.get('/', routes.index);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
-	var restaurant = req.body.restaurant;
+	var select = document.getElementById("restSel");
+  console.log(select.selectedIndex)
 	queries.createDish(dishName);
 	queries.addDishToRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
