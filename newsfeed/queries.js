@@ -50,7 +50,7 @@ exports.createResturant  = function (name) {
     // The function takes an email and Dish name  and match the user and the dish.
     // Then it creates a Relation LIKED Relation between the user and a dish.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dnp}}) CREATE (user)-[:LIKES_DISH]->(dish) WITH user,dish MATCH (user)-[x:DISLIKES_DISH]->(dish)", 
+     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dnp}}) CREATE (user)-[:LIKES_DISH]->(dish) WITH user,dish MATCH (user)-[x:DISLIKES_DISH]->(dish) DELETE x", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
