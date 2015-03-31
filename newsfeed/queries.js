@@ -138,7 +138,7 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
-exports.UserSharesRestaurant  = function (UserEmail,RestaurantNamea) {
+exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
      db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT]->(restaurant)", 
         params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
         if (err) throw err;
