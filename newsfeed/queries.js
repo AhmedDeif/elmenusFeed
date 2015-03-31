@@ -133,6 +133,17 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
     });
 }
 
-
+/*  Sprint #-1-US-7
+     The user can share a restaurant on facebook or twitter.
+     This function takes the User Email and the Restaurant Name as an input.
+     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
+*/
+exports.UserSharesRestaurant  = function (UserEmail,RestaurantNamea) {
+     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT]->(restaurant)", 
+        params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
 
 
