@@ -194,3 +194,23 @@ exports.createrYuckUserPhoto  = function (UserEmail,PhotoURL) {
     });
 }
 
+
+
+
+
+/*  Sprint #-1-US-1
+     The user can see his activity log.
+     This function takes the User Email as an input.
+     It matches the user with all other nodes that he has a relation with.
+     then it returns all these nodes with the relations hw has with them.
+     
+*/
+
+exports.showOldActionsHistory  = function (UserEmail) {
+    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {ep:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
