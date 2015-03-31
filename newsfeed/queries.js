@@ -159,3 +159,16 @@ exports.UserSharesDish = function (UserEmail,DishName) {
     });
 }
 
+
+/*  Sprint #-1-US-9
+     The user can share a photo on facebook or twitter.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+*/
+exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO]->(photo)", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
