@@ -195,9 +195,6 @@ exports.createrYuckUserPhoto  = function (UserEmail,PhotoURL) {
 }
 
 
-
-
-
 /*  Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
