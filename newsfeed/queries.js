@@ -55,19 +55,5 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 
 
 
-/*  Sprint #-1-US-5
-     The user can add a photo yuck to a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "ADD_YUCK" to it.
-     If there was a yum on this photo, placed by the same user, then it will be deleted 
-     and replaced by a yuck
-*/
-exports.createrYuckUserPhoto  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {pnp}}) CREATE (user)-[:ADD_YUCK]->(photo) WITH user,photo MATCH (user)-[x:ADD_YUM]->(photo) DELETE x", 
-        params = {ep:UserEmail,pnp:PhotoURL}, function (err, results) {
-        if (err) throw err;
-        console.log('done');
-    });
-}
 
 }
