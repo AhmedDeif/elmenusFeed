@@ -210,16 +210,3 @@ exports.showOldActionsHistory  = function (UserEmail) {
         else console.log("Done");
     });
 }
-/*  Sprint #-1-US-6
-     The user can delete a photo yuck in a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and deletes the relationship "ADD_YUCK" between them.
-*/
-exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:ADD_YUCK]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
