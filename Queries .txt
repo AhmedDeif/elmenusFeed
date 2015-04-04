@@ -1,0 +1,352 @@
+
+CREATE CONSTRAINT ON (a:User) ASSERT a.email IS UNIQUE
+CREATE CONSTRAINT ON (a:Dish) ASSERT a.dish_name IS UNIQUE
+CREATE CONSTRAINT ON (a:Restaurant) ASSERT a.name IS UNIQUE
+
+//-----------------------------------------------------------------------------------------------------------------------
+//1-I Can create a new resturant and this resturants has properties.
+
+CREATE (:Restaurant { name:"Papa John's Pizza" })
+CREATE (:Restaurant { name:"Peking" })
+CREATE (:Restaurant { name:"Spectra" })
+CREATE (:Restaurant { name:"Domino's Pizza" })
+CREATE (:Restaurant { name:"Burger King" })
+//-----------------------------------------------------------------------------------------------------------------------
+//2-I can add a dish to the resturant
+
+//CREATE (:Dish { dish_name:"Chicken wings" })
+//CREATE (:Dish { dish_name:"BBQ Chicken Wings" })
+//CREATE (:Dish { dish_name:"Fried Mushrooms" })
+//CREATE (:Dish { dish_name:"Potato Wedges" })
+//CREATE (:Dish { dish_name:"Prawn Spring Rolls" })
+//CREATE (:Dish { dish_name:"Dumplings" })
+
+MATCH (r:Restaurant {name:"Papa John's Pizza"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"Chicken wings" })
+WITH 1 as dummy
+MATCH (r:Restaurant {name:"Papa John's Pizza"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"BBQ Chicken Wings" })
+WITH 1 as dummy
+MATCH (r:Restaurant {name:"Spectra"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"Fried Mushrooms" })
+WITH 1 as dummy
+MATCH (r:Restaurant {name:"Spectra"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"Potato Wedges" })
+WITH 1 as dummy
+MATCH (r:Restaurant {name:"Domino's Pizza"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"Prawn Spring Rolls" })
+WITH 1 as dummy
+MATCH (r:Restaurant{name:"Burger King"}) CREATE (r)-[rl:Has]->(:Dish { dish_name:"Dumplings" })
+
+//-----------------------------------------------------------------------------------------------------------------------
+//3-I can sign up
+
+CREATE (:User { email:"eget.ipsum@metusAliquam.ca" })
+CREATE (:User { email:"dolor.Donec.fringilla@musProinvel.net" })
+CREATE (:User { email:"hendrerit@nullaatsem.net" })
+CREATE (:User { email:"Nunc@amet.ca" })
+CREATE (:User { email:"mauris.sagittis@enimEtiamimperdiet.co.uk" })
+CREATE (:User { email:"id@augueid.org" })
+CREATE (:User { email:"dolor@egetvarius.org" })
+CREATE (:User { email:"ut@metusurnaconvallis.org" })
+CREATE (:User { email:"odio.semper@nascetur.com" })
+CREATE (:User { email:"Donec@faucibusorciluctus.edu" })
+
+
+//-----------------------------------------------------------------------------------------------------------------------
+//5-I can write a review connected with a restaurant.
+
+
+MATCH (n:User { email:"eget.ipsum@metusAliquam.ca" }),(r:Restaurant { name:"Papa John's Pizza" })
+CREATE (n) -[:Review { title:"My title" , body:"my review on Papa John's Pizza" }]-> (r) 
+
+WITH 1 as dummy
+
+MATCH (n:User { email:"dolor.Donec.fringilla@musProinvel.net" }),(r:Restaurant { name:"Peking" })
+CREATE (n) -[:Review { title:"My title" , body:"my review on Peking" }]-> (r) 
+
+WITH 1 as dummy
+
+MATCH (n:User { email:"hendrerit@nullaatsem.net" }),(r:Restaurant { name:"Domino's Pizza" })
+CREATE (n) -[:Review { title:"My title" , body:"my review on Domino's Pizza" }]-> (r) 
+
+//-----------------------------------------------------------------------------------------------------------------------
+//6-I can like a dish in a specific restaurant.
+
+MATCH (user:User {email: "eget.ipsum@metusAliquam.ca"}),
+	(dish:Dish {dish_name: "BBQ Chicken Wings"}),(r:Restaurant {name:"Papa John's Pizza"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "dolor.Donec.fringilla@musProinvel.net"}),
+	(dish:Dish {dish_name: "Chicken wings"}),(r:Restaurant {name:"Papa John's Pizza"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "hendrerit@nullaatsem.net"}),
+	(dish:Dish {dish_name: "Fried Mushrooms"}),(r:Restaurant {name:"Spectra"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "Nunc@amet.ca"}),
+	(dish:Dish {dish_name: "Potato Wedges"}),(r:Restaurant {name:"Spectra"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"}),
+	(dish:Dish {dish_name: "Prawn Spring Rolls"}),(r:Restaurant {name:"Domino's Pizza"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "id@augueid.org"}),
+	(dish:Dish {dish_name: "Dumplings"}),(r:Restaurant{name:"Burger King"})
+CREATE (user)-[:LIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:DISLIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+-----------------------------------------------------------------------------------------------------------------------
+//7-I can unlike an already liked dish.
+
+MATCH (User {email: "eget.ipsum@metusAliquam.ca"})-[x:LIKES_DISH]->(Dish {dish_name: "BBQ Chicken Wings"})<-[:has]-(r:Restaurant {name:"Papa John's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "dolor.Donec.fringilla@musProinvel.net"})-[x:LIKES_DISH]->(Dish {dish_name: "Chicken wings"})<-[:has]-(r:Restaurant {name:"Papa John's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "hendrerit@nullaatsem.net"})-[x:LIKES_DISH]->(Dish {dish_name: "Fried Mushrooms"})<-[:has]-(r:Restaurant {name:"Spectra"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "Nunc@amet.ca"})-[x:LIKES_DISH]->(Dish {dish_name: "Potato Wedges"})<-[:has]-(r:Restaurant {name:"Spectra"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"})-[x:LIKES_DISH]->(Dish {dish_name: "Prawn Spring Rolls"})<-[:has]-(r:Restaurant {name:"Domino's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "id@augueid.org"})-[x:LIKES_DISH]->(Dish {dish_name: "Dumplings"})<-[:has]-(r:Restaurant {name:"Burger King"})
+DELETE x
+
+//-----------------------------------------------------------------------------------------------------------------------
+//8-I can dislike a dish in a specific restaurant.
+
+MATCH (user:User {email: "eget.ipsum@metusAliquam.ca"}),
+	(dish:Dish {dish_name: "BBQ Chicken Wings"}),(r:Restaurant {name:"Papa John's Pizza"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "dolor.Donec.fringilla@musProinvel.net"}),
+	(dish:Dish {dish_name: "Chicken wings"}),(r:Restaurant {name:"Papa John's Pizza"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "hendrerit@nullaatsem.net"}),
+	(dish:Dish {dish_name: "Fried Mushrooms"}),(r:Restaurant {name:"Spectra"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "Nunc@amet.ca"}),
+	(dish:Dish {dish_name: "Potato Wedges"}),(r:Restaurant {name:"Spectra"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"}),
+	(dish:Dish {dish_name: "Prawn Spring Rolls"}),(r:Restaurant {name:"Domino's Pizza"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+
+MATCH (user:User {email: "id@augueid.org"}),
+	(dish:Dish {dish_name: "Dumplings"}),(r:Restaurant{name:"Burger King"})
+CREATE (user)-[:DISLIKES_DISH]->(dish)<-[:has]-(r)
+WITH user,dish
+MATCH (user)-[x:LIKES_DISH]->(dish)<-[:has]-(r)
+DELETE x
+
+//-----------------------------------------------------------------------------------------------------------------------
+//9-I can remove the dislike from an already disliked dish.
+
+MATCH (User {email: "eget.ipsum@metusAliquam.ca"})-[x:DISLIKES_DISH]->(Dish {dish_name: "BBQ Chicken Wings"})<-[:has]-(r:Restaurant {name:"Papa John's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "dolor.Donec.fringilla@musProinvel.net"})-[x:DISLIKES_DISH]->(Dish {dish_name: "Chicken wings"})<-[:has]-(r:Restaurant {name:"Papa John's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "hendrerit@nullaatsem.net"})-[x:DISLIKES_DISH]->(Dish {dish_name: "Fried Mushrooms"})<-[:has]-(r:Restaurant {name:"Spectra"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "Nunc@amet.ca"})-[x:DISLIKES_DISH]->(Dish {dish_name: "Potato Wedges"})<-[:has]-(r:Restaurant {name:"Spectra"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"})-[x:DISLIKES_DISH]->(Dish {dish_name: "Prawn Spring Rolls"})<-[:has]-(r:Restaurant {name:"Domino's Pizza"})
+DELETE x
+
+WITH 1 as dummy
+
+MATCH (User {email: "id@augueid.org"})-[x:DISLIKES_DISH]->(Dish {dish_name: "Dumplings"})<-[:has]-(r:Restaurant {name:"Burger King"})
+DELETE x
+
+
+
+
+//-----------------------------------------------------------------------------------------------------------------------
+//14-I can add a restaurant to favourites.
+
+MATCH (user:User {email: "eget.ipsum@metusAliquam.ca"}),
+	(rest:Restaurant {name: "Papa John's Pizza"})
+CREATE (user)-[:FAVORITES]->(rest)
+
+WITH 1 as dummy
+
+MATCH (user:User {email: "dolor.Donec.fringilla@musProinvel.net"}),
+	(rest:Restaurant {name: "Peking"})
+CREATE (user)-[:FAVORITES]->(rest)
+
+WITH 1 as dummy
+
+MATCH (user:User {email: "hendrerit@nullaatsem.net"}),
+	(rest:Restaurant {name: "Spectra"})
+CREATE (user)-[:FAVORITES]->(rest)
+
+WITH 1 as dummy
+
+MATCH (user:User {email: "Nunc@amet.ca"}),
+	(rest:Restaurant {name: "Domino's Pizza"})
+CREATE (user)-[:FAVORITES]->(rest)
+
+WITH 1 as dummy
+
+MATCH (user:User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"}),
+	(rest:Restaurant {name: "Burger King"})
+CREATE (user)-[:FAVORITES]->(rest)
+
+
+//-----------------------------------------------------------------------------------------------------------------------
+//15-I can remove a restaurant from favourites.
+
+
+MATCH (User {email: "eget.ipsum@metusAliquam.ca"})-[f:FAVORITES]->
+	(Restaurant {name: "Papa John's Pizza"})
+DELETE f
+
+WITH 1 as dummy
+
+MATCH (User {email: "dolor.Donec.fringilla@musProinvel.net"})-[f:FAVORITES]->
+	(Restaurant {name: "Peking"})
+DELETE f
+
+WITH 1 as dummy
+
+MATCH (User {email: "hendrerit@nullaatsem.net"})-[f:FAVORITES]->
+	(Restaurant {name: "Spectra"})
+DELETE f
+
+WITH 1 as dummy
+
+MATCH (User {email: "Nunc@amet.ca"})-[f:FAVORITES]->
+	(Restaurant {name: "Domino's Pizza"})
+DELETE f
+
+WITH 1 as dummy
+
+MATCH (User {email: "mauris.sagittis@enimEtiamimperdiet.co.uk"})-[f:FAVORITES]->
+	(Restaurant {name: "Burger King"})
+DELETE f
+
+
+//-----------------------------------------------------------------------------------------------------------------------
+//18-I can follow another user.
+MATCH (d:User),(r:User) 
+WHERE d.email="eget.ipsum@metusAliquam.ca" AND r.email = "dolor.Donec.fringilla@musProinvel.net" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+WITH 1 as dummy
+
+MATCH (d:User),(r:User) 
+WHERE d.email="dolor.Donec.fringilla@musProinvel.net" AND r.email = "hendrerit@nullaatsem.net" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+WITH 1 as dummy
+
+MATCH (d:User),(r:User) 
+WHERE d.email="hendrerit@nullaatsem.net" AND r.email = "Nunc@amet.ca" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+WITH 1 as dummy
+
+MATCH (d:User),(r:User) 
+WHERE d.email="mauris.sagittis@enimEtiamimperdiet.co.uk" AND r.email = "id@augueid.org" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+WITH 1 as dummy
+
+MATCH (d:User),(r:User) 
+WHERE d.email="id@augueid.org" AND r.email = "dolor@egetvarius.org" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+WITH 1 as dummy
+
+MATCH (d:User),(r:User) 
+WHERE d.email="ut@metusurnaconvallis.org" AND r.email = "odio.semper@nascetur.com" AND d.email <> r.email  
+CREATE (d)-[f:Follows]->(r)
+
+
+//-----------------------------------------------------------------------------------------------------------------------
+//19-I can unfollow another user.
+
+MATCH (d)-[rel:Follows]->(r) 
+WHERE d.email="ut@metusurnaconvallis.org" AND r.email="odio.semper@nascetur.com" 
+DELETE rel
+
+WITH 1 as dummy
+
+MATCH (d)-[rel:Follows]->(r) 
+WHERE d.email="id@augueid.org" AND r.email="dolor@egetvarius.org" 
+DELETE rel
+
+-----------------------------------------------------------------------------------------------------------------------
+
+
+
