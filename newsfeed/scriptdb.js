@@ -190,3 +190,34 @@ if (fs.existsSync('C:/tmp/createLikeUserDishRestaurant.csv')) {
   }
 });
 }
+
+//----------------------------------------------------------------------------------------
+// create follow user
+
+function followUser(){
+if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
+    fs.unlinkSync('C:/tmp/createFollowUserUser.csv');
+}
+  connection.query("select \'Follower\',\'Followee\' UNION select u1.email,u2.email from users u1,users u2,user_followers f where u1.id=f.user_id and u2.id=f.follower_id and u1.id<>u2.id INTO OUTFILE \'C:/tmp/createFollowUserUser.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+    setTimeout(function(){
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {Email:row.Follower}) match (u2:User {Email:row.Followee}) MERGE (u1) -[:Follow]-> (u2)", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('User-Follow-User Done');
+          connection.end();  //Close mysql connection
+        }
+    });
+  },400);
+          
+      
+
+}
+  else{
+    throw err;
+  }
+});
+}
