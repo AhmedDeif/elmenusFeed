@@ -131,6 +131,37 @@ function reviewsOfRestaurants(){
 }
 
 //----------------------------------------------------------------------------------------
+// add to favourite
+
+
+
+
+function addToFavourite(){
+if (fs.existsSync('C:/tmp/createFavoriteUserRestaurant.csv')) {
+    fs.unlinkSync('C:/tmp/createFavoriteUserRestaurant.csv');
+}
+  connection.query("select \'User\',\'Restaurant\' UNION select u.email AS User,r.name_en AS Restaurant from restaurants r ,users u,user_favorites f where f.user_id = u.id and r.id = f.restaurant_id INTO OUTFILE \'/tmp/createFavoriteUserRestaurant.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+    setTimeout(function(){
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {Name:row.Restaurant}) match (u:User {Email:row.User}) MERGE (u) -[:Favorite]-> (r) return r limit 1;", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('User-Restaurants-Favourite Done');
+          likeDish();
+        }
+    });
+  },400);
+          
+}
+  else{
+    throw err;
+  }
+});
+}
+//----------------------------------------------------------------------------------------
 // create like
 
 
