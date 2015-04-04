@@ -60,28 +60,6 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 }
 
 
-
-//2-I can add a dish to the resturant
-exports.createDish  = function (name) {
-    db.query("CREATE (:Dish { dish_name:{np} })",
-     params = {np:name}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
-
-exports.addDishToRestaurant  = function (dish,restaurant) {
-    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:Has]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-
-
-}
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
@@ -122,6 +100,12 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 */
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
     db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
 
 /* Sprint #-0-US-18
     createFollowUser(FollowerEmail, FolloweeEmail):
