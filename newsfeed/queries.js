@@ -99,6 +99,11 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
     db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
         if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+       });
+}
 
 /* Sprint #-0-US-18
     createFollowUser(FollowerEmail, FolloweeEmail):
