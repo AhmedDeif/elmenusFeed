@@ -1,3 +1,46 @@
+var neo4j = require('neo4j');
+var db = new neo4j.GraphDatabase('http://localhost:7474');
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : '1234',
+  database : 'neo4j2'
+});
+
+connection.connect();
+var fs = require('fs');  // To delete old CSVs
+
+uniqueUser(); 
+
+
+//---------------------------------------------------------------------------------
+//Create constrains
+
+function uniqueUser(){
+  db.query("CREATE CONSTRAINT ON (x:User) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-User Done');
+          uniqueRestaurant();
+        }
+    });
+}
+
+function uniqueRestaurant(){
+  db.query("CREATE CONSTRAINT ON (x:Restaurant) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-Restaurant Done');
+          indexDishRes();
+        }
+    });
+}
+
 //-----------------------------------------------------------------------------
 // Create users
 
