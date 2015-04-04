@@ -83,7 +83,6 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 
 
 }
->>>>>>> master
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
@@ -113,7 +112,6 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
-<<<<<<< HEAD
 };
 
 /*  Sprint #-1-US-2
@@ -126,7 +124,11 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
     db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
         if (err){  console.log('Error');
-=======
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
 
 /* Sprint #-0-US-18
     createFollowUser(FollowerEmail, FolloweeEmail):
@@ -144,13 +146,10 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
-
->>>>>>> master
                  throw err;
                 }
         else console.log("Done");
     });
-<<<<<<< HEAD
 }
 
 /*  Sprint #-1-US-3
@@ -163,8 +162,10 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
      db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:ADD_YUM]->(photo)WITH user,photo MATCH (user)-[x:ADD_YUCK]->(photo) Delete x;", 
         params = {ep:UserEmail,dnp:DishName}, function (err, results) {
-        if (err) throw err;
-        console.log('done');
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
     });
 }
 
@@ -197,9 +198,6 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
 }
 
 
-=======
-
-}
 
 var ret;
 exports.Get_restaurant_info  = function (name) {
@@ -240,4 +238,3 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
->>>>>>> master
