@@ -70,6 +70,35 @@ function users(){
 });
 }
 
+//-------------------------------------------------------
+//create dish
+
+
+function dishes(){
+  if (fs.existsSync('C:/tmp/allDishes.csv')) {
+    fs.unlinkSync('C:/tmp/allDishes.csv');
+}
+
+  connection.query("select \'Dish\',\'Restaurant\' UNION SELECT d.name_en As Dish , r.name_en FROM restaurants r, items d,menus m where d.menu_id = m.id and m.restaurant_id = r.id INTO OUTFILE \'C:/tmp/allDishes.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/allDishes.csv\" AS row MERGE (d:Dish {Name: row.Dish,Restaurant: row.Restaurant}) return d limit 1 ;", params = {}, function (err, results) {
+        if (err){  
+                console.error('Error'); 
+                }
+        else {
+
+          console.log('Dishes Done');
+          users();
+        }
+    });
+    
+}
+  else{
+      throw err;
+  }
+});
+}
 //----------------------------------------------------------------------------------------
 // create review
 
