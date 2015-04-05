@@ -41,6 +41,55 @@ function uniqueRestaurant(){
     });
 }
 
+//------------------------------------------------------------------------------------
+//create indices
+function indexDishRes(){
+  db.query("create index on :Dish(Restaurant);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Dish-Restaurant Done');
+          indexUserEmail();
+        }
+    });
+}
+
+function indexUserEmail(){
+  db.query("create index on :User(Email);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-User-Mail Done');
+          indexResName();
+        }
+    });
+}
+
+function indexResName(){
+  db.query("create index on :Restaurant(Name);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Res-Name Done');
+          indexDishName();
+        }
+    });
+}
+
+function indexDishName(){
+  db.query("create index on :Dish(Name);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Dish-Name Done');
+          restaurants();
+        }
+    });
+}
 //-----------------------------------------------------------------------------
 // Create users
 
@@ -62,6 +111,34 @@ function users(){
           dishesInRestaurants();
         }
     });
+
+}
+  else{
+      throw err;
+  }
+});
+}
+
+//---------------------------------------------------------------------------------
+//Create restaurants
+
+function restaurants(){
+  if (fs.existsSync('C:/tmp/allRestaurants.csv')) {
+    fs.unlinkSync('C:/tmp/allRestaurants.csv');
+  }
+  connection.query("select \'Restaurant\' UNION SELECT name_en AS Restaurant FROM restaurants INTO OUTFILE \'/tmp/allRestaurants.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/allRestaurants.csv\" AS row MERGE (R:Restaurant {Name: row.Restaurant}) return R.Name limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Restaurants Done');
+          dishes();
+        }
+    });
+      
 
 }
   else{
