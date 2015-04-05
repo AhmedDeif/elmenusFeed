@@ -208,6 +208,41 @@ function reviewsOfRestaurants(){
 }
 
 //----------------------------------------------------------------------------------------
+// dish-[]->restaurant
+
+
+
+
+function dishesInRestaurants(){
+  if (fs.existsSync('C:/tmp/dishesRestaurant.csv')) {
+    fs.unlinkSync('C:/tmp/dishesRestaurant.csv');
+}
+  connection.query("select \'Restaurant\',\'Dish\' UNION select  r.name_en As Restaurant,d.name_en As Dish from restaurants r, items d,menus m where m.restaurant_id = r.id and d.menu_id=m.id INTO OUTFILE \'C:/tmp/dishesRestaurant.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+    setTimeout(function(){
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/dishesRestaurant.csv\" AS row match (r:Restaurant {Name:row.Restaurant}) match (d:Dish {Name:row.Dish,Restaurant:row.Restaurant}) MERGE (r)-[:Has]->(d) return r limit 1;", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('Dishes-Restaurants Done');
+          reviewsOfRestaurants();
+        }
+    });
+
+  },400);
+          
+     
+
+}
+  else{
+    throw err;
+    connection.end();
+  }
+});
+}
+//----------------------------------------------------------------------------------------
 // add to favourite
 
 
