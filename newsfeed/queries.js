@@ -193,6 +193,25 @@ exports.createCuisine  = function (name) {
     });
 }
 /////////////////////////////////////////////
+/*
+    Sprint 1  US 22
+        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and restaurant's name and
+    creates the corresponding relation between
+    cuisine and restaurant in the database.
+*/
+exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.Name={cp} AND r.name ={rp} CREATE (r)-[rl:Cuisine]->(c)", params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+/////////////////////////////////////////////
+
+
 
 
 
