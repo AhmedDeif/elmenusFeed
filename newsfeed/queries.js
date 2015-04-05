@@ -176,3 +176,23 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+/////////////////////////////////////////
+/*
+    Sprint 1  US 21
+        createCuisine(name):
+    This function takes as input the Cuisine's 
+    name and creates the corresponding cuisine in the
+    database.
+*/
+exports.createCuisine  = function (name) {
+    db.query("CREATE (:Cuisine { Name:{np} })", params = {np:name}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+/////////////////////////////////////////////
+
+
+
