@@ -99,7 +99,8 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
      shows that the photo is in this specific restaurant.
 */
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
-    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
+    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", 
+        params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
