@@ -4,13 +4,15 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , request = require('supertest');
+  , routes = require('./routes');
 var neo4j = require('neo4j');
 var queries = require('./queries.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 var app = module.exports = express.createServer();
 
+module.exports = {
+  app: app
+};
 // Configuration
 
 app.configure(function(){
@@ -57,10 +59,6 @@ app.post('/new_review', function(req, res) {
   queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
   res.redirect('/add_review');
 })
-
-
-
-
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
