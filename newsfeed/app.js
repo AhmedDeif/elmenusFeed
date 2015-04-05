@@ -49,8 +49,9 @@ app.get('/', routes.index);
 app.get('/add_review', routes.newReview);
 app.post('/new_review', function(req, res) {
   
-    var Email = req.body.email;
-    var restaurantName = req.body.restaurantName;
+  var Email = req.body.email;
+  
+  var restaurantName = req.body.restaurantName;
 
   var reviewTitle = req.body.reviewTitle;
 
