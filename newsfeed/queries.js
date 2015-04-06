@@ -51,11 +51,13 @@ exports.createResturant  = function (name) {
 
     // I can like a dish in a specific restaurant.
     // The function takes an email and Dish name and match the user and the dish.
-    // Then it creates a Relation LIKES_DISH Relation between the user and a dish, the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish.
-	// the score attribute in the LIKES_DISH relation indicates the value that affects the overall score of the relationship between the users.
-	
+    // Then it creates a Relation LIKES_DISH Relation between the user and a dish,
+	// the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
+	// in this case the value is TRUE, therefore a like is created.
+	// the score attribute in the LIKES_DISH relation indicates the value that
+	// affects the overall score of the relationship between the users.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'true', score:'7'}]->(d) return u,x,d", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:TRUE, score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -66,11 +68,13 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 
     // I can dislike a dish in a specific restaurant.
     // The function takes an email and Dish name and match the user and the dish.
-    // Then it creates a Relation LIKES_DISH Relation between the user and a dish, the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish.
-	// the score attribute in the LIKES_DISH relation indicates the value that affects the overall score of the relationship between the users.
-	
-exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'false', score:'7'}]->(d) return u,x,d", 
+    // Then it creates a Relation LIKES_DISH Relation between the user and a dish,
+	// the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
+	// in this case the value is FALSE, therefore a dislike is created.
+	// the score attribute in the LIKES_DISH relation indicates the value that
+	// affects the overall score of the relationship between the users.
+exports.createrDisLikeUserDish  = function (User:Email,DishName) {
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:FALSE, score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
