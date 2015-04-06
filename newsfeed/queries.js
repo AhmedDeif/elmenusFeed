@@ -202,7 +202,8 @@ exports.createCuisine  = function (name) {
     cuisine and restaurant in the database.
 */
 exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)",
+             params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
@@ -219,7 +220,8 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
     cuisine
 */
 exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
-    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {cp:CuisineName,np:UserEmail}, function (err, results) {
+    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {cp:CuisineName,np:UserEmail}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
@@ -230,7 +232,8 @@ exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
 //another method that make user like all cuisines of restaurant 
 
 exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
-    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
+    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
