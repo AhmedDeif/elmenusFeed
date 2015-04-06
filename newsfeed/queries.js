@@ -135,8 +135,8 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
      and replaced by a yum.
 */
 exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:ADD_YUM]->(photo)WITH user,photo MATCH (user)-[x:ADD_YUCK]->(photo) Delete x;", 
-        params = {ep:UserEmail,dnp:DishName}, function (err, results) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
         if (err) throw err;
         console.log('done');
     });
@@ -147,13 +147,30 @@ exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "ADD_YUM" between them.
 */
-
 exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
     db.query("MATCH (n)-[rel:ADD_YUM]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
         else console.log("Done");
+    });
+}
+
+/*  Sprint #-1-US-5
+     The user can add a photo yuck to a certain photo.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
+     If this relationship has a value true, then a yum is added. If it's false, then it's a yuck.
+     The property "score" determines the weight of the action of adding a photo yuck. It's to be used while getting the common photo yums between 2 users.
+     If there was a yum on this photo, placed by the same user, then it will be deleted 
+     and replaced by a yuck.
+*/
+
+     exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
     });
 }
 
