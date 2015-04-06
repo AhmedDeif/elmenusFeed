@@ -197,7 +197,8 @@ exports.createCuisine  = function (name) {
     Sprint 1  US 22
         createRelCuisineRestaurant(Restaurant name,Cuisine name):
     This function takes as input the Cuisine's 
-    name and restaurant's name and
+    name and restaurant's name and search for them in
+    database then when they are found the function
     creates the corresponding relation between
     cuisine and restaurant in the database.
 */
@@ -215,7 +216,8 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
     Sprint 1  US 23
         createRelLikeCuisine(User Email,Cuisine name):
     This function takes as input the Cuisine's 
-    name and User's email and
+    name and User's email and finds them in the database when
+    they are found the function 
     create a like relation between user and
     cuisine
 */
@@ -229,7 +231,11 @@ exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
     });
 }
 
-//another method that make user like all cuisines of restaurant 
+/*another method that make user like all cuisines of restaurant 
+    it finds the user and restaurant in the database then it gets
+    all the cuisines of the restaurant and add a like cuisine relation
+    between the user and the cuisines
+*/
 
 exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
     db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
