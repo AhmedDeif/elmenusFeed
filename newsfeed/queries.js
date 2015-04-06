@@ -51,7 +51,7 @@ exports.createResturant  = function (name) {
     // The function takes an email and Dish name  and match the user and the dish.
     // Then it creates a Relation LIKED Relation between the user and a dish.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dnp}}) CREATE (user)-[:LIKES_DISH]->(dish) WITH user,dish MATCH (user)-[x:DILIKES_DISH]->(dish) DELETE x", 
+     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dnp}}) CREATE (user)-[:LIKES_DISH]->(dish) WITH user,dish MATCH (user)-[x:DILIKES_DISH]->(dish) DELETE x",
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -85,7 +85,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 }
 /* Sprint #-0-US-2
     createDish(name):
-    This function takes as input the dish's 
+    This function takes as input the dish's
     name and creates the corresponding dish in the
     database using a CYPHER CREATE query.
 */
@@ -115,7 +115,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
 
 /* Sprint #-0-US-18
     createFollowUser(FollowerEmail, FolloweeEmail):
-    This function takes as an input the email of 
+    This function takes as an input the email of
     the user that is requesting to follow another
     user, and the email of the other user that is
     being requested to be followed, then checks
@@ -143,7 +143,7 @@ exports.Get_restaurant_info  = function (name) {
         if (err){  console.log('Error');
                  throw err;
                 }
-				
+
 			data1 = results.map(function (result) {
             return result['out'];
 			});
@@ -157,7 +157,7 @@ exports.Get_restaurant_info  = function (name) {
             ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
             console.log(ret.RestaurantName[0]);
     });
-	
+
 	return ret;
 }
 
@@ -165,10 +165,10 @@ exports.Get_restaurant_info  = function (name) {
 
 
 //14-I can add a restaurant to favourites.
-//The function takes as inputs the email of the user and the name of the restaurant 
+//The function takes as inputs the email of the user and the name of the restaurant
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);",params = {ep:email,rp:RestaurantName}, function (err, results) {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 8}]->(rest);",params = {ep:email,rp:RestaurantName}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
