@@ -176,3 +176,20 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+
+var relations;
+exports.getRelations = function(callback) {
+    db.query("MATCH ()-[r]->() return distinct type(r);", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        relations = results.map(function(result) {
+            return result['r.name'];
+        });
+        relations = JSON.stringify(relations);
+        relations = JSON.parse(relations);
+        callback(relations);
+    });
+}
+

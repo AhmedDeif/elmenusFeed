@@ -1,0 +1,6 @@
+form(action="/relations_view", method="post")
+div
+		label Restaurant: 
+		select(id='restSel', name='rests', style='min-width:300px')
+			each rest in rl				
+				option(value=rest)= rest
