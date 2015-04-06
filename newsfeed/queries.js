@@ -46,20 +46,34 @@ exports.createResturant  = function (name) {
                 }
         else console.log("Done");
     });
+}
+
 
     //(S6) I can like a dish in a specific restaurant.
     // The function takes an email and Dish name  and match the user and the dish.
     // Then it creates a Relation LIKED Relation between the user and a dish.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dnp}}) CREATE (user)-[:LIKES_DISH]->(dish) WITH user,dish MATCH (user)-[x:DILIKES_DISH]->(dish) DELETE x", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'1'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
     });
-}
+
 
 }
 
+    //(S6) I can dislike a dish in a specific restaurant.
+    // The function takes an email and Dish name  and match the user and the dish.
+    // Then it creates a Relation DISLIKED Relation between the user and a dish.
+exports.createrLikeUserDish  = function (UserEmail,DishName) {
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'0'}]->(d) return u,x,d", 
+     	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+
+
+}
 
 
 //2-I can add a dish to the resturant
