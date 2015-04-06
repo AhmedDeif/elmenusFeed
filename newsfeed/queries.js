@@ -49,9 +49,11 @@ exports.createResturant  = function (name) {
 }
 
 
-    //(S6) I can like a dish in a specific restaurant.
-    // The function takes an email and Dish name  and match the user and the dish.
-    // Then it creates a Relation LIKED Relation between the user and a dish.
+    // I can like a dish in a specific restaurant.
+    // The function takes an email and Dish name and match the user and the dish.
+    // Then it creates a Relation LIKES_DISH Relation between the user and a dish, the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish.
+	// the score attribute in the LIKES_DISH relation indicates the value that affects the overall score of the relationship between the users.
+	
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'true', score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
@@ -62,9 +64,11 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 
 }
 
-    //(S6) I can dislike a dish in a specific restaurant.
-    // The function takes an email and Dish name  and match the user and the dish.
-    // Then it creates a Relation DISLIKED Relation between the user and a dish.
+    // I can dislike a dish in a specific restaurant.
+    // The function takes an email and Dish name and match the user and the dish.
+    // Then it creates a Relation LIKES_DISH Relation between the user and a dish, the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish.
+	// the score attribute in the LIKES_DISH relation indicates the value that affects the overall score of the relationship between the users.
+	
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'false', score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
