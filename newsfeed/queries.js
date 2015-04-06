@@ -53,7 +53,7 @@ exports.createResturant  = function (name) {
     // The function takes an email and Dish name  and match the user and the dish.
     // Then it creates a Relation LIKED Relation between the user and a dish.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'1'}]->(d) return u,x,d", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'true', score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -66,7 +66,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
     // The function takes an email and Dish name  and match the user and the dish.
     // Then it creates a Relation DISLIKED Relation between the user and a dish.
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'0'}]->(d) return u,x,d", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:'false', score:'7'}]->(d) return u,x,d", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
