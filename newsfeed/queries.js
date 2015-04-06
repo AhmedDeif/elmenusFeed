@@ -185,7 +185,7 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     database.
 */
 exports.createCuisine  = function (name) {
-    db.query("CREATE (:Cuisine { Name:{np} })", params = {np:name}, function (err, results) {
+    db.query("CREATE (:Cuisine { name:{np} })", params = {np:name}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
@@ -202,7 +202,7 @@ exports.createCuisine  = function (name) {
     cuisine and restaurant in the database.
 */
 exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.Name={cp} AND r.name ={rp} CREATE (r)-[rl:Cuisine]->(c)", params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
         if (err){  console.error('Error');
                  throw err;
                 }
@@ -210,8 +210,34 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
     });
 }
 /////////////////////////////////////////////
+/*
+    Sprint 1  US 23
+        createRelLikeCuisine(User Email,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and User's email and
+    create a like relation between user and
+    cuisine
+*/
+exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
+    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {cp:CuisineName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
 
+//another method that make user like all cuisines of restaurant 
 
+exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
+    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+///////////////////////////////////////////////////////////////////
 
 
 
