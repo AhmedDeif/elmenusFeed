@@ -48,7 +48,6 @@ exports.createResturant  = function (name) {
     });
 }
 
-
     // I can like a dish in a specific restaurant.
     // The function takes an email and Dish name and match the user and the dish.
     // Then it creates a Relation LIKES_DISH Relation between the user and a dish,
