@@ -19,12 +19,19 @@ exports.newDish = function(req, res){
 	res.render('add_dish')
 };
 
+<<<<<<< HEAD
 
 
 exports.signUp = function(req, res){
 	res.render('signup')
 };
 
+=======
+exports.signUp = function(req, res){
+	res.render('signup')
+};
+
+>>>>>>> bd6c6415b68819852553c1d9f54cddba894f58dc
 exports.newReview = function(req, res){
 	res.render('add_review')
 };

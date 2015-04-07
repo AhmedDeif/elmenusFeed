@@ -58,31 +58,6 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
     });
 }
 
-}
-
-
-
-//2-I can add a dish to the resturant
-exports.createDish  = function (name) {
-    db.query("CREATE (:Dish { dish_name:{np} })",
-     params = {np:name}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
-
-exports.addDishToRestaurant  = function (dish,restaurant) {
-    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:Has]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-
-
-}
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
@@ -122,8 +97,9 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
      shows that the photo is in this specific restaurant.
 */
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
-    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
-        if (err){  console.log('Error');
+    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", 
+        params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
+        if (err){  console.error('Error');
                  throw err;
                 }
         else console.log("Done");
@@ -152,37 +128,6 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     });
 }
 
-/*  Sprint #-1-US-3
-     The user can add a photo yum to a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "ADD_YUM" to it.
-     If there was a yuck on this photo, placed by the same user, then it will be deleted 
-     and replaced by a yum.
-*/
-exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:ADD_YUM]->(photo)WITH user,photo MATCH (user)-[x:ADD_YUCK]->(photo) Delete x;", 
-        params = {ep:UserEmail,dnp:DishName}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
-
-/*  Sprint #-1-US-4
-     The user can delete a photo yum in a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and deletes the relationship "ADD_YUM" between them.
-*/
-
-exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:ADD_YUM]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
 
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
@@ -238,3 +183,74 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+
+/*
+    Sprint 1  US 21
+        createCuisine(name):
+    This function takes as input the Cuisine's 
+    name and creates the corresponding cuisine in the
+    database.
+*/
+exports.createCuisine  = function (name) {
+    db.query("CREATE (:Cuisine { name:{np} })", params = {np:name}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*
+    Sprint 1  US 22
+        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and restaurant's name and search for them in
+    database then when they are found the function
+    creates the corresponding relation between
+    cuisine and restaurant in the database.
+*/
+exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)",
+             params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*
+    Sprint 1  US 23
+        createRelLikeCuisine(User Email,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and User's email and finds them in the database when
+    they are found the function 
+    create a like relation between user and
+    cuisine
+*/
+exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
+    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {cp:CuisineName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*another method that make user like all cuisines of restaurant 
+    it finds the user and restaurant in the database then it gets
+    all the cuisines of the restaurant and add a like cuisine relation
+    between the user and the cuisines
+*/
+
+exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
+    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
