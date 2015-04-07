@@ -232,7 +232,7 @@ exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
 
 }
 
-/*  Sprint #-1-US-24
+/*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
      This function no inputs.
