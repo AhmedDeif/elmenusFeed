@@ -78,7 +78,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 	in this case the value is FALSE, therefore a dislike is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.*/
-exports.createrDisLikeUserDish  = function (User:Email,DishName) {
+exports.createrDisLikeUserDish  = function (UserEmail,DishName) {
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
