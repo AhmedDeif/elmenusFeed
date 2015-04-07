@@ -48,7 +48,9 @@ exports.createResturant  = function (name) {
     });
 }
 
-    /*I can like a dish in a specific restaurant.
+    /*
+	Sprint #-0-US-5
+	I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
 	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
@@ -65,7 +67,9 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 
 }
 
-    /*I can dislike a dish in a specific restaurant.
+    /*
+	Sprint #-0-US-7
+	I can dislike a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
 	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
