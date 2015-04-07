@@ -65,8 +65,8 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
         if (err) throw err;
         console.log('done');
     });
-
 }
+
 
     /*
 	Sprint #-0-US-7
@@ -152,13 +152,27 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
-
                  throw err;
                 }
         else console.log("Done");
     });
-
 }
+
+
+/*  Sprint #-1-US-7
+     The user can share a restaurant on facebook or twitter.
+     This function takes the User Email and the Restaurant Name as an input.
+     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
+*/
+exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
+     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT]->(restaurant)", 
+        params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
+
+
 
 var ret;
 exports.Get_restaurant_info  = function (name) {
@@ -199,7 +213,7 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
-/////////////////////////////////////////
+
 /*
     Sprint 1  US 21
         createCuisine(name):
@@ -215,7 +229,7 @@ exports.createCuisine  = function (name) {
         else console.log("Done");
     });
 }
-/////////////////////////////////////////////
+
 /*
     Sprint 1  US 22
         createRelCuisineRestaurant(Restaurant name,Cuisine name):
@@ -234,7 +248,7 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
         else console.log("Done");
     });
 }
-/////////////////////////////////////////////
+
 /*
     Sprint 1  US 23
         createRelLikeCuisine(User Email,Cuisine name):
@@ -269,7 +283,4 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
         else console.log("Done");
     });
 }
-///////////////////////////////////////////////////////////////////
-
-
 
