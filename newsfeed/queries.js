@@ -179,7 +179,7 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
 /*
   Sprint #-1-US-20
     commonFavoritedRestaurants():
-      This function takes no inputs. It matches all users that
+      This function takes no inputs. It matches 2 users that
       are following each other and have favorited the same restaurant,
       and increases the corresponding totalScore between these two users
       (in the :FOLLOWS relationship), incrementing it by the score in the
