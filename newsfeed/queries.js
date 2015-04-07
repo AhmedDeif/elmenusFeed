@@ -59,11 +59,13 @@ exports.createResturant  = function (name) {
 	in this case the value is TRUE, therefore a like is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.
-    The functon also creates another realtion (LikeCuisine). 
+
+    The function also creates another relation (LikeCuisine). 
     When a user likes a dish in a restaurant, this means he likes 
-    the cuisine of this restaurant. SO this function finds the restaurant containing this dish,
+    the cuisine of this restaurant. So this function finds the restaurant containing this dish,
     then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
-    between the user and the these cuisines.
+    between the user and the these cuisines. It also adds a score of 5 points between the user 
+    and the cuisine (as described in story 23). 
     */
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
