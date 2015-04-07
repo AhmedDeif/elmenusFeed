@@ -97,12 +97,13 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
      shows that the photo is in this specific restaurant.
 */
 exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
-    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
-        if (err){  console.log('Error');
+    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", 
+        params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
+        if (err){  console.error('Error');
                  throw err;
                 }
         else console.log("Done");
-       });
+    });
 }
 
 /* Sprint #-0-US-18
@@ -255,4 +256,74 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
         else console.log("Done");
     });
 
+}
+
+/*
+    Sprint 1  US 21
+        createCuisine(name):
+    This function takes as input the Cuisine's 
+    name and creates the corresponding cuisine in the
+    database.
+*/
+exports.createCuisine  = function (name) {
+    db.query("CREATE (:Cuisine { name:{np} })", params = {np:name}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*
+    Sprint 1  US 22
+        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and restaurant's name and search for them in
+    database then when they are found the function
+    creates the corresponding relation between
+    cuisine and restaurant in the database.
+*/
+exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)",
+             params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*
+    Sprint 1  US 23
+        createRelLikeCuisine(User Email,Cuisine name):
+    This function takes as input the Cuisine's 
+    name and User's email and finds them in the database when
+    they are found the function 
+    create a like relation between user and
+    cuisine
+*/
+exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
+    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {cp:CuisineName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*another method that make user like all cuisines of restaurant 
+    it finds the user and restaurant in the database then it gets
+    all the cuisines of the restaurant and add a like cuisine relation
+    between the user and the cuisines
+*/
+
+exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
+    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
+             params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
 }
