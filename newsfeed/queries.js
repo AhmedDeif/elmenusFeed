@@ -236,14 +236,14 @@ exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
 /*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
-     This function no inputs.
-     It matches two users having a yum on the same photo, and matches 2 users having a follow 
-     relationship with each other (either user1 follows user2 or vice versa)
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
 */
-exports.UserCommonYumsUser  = function () {
-    db.query("MATCH (user1)-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2), (user1) -[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
-        function (err, results) {
+exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
