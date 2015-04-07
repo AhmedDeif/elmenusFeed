@@ -188,6 +188,7 @@ exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
     });
 }
 
+
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
@@ -229,6 +230,24 @@ exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
         else console.log("Done");
     });
 
+}
+
+/*  Sprint #-1-US-24
+     The user can see posts on the news feed prioritized by the common photo yums 
+     between that user and other users he's following.
+     This function no inputs.
+     It matches two users having a yum on the same photo, and matches 2 users having a follow 
+     relationship with each other (either user1 follows user2 or vice versa)
+     This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
+*/
+exports.UserCommonYumsUser  = function () {
+    db.query("MATCH (user1)-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2), (user1) -[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+        function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
 }
 
 var ret;
