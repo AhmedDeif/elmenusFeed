@@ -125,7 +125,35 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS { numberOfVisits :0 , score :5}]->(r)", params = {e1p:FollowerEmail
+            ,e2p:FolloweeEmail}
+            , function (err, results) {
+        if (err){  console.log('Error');
+
+                 throw err;
+                }
+        else console.log("Done");
+    });
+
+}
+
+/* Sprint #-1-US-29
+    visitFollowUser(FollowerEmail,FolloweeEmail):
+    This function takes as an input the email of 
+    the user who is already logged in now which is
+    "FollowerEmail" and the email of the user he 
+    is following  "FolloweeEmail" and each time 
+    the follower visits the followee's profile
+    the numberOFVisits which is an attribute in
+    the relation follow will be incremented
+    by one.
+    This function is to get the number of
+    how many times a user visits another user's
+    profile but there should be a relation follow
+    between them.
+    */
+exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
+    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email set f.numberOfVisits = f.numberOfVisits+1", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
