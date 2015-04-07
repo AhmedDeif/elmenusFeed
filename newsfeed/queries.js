@@ -50,17 +50,24 @@ exports.createResturant  = function (name) {
 
     /*
 	Sprint #-0-US-5
-	Sprint #-1-US-30
+	Sprint #-1-US-28
+    Sprint #-1-US-30
 	I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
 	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
 	in this case the value is TRUE, therefore a like is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
-	affects the overall score of the relationship between the users.*/
+	affects the overall score of the relationship between the users.
+    The functon also creates another realtion (LikeCuisine). 
+    When a user likes a dish in a restaurant, this means he likes 
+    the cuisine of this restaurant. SO this function finds the restaurant containing this dish,
+    then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
+    between the user and the these cuisines.
+    */
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
