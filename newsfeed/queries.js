@@ -117,7 +117,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
-};
+
 
 /*  Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
