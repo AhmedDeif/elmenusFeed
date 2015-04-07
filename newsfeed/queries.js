@@ -250,6 +250,26 @@ exports.UserCommonYumsUser  = function () {
     });
 }
 
+
+
+/*  Sprint #-1-US-26
+     The user can see posts on the news feed prioritized by the common photo yucks 
+     between that user and other users he's following.
+     This function no inputs.
+     It matches two users having a yum on the same photo, and matches 2 users having a follow 
+     relationship with each other (either user1 follows user2 or vice versa)
+     This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
+*/
+exports.UserCommonYucksUser  = function () {
+    db.query("MATCH (user1)-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2), (user1) -[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+        function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
 var ret;
 exports.Get_restaurant_info  = function (name) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
