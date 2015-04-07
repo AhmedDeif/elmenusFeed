@@ -1,6 +1,11 @@
 form(action="/relations_view", method="post")
 div
-		label Restaurant: 
-		select(id='restSel', name='rests', style='min-width:300px')
-			each rest in rl				
-				option(value=rest)= rest
+		label Relations: 
+		select(id='relSel', name='rels', style='min-width:300px')
+			each rel in rl				
+				option(value=rel)= rel
+
+div
+		input(type="submit", value="Choose relation" href='Get_relation_info/select')
+		//-- var select=null; if (rest == rests.title) select='selected';
+

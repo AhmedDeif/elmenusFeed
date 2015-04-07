@@ -185,11 +185,40 @@ exports.getRelations = function(callback) {
             throw err;
         }
         relations = results.map(function(result) {
-            return result['r.name'];
+            return result['type(r)'];
         });
         relations = JSON.stringify(relations);
         relations = JSON.parse(relations);
         callback(relations);
     });
 }
+
+var rel;
+exports.Get_relation_info  = function (relation) {
+    db.query("match (u) -[:r]-> (m) return distinct labels(u) , labels(m)", params = {r:relation}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+                
+            data1 = results.map(function (result) {
+            return result['labels(u)'];
+            });
+
+            data2 = results.map(function (result) {
+            return result['labels(m)'];
+            });
+
+            data1 = ' \"Source\":' + JSON.stringify(data1);
+            data2 = ' \"Destination\":' + JSON.stringify(data2);
+            rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            console.log(rel);
+    });
+    
+    return rel;
+}
+
+
+
+
+
 

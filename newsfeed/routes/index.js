@@ -32,4 +32,9 @@ exports.relationsView = function(req, res) {
 		});
 	};
 
+exports.Get_relation_info = function(req, res){
+	var x = query.Get_relation_info(req.param("tagId"));
+	res.render('Get_relation_info', x);
+};
+
 
