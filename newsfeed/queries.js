@@ -125,7 +125,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS ]->(r) return f;", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
@@ -136,6 +136,10 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     });
 
 }
+
+
+
+
 
 var ret;
 exports.Get_restaurant_info  = function (name) {
