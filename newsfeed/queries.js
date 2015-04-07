@@ -176,3 +176,24 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+/*
+  Sprint #-1-US-20
+    commonFavoritedRestaurants():
+      This function takes no inputs. It matches all users that
+      are following each other and have favorited the same restaurant,
+      and increases the corresponding totalScore between these two users
+      (in the :FOLLOWS relationship), incrementing it by the score in the
+      :FAVORITES relationship.
+*/
+exports.commonFavoritedRestaurants = function (user1, user2) {
+  db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}}),"
+  + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {usr1:user1, usr2:user2},
+  function (err, results) {
+    if (err)
+    {
+      console.log('Error');
+      throw err;
+    }
+    else console.log("Done");
+  });
+}
