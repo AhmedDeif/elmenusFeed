@@ -50,6 +50,7 @@ exports.createResturant  = function (name) {
 
     /*
 	Sprint #-0-US-5
+	Sprint #-1-US-30
 	I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
@@ -58,7 +59,8 @@ exports.createResturant  = function (name) {
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.*/
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:TRUE, score:'7'}]->(d) return u,x,d", 
+//match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -69,6 +71,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 
     /*
 	Sprint #-0-US-7
+	Sprint #-1-US-31
 	I can dislike a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
@@ -77,7 +80,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.*/
 exports.createrDisLikeUserDish  = function (User:Email,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) optional match (u)-[l:LIKES_DISH]->(d) delete l create (u)-[x:LIKES_DISH {likes:FALSE, score:'7'}]->(d) return u,x,d", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
