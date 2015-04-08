@@ -2,13 +2,17 @@
 /*
  * GET home page.
  */
-
- var query = require('../queries');
+var query = require('../queries');
  
 exports.index = function(req, res){
-
   res.render('index', { title: 'Express' })
 };
+
+exports.addDish = function(req, res) {
+		query.getRestaurants(function(restaurants) {
+			res.render('add_dish', {rs:restaurants});
+		});
+	};
 
 exports.Get_restaurant_info = function(req, res){
 	query.Get_restaurant_info(req.param("tagId"),function renderRes(myRes){res.render('Get_restaurant_info', myRes);});
@@ -39,4 +43,3 @@ exports.Get_relation_info = function(req, res){
 exports.Get_relation_info_cont = function(req, res, x){
  	res.render('Get_relation_info', x);
  };
-
