@@ -77,6 +77,10 @@ exports.createResturant  = function (name) {
  /*
 	Story 33:
 >>>>>>> master
+=======
+ /*
+	Story 33:
+>>>>>>> master
     When a user likes  dish in a restaurant, then a check is made to find
     if any of his followees like the same cuisine as that of this restaurant.
     If so, the score between the follower and the followee is increased by
