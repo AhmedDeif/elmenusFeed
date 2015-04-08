@@ -173,7 +173,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     This function is to get the number of
     how many times a user visits another user's
     profile but there should be a relation follow
-    between
+    between them.
     */
 exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
     db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email set f.numberOfVisits = f.numberOfVisits+1", params = {e1p:FollowerEmail
@@ -302,7 +302,7 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
      The user can see his activity log.
      This function takes the User Email as an input.
      It matches the user with all other nodes that he has a relation with.
-     then it returns all these nodes with the relations hw has with them.
+     then it returns all these nodes with the relations he has with them.
      
 */
 
