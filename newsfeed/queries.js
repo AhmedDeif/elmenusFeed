@@ -79,7 +79,6 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
     });
 }
 
-
     /*
 	Sprint #-0-US-7
 	Sprint #-1-US-31
@@ -194,12 +193,63 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     });
 }
 
+/*  Sprint #-1-US-3
+     The user can add a photo yum to a certain photo.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
+     If this relationship has a value true, then a yum is added. If it's false, then it's a yuck.
+     The property "score" determines the weight of the action of adding a photo yum. It's to be used while getting the common photo yums between 2 users.
+     If there was a yuck on this photo, placed by the same user, then it will be deleted 
+     and replaced by a yum.
+*/
+exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
+
+/*  Sprint #-1-US-4
+     The user can delete a photo yum in a certain photo.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and deletes the relationship "ADD_YUM" between them.
+*/
+exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
+    db.query("MATCH (n)-[rel:ADD_YUM]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*  Sprint #-1-US-5
+     The user can add a photo yuck to a certain photo.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
+     If this relationship has a value true, then a yum is added. If it's false, then it's a yuck.
+     The property "score" determines the weight of the action of adding a photo yuck. It's to be used while getting the common photo yucks between 2 users.
+     If there was a yum on this photo, placed by the same user, then it will be deleted 
+     and replaced by a yuck.
+*/
+
+     exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
+
+
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
 exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
+
      db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", 
         params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
         if (err) throw err;
@@ -448,4 +498,6 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
                 }
         else console.log("Done");
     });
+
 }
+
