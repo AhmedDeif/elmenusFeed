@@ -149,7 +149,7 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{score:3,totalScore:3}]->(r)", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
