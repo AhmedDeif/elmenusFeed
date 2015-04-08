@@ -160,8 +160,18 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 
 }
 
-var ret;
-exports.Get_restaurant_info  = function (name) {
+/*	Get_restaurant_info(name, req, res):
+    This function takes as an input the name of 
+    the restaurant that the user is requesting
+	then the reviews are fetched from the database.
+	the(req, res) parameters are passed from index.js
+	in order to be able to call the render function whenever
+	the query finishes and fetches the results.
+	the Get_restaurant_info_cont passes all these params to 
+	index.js and then executes render passing the page name and the 
+	output JSON object.
+*/
+exports.Get_restaurant_info  = function (name, callback) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -177,11 +187,10 @@ exports.Get_restaurant_info  = function (name) {
 
 			data1 = ' \"myData\":' + JSON.stringify(data1);
             data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
-            ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            var ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
             console.log(ret.RestaurantName[0]);
+			callback(ret);
     });
-	
-	return ret;
 }
 
 
