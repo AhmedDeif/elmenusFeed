@@ -31,7 +31,7 @@ exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
-    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} ,score:3}]-> (r)"
+    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)"
         , params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
