@@ -186,11 +186,10 @@ exports.getRelations = function(callback) {
         relations = results.map(function(result) {
             return result['type(r)'];
         });
-        relations = JSON.stringify(relations);
-        relations = JSON.parse(relations);
         console.log(relations[0]);
         console.log(relations[1]);
         console.log(relations.length);
+		callback(relations);
     });
 }
 

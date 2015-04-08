@@ -31,7 +31,7 @@ exports.costChange = function(req, res){
 };
 
 exports.Relations = function(req, res){
-		query.getRelations(function(relations) {
-			res.render('Relations', {rl:relations});
+		query.getRelations(function relations(myRes) {
+			res.render('Relations', {rl:myRes});
 		});
 };
