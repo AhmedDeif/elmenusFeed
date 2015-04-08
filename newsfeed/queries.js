@@ -56,31 +56,24 @@ exports.createResturant  = function (name) {
 	Sprint #-1-US-30
     Sprint #-1-US-33
 	I can like a dish in a specific restaurant.
-    
+
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
 	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
 	in this case the value is TRUE, therefore a like is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.
+
     
     Story 28:
+
     The function also creates another relation (LikeCuisine). 
     When a user likes a dish in a restaurant, this means he likes 
     the cuisine of this restaurant. So this function finds the restaurant containing this dish,
     then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
     between the user and the these cuisines. It also adds a score of 5 points between the user 
     and the cuisine (as described in story 23). 
-
-    Story 33:
-=======
- /*
-	Story 33:
->>>>>>> master
-=======
- /*
-	Story 33:
->>>>>>> master
+    story 33:
     When a user likes  dish in a restaurant, then a check is made to find
     if any of his followees like the same cuisine as that of this restaurant.
     If so, the score between the follower and the followee is increased by
@@ -96,6 +89,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
         console.log('done');
     });
 }
+
 
     /*
 	Sprint #-0-US-7
@@ -302,7 +296,6 @@ exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
     });
 }
 
-
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
@@ -364,9 +357,6 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
-
-
-
 /*  Sprint #-1-US-26
      The user can see posts on the news feed prioritized by the common photo yucks 
      between that user and other users he's following.
@@ -599,7 +589,7 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
         else console.log("Done");
     });
 }
-///////////////////////////////////////////////////////////////////
+
 /*  Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
@@ -615,4 +605,5 @@ exports.showOldActionsHistory  = function (UserEmail) {
                 }
         else console.log("Done");
     });
+
 }
