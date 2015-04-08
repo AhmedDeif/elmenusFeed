@@ -6,8 +6,5 @@
     "express": "2.5.8",
     "jade": ">= 0.26.1",
     "neo4j": "^1.1.1"
-  },
-  "devDependencies": {
-    "supertest": "^0.15.0"
   }
 }
