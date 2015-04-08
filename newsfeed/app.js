@@ -42,13 +42,17 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
-	var dishName = req.body.dishName;
-	var select = document.getElementById("restSel");
-  console.log(select.selectedIndex)
-	queries.createDish(dishName);
-	queries.addDishToRestaurant(dishName, restaurant);
-	res.redirect('/add_dish');
-})
+  var getDishName = function(callback) {
+    var dishName = req.body.dishName;
+    var restaurant = req.body.rests;    
+    callback(dishName, restaurant);
+  }
+  getDishName(function(dishName, restaurant) {
+    queries.createDish(dishName);
+    queries.addDishToRestaurant(dishName, restaurant);
+    res.redirect('/add_dish');
+  });
+});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

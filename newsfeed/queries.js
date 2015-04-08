@@ -60,7 +60,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         if (err){  console.error('Error');
                  throw err;
                 }
-        else console.log("Done");
+        else console.log(results);
     });
 }
 
