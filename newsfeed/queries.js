@@ -1,4 +1,5 @@
 var neo4j = require('neo4j');
+var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
@@ -31,7 +32,8 @@ exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
-    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)", params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
+    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)"
+        , params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -51,16 +53,26 @@ exports.createResturant  = function (name) {
     /*
 	Sprint #-0-US-5
 	Sprint #-1-US-30
+    Sprint #-1-US-33
 	I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
 	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
 	in this case the value is TRUE, therefore a like is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
-	affects the overall score of the relationship between the users.*/
+	affects the overall score of the relationship between the users.
+
+    Story 33:
+    When a user likes  dish in a restaurant, then a check is made to find
+    if any of his followees like the same cuisine as that of this restaurant.
+    If so, the score between the follower and the followee is increased by
+    the score of common cuisine(Which is 5 in this case)* number of total 
+    common cuisine likes. The relation is checked both ways to make sure that
+    the score is added for each relation in case 2 users follow each other.
+    */
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -77,7 +89,7 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
 	in this case the value is FALSE, therefore a dislike is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.*/
-exports.createrDisLikeUserDish  = function (User:Email,DishName) {
+exports.createrDisLikeUserDish  = function (UserEmail,DishName) {
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
@@ -116,7 +128,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         else console.log("Done");
     });
 }
-};
+
 
 /*  Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
@@ -147,7 +159,7 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{score:3,totalScore:3}]->(r)", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
@@ -159,8 +171,18 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 
 }
 
-var ret;
-exports.Get_restaurant_info  = function (name) {
+/*	Get_restaurant_info(name, req, res):
+    This function takes as an input the name of 
+    the restaurant that the user is requesting
+	then the reviews are fetched from the database.
+	the(req, res) parameters are passed from index.js
+	in order to be able to call the render function whenever
+	the query finishes and fetches the results.
+	the Get_restaurant_info_cont passes all these params to 
+	index.js and then executes render passing the page name and the 
+	output JSON object.
+*/
+exports.Get_restaurant_info  = function (name, callback) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -176,11 +198,10 @@ exports.Get_restaurant_info  = function (name) {
 
 			data1 = ' \"myData\":' + JSON.stringify(data1);
             data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
-            ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            var ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
             console.log(ret.RestaurantName[0]);
+			callback(ret);
     });
-	
-	return ret;
 }
 
 
@@ -190,7 +211,8 @@ exports.Get_restaurant_info  = function (name) {
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);",params = {ep:email,rp:RestaurantName}, function (err, results) {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES{score:9}]->(rest);"
+    , params = {ep:email,rp:RestaurantName}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -212,6 +234,7 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
     });
 }
 
+
 /*  Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
@@ -221,6 +244,56 @@ exports.UserSharesDish = function (UserEmail,DishName) {
      db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH]->(dish)", 
         params = {ep:UserEmail,dn:DishName}, function (err, results) {
          if (err){  console.log('Error');
+                          throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+
+
+var relations;
+exports.getRelations = function(callback) {
+    db.query("MATCH ()-[r]->() return distinct type(r);", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        relations = results.map(function(result) {
+            return result['type(r)'];
+        });
+        relations = JSON.stringify(relations);
+        relations = JSON.parse(relations);
+        callback(relations);
+    });
+}
+
+var rel;
+exports.Get_relation_info  = function (r, req, res) {
+    var query = "match (u) -[:" + r + "]-> (m) return distinct labels(u) , labels(m)";
+     db.query(query, function (err, results) {
+         if (err){  console.log('Error');
+                  throw err;
+                 }
+                
+            data1 = results.map(function (result) {
+             return result['labels(u)'];
+            });
+ 
+             data2 = results.map(function (result) {
+             return result['labels(m)'];
+             });
+ 
+            data1 = ' \"Source\":' + JSON.stringify(data1);
+             data2 = ' \"Destination\":' + JSON.stringify(data2);
+             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+           indexjs.Get_relation_info_cont(req, res, rel);
+     });
+    
+    
+    return rel;
+}
+
 
 /*
     Sprint 1  US 21
