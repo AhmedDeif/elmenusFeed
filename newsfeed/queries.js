@@ -52,6 +52,7 @@ exports.createResturant  = function (name) {
 
     /*
 	Sprint #-0-US-5
+    Sprint #-1-US-28
 	Sprint #-1-US-30
     Sprint #-1-US-33
 	I can like a dish in a specific restaurant.
@@ -61,6 +62,13 @@ exports.createResturant  = function (name) {
 	in this case the value is TRUE, therefore a like is created.
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.
+    
+    Story 28:
+    The function also creates another relation (LikeCuisine). 
+    When a user likes a dish in a restaurant, this means he likes 
+    the cuisine of this restaurant. So this function finds the restaurant containing this dish,
+    then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
+    between the user and the these cuisines. It also adds a score of 5 points between the user
 
     Story 33:
     When a user likes  dish in a restaurant, then a check is made to find
