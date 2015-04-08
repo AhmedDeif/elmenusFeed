@@ -12,6 +12,9 @@
  var app = module.exports = express.createServer();
 
 
+module.exports = {
+  app: app
+};
 // Configuration
 
  app.configure(function(){
@@ -59,8 +62,9 @@ app.post('/sign_up', function(req, res) {
 app.get('/add_review', routes.newReview);
 app.post('/new_review', function(req, res) {
   
-    var Email = req.body.email;
-    var restaurantName = req.body.restaurantName;
+  var Email = req.body.email;
+  
+  var restaurantName = req.body.restaurantName;
 
   var reviewTitle = req.body.reviewTitle;
 
@@ -70,5 +74,5 @@ app.post('/new_review', function(req, res) {
   res.redirect('/add_review');
 })
 
- app.listen(3000);
- console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
