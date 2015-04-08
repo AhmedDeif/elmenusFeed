@@ -5,20 +5,12 @@
 
  var express = require('express')
   , routes = require('./routes');
-<<<<<<< HEAD
+
 var neo4j = require('neo4j');
 var queries = require('./queries.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 var fs = require('fs');
 var app = module.exports = express.createServer();
-=======
-
- var neo4j = require('neo4j');
- var queries = require('./queries.js');
- var db = new neo4j.GraphDatabase('http://localhost:7474');
- var app = module.exports = express.createServer();
-
->>>>>>> master
 
 module.exports = {
   app: app
