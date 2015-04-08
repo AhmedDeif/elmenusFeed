@@ -12,6 +12,9 @@
  var app = module.exports = express.createServer();
 
 
+module.exports = {
+  app: app
+};
 // Configuration
 
  app.configure(function(){
@@ -35,6 +38,12 @@
 
 app.get('/', routes.index);
 app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
+app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
+app.get('/relations_view', routes.relationsView);
+app.post('/relations', function(req, res) {
+  var relation = req.param("rels");
+  res.redirect('/Get_relation_info/' + relation);
+})
 app.get('/add_dish', routes.newDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
@@ -42,7 +51,7 @@ app.post('/new_dish', function(req, res) {
 	queries.createDish(dishName);
 	queries.addDishToRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
-})
+});
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
   var email = req.body.email;
@@ -53,8 +62,9 @@ app.post('/sign_up', function(req, res) {
 app.get('/add_review', routes.newReview);
 app.post('/new_review', function(req, res) {
   
-    var Email = req.body.email;
-    var restaurantName = req.body.restaurantName;
+  var Email = req.body.email;
+  
+  var restaurantName = req.body.restaurantName;
 
   var reviewTitle = req.body.reviewTitle;
 
@@ -64,5 +74,5 @@ app.post('/new_review', function(req, res) {
   res.redirect('/add_review');
 })
 
- app.listen(3000);
- console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
