@@ -161,7 +161,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 }
 
 var ret;
-exports.Get_restaurant_info  = function (name) {
+exports.Get_restaurant_info  = function (name, req, res) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -179,6 +179,7 @@ exports.Get_restaurant_info  = function (name) {
             data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
             ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
             console.log(ret.RestaurantName[0]);
+			indexjs.Get_restaurant_info_cont(req, res, ret);
     });
 	
 	return ret;

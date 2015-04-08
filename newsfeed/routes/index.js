@@ -11,7 +11,10 @@ exports.index = function(req, res){
 };
 
 exports.Get_restaurant_info = function(req, res){
-	var x = query.Get_restaurant_info(req.param("tagId"));
+	query.Get_restaurant_info(req.param("tagId"), req, res);
+};
+
+exports.Get_restaurant_info_cont = function(req, res, x){
 	res.render('Get_restaurant_info', x);
 };
 
