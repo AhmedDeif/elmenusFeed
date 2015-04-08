@@ -79,10 +79,6 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
     });
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
     /*
 	Sprint #-0-US-7
 	Sprint #-1-US-31
@@ -197,7 +193,6 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     });
 }
 
-<<<<<<< HEAD
 /*  Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -247,19 +242,15 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
     });
 }
 
-=======
->>>>>>> master
+
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
 exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
-<<<<<<< HEAD
-     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT]->(restaurant)", 
-=======
+
      db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", 
->>>>>>> master
         params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -272,11 +263,7 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
 exports.UserSharesDish = function (UserEmail,DishName) {
-<<<<<<< HEAD
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH]->(dish)", 
-=======
      db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", 
->>>>>>> master
         params = {ep:UserEmail,dn:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -290,11 +277,7 @@ exports.UserSharesDish = function (UserEmail,DishName) {
      It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
 */
 exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
-<<<<<<< HEAD
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO]->(photo)", 
-=======
      db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", 
->>>>>>> master
         params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
          if (err){  console.log('Error');
                  throw err;
@@ -515,9 +498,6 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
                 }
         else console.log("Done");
     });
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 }
 
