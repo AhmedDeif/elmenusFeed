@@ -219,7 +219,7 @@ exports.getRelations = function(callback) {
 
 var rel;
 exports.Get_relation_info  = function (r, req, res) {
-    var query = "match (u) <-[:" + r + "]- (m) return distinct labels(u) , labels(m)";
+    var query = "match (u) -[:" + r + "]-> (m) return distinct labels(u) , labels(m)";
      db.query(query, function (err, results) {
          if (err){  console.log('Error');
                   throw err;
@@ -236,8 +236,6 @@ exports.Get_relation_info  = function (r, req, res) {
             data1 = ' \"Source\":' + JSON.stringify(data1);
              data2 = ' \"Destination\":' + JSON.stringify(data2);
              rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
-             console.log(rel.Source[0]);
-             console.log(rel.Destination[0]);
            indexjs.Get_relation_info_cont(req, res, rel);
      });
     

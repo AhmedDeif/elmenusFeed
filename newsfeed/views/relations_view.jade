@@ -1,11 +1,11 @@
-form(action="/relations_view", method="post")
-div
+form(action="/relations", method="post")
+	div
 		label Relations: 
 		select(id='relSel', name='rels', style='min-width:300px')
 			each rel in rl				
 				option(value=rel)= rel
 
-div
-		input(type="submit", value="Choose relation" href='Get_relation_info/select')
+	div
+		input(type="submit", value="Choose relation")
 		//-- var select=null; if (rest == rests.title) select='selected';
 
