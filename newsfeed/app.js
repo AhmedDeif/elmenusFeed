@@ -42,16 +42,14 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
-  var getDishName = function(callback) {
-    var dishName = req.body.dishName;
-    var restaurant = req.body.rests;    
-    callback(dishName, restaurant);
+  var dishName = req.body.dishName;
+  var restaurant = req.param("rests");
+  queries.createDish(dishName);
+  setTimeout(test, 5000);
+  var test = function(callback) {
+    callback(queries.addDishToRestaurant(dishName, restaurant));
   }
-  getDishName(function(dishName, restaurant) {
-    queries.createDish(dishName);
-    queries.addDishToRestaurant(dishName, restaurant);
-    res.redirect('/add_dish');
-  });
+  res.redirect('/add_dish');
 });
 
 app.listen(3000);
