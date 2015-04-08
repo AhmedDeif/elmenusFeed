@@ -191,7 +191,7 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
      If this relationship has a value true, then a yum is added. If it's false, then it's a yuck.
-     The property "score" determines the weight of the action of adding a photo yuck. It's to be used while getting the common photo yums between 2 users.
+     The property "score" determines the weight of the action of adding a photo yuck. It's to be used while getting the common photo yucks between 2 users.
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
