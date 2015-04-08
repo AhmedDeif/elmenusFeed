@@ -44,11 +44,7 @@ app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
   var dishName = req.body.dishName;
   var restaurant = req.param("rests");
-  queries.createDish(dishName);
-  setTimeout(test, 5000);
-  var test = function(callback) {
-    callback(queries.addDishToRestaurant(dishName, restaurant));
-  }
+  queries.createDishAndRestaurant(dishName, restaurant);
   res.redirect('/add_dish');
 });
 

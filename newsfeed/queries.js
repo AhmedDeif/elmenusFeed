@@ -60,7 +60,7 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         if (err){  console.error('Error');
                  throw err;
                 }
-        else console.log(results);
+        else console.log('Done');
     });
 }
 
@@ -77,5 +77,14 @@ exports.getRestaurants = function(callback) {
         restaurants = JSON.stringify(restaurants);
         restaurants = JSON.parse(restaurants);
         callback(restaurants);
+    });
+}
+
+exports.createDishAndRestaurant = function(dish, restaurant) {
+    db.query("MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log('Done');
     });
 }
