@@ -250,7 +250,7 @@ exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
 }
 
 /*  Sprint #-1-US-4
-     The user can delete a photo yuck in a certain photo.
+     The user can delete a photo yum in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
 */
@@ -589,6 +589,7 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
         else console.log("Done");
     });
 }
+
 
 /*  Sprint #-1-US-1
      The user can see his activity log.
