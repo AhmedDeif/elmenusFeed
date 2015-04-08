@@ -11,11 +11,7 @@ exports.index = function(req, res){
 };
 
 exports.Get_restaurant_info = function(req, res){
-	query.Get_restaurant_info(req.param("tagId"), req, res);
-};
-
-exports.Get_restaurant_info_cont = function(req, res, x){
-	res.render('Get_restaurant_info', x);
+	query.Get_restaurant_info(req.param("tagId"),function renderRes(myRes){res.render('Get_restaurant_info', myRes);});
 };
 
 exports.newDish = function(req, res){

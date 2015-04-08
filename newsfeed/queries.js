@@ -1,5 +1,4 @@
 var neo4j = require('neo4j');
-var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
@@ -172,8 +171,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 	index.js and then executes render passing the page name and the 
 	output JSON object.
 */
-var ret;
-exports.Get_restaurant_info  = function (name, req, res) {
+exports.Get_restaurant_info  = function (name, callback) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -189,12 +187,10 @@ exports.Get_restaurant_info  = function (name, req, res) {
 
 			data1 = ' \"myData\":' + JSON.stringify(data1);
             data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
-            ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            var ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
             console.log(ret.RestaurantName[0]);
-			indexjs.Get_restaurant_info_cont(req, res, ret);
+			callback(ret);
     });
-	
-	return ret;
 }
 
 
