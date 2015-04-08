@@ -52,8 +52,13 @@ exports.createResturant  = function (name) {
 
     /*
 	Sprint #-0-US-5
+<<<<<<< HEAD
+	Sprint #-1-US-28
+    Sprint #-1-US-30
+=======
 	Sprint #-1-US-30
     Sprint #-1-US-33
+>>>>>>> master
 	I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
@@ -62,6 +67,18 @@ exports.createResturant  = function (name) {
 	the score attribute in the LIKES_DISH relation indicates the value that
 	affects the overall score of the relationship between the users.
 
+<<<<<<< HEAD
+    The function also creates another relation (LikeCuisine). 
+    When a user likes a dish in a restaurant, this means he likes 
+    the cuisine of this restaurant. So this function finds the restaurant containing this dish,
+    then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
+    between the user and the these cuisines. It also adds a score of 5 points between the user 
+    and the cuisine (as described in story 23). 
+    */
+exports.createrLikeUserDish  = function (UserEmail,DishName) {
+//match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
+=======
     Story 33:
     When a user likes  dish in a restaurant, then a check is made to find
     if any of his followees like the same cuisine as that of this restaurant.
@@ -73,6 +90,7 @@ exports.createResturant  = function (name) {
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
+>>>>>>> master
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
