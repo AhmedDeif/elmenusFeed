@@ -26,4 +26,11 @@ exports.newReview = function(req, res){
 	res.render('add_review')
 };
 
+exports.costChange = function(req, res){
+	res.render('costChange');
+};
 
+exports.Relations = function(req, res){
+	var x = query.getRelations();
+	res.render('Relations');
+};

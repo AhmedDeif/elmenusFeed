@@ -43,6 +43,18 @@ app.post('/new_dish', function(req, res) {
 	queries.addDishToRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
 })
+app.get('/costChange/:tagName', routes.costChange);
+app.post('/costChange/:tagName', function(req, res) {
+  var cost = req.body.cost;
+  var relation = req.param["tagName"];
+  queries.costChange(relation, cost);
+  res.redirect('/Relations');
+})
+app.get('/Relations', routes.Relations);
+app.post('/Relations', function(req, res) {
+  var relation = req.body.restaurant;
+  res.redirect('/costChange/:'+relation);
+})
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
   var email = req.body.email;

@@ -176,3 +176,30 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+
+exports.getRelations = function(){
+    db.query("MATCH (n)-[R]->(d) return distinct type(R);", 
+        params={},function(err,results){
+            if (err){  console.log('Error');
+                 throw err;
+                }
+                var Relations = results.map(function (results) {
+                    return results[type(R)];
+                })
+                Relations = JSON.stringify(Relations);
+                ret = JSON.parse(Relations);
+                console.log(ret.type(R));
+        });
+}
+
+
+exports.changeRelationCost = function (name, cost) {
+    db.query("MATCH (n)-[R:{nam}]->(d) UPDATE R.cost = c;",
+     params={nam:name, c:cost}, function(err,results){
+       if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done"); 
+    });
+}
+
