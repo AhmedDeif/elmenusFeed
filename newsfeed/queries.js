@@ -126,10 +126,34 @@ exports.addDishToRestaurant  = function (dish,restaurant) {
         if (err){  console.error('Error');
                  throw err;
                 }
-        else console.log("Done");
+        else console.log('Done');
     });
 }
 
+var restaurants;
+exports.getRestaurants = function(callback) {
+    db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        restaurants = results.map(function(result) {
+            return result['r.name'];
+        });
+        restaurants = JSON.stringify(restaurants);
+        restaurants = JSON.parse(restaurants);
+        callback(restaurants);
+    });
+}
+
+exports.createDishAndRestaurant = function(dish, restaurant) {
+    db.query("MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log('Done');
+    });
+}
 
 /*  Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
@@ -334,6 +358,3 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
         else console.log("Done");
     });
 }
-
-
-
