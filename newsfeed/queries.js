@@ -69,12 +69,16 @@ exports.createResturant  = function (name) {
     between the user and the these cuisines. It also adds a score of 5 points between the user 
     and the cuisine (as described in story 23). 
     Story 33:
+=======
+ /*
+	Story 33:
+>>>>>>> master
     When a user likes  dish in a restaurant, then a check is made to find
     if any of his followees like the same cuisine as that of this restaurant.
     If so, the score between the follower and the followee is increased by
     the score of common cuisine(Which is 5 in this case)* number of total 
     common cuisine likes. The relation is checked both ways to make sure that
-    the score is added for each relation in case 2 users follow each other.
+    the score is added for each relation in case 2 users follow each other. 
     */
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
@@ -199,7 +203,6 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
                 }
         else console.log("Done");
     });
-
 }
 
 /* Sprint #-1-US-29
@@ -218,8 +221,8 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     between them.
     */
 exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5", params = {e1p:FollowerEmail
-            ,e2p:FolloweeEmail}
+    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5",
+     params = {e1p:FollowerEmail,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -269,7 +272,7 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
      and replaced by a yuck.
 */
 
-     exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
+exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
      db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", 
         params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
         if (err) throw err;
@@ -291,8 +294,6 @@ exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
         else console.log("Done");
     });
 }
-
-
 
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
@@ -355,7 +356,27 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
+/*  Sprint #-1-US-26
+     The user can see posts on the news feed prioritized by the common photo yucks 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yucks on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
+     This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
+*/
+exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
 
+
+
+var ret;
 /*	Get_restaurant_info(name, req, res):
     This function takes as an input the name of 
     the restaurant that the user is requesting
@@ -583,4 +604,5 @@ exports.showOldActionsHistory  = function (UserEmail) {
                 }
         else console.log("Done");
     });
+
 }
