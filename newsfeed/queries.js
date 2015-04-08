@@ -62,7 +62,7 @@ exports.createResturant  = function (name) {
 
     Story 33:
     When a user likes  dish in a restaurant, then a check is made to find
-    if any of his followees like the same cuisisne as that of this restaurant.
+    if any of his followees like the same cuisine as that of this restaurant.
     If so, the score between the follower and the followee is increased by
     the score of common cuisine(Which is 5 in this case)* number of total 
     common cuisine likes. The relation is checked both ways to make sure that
