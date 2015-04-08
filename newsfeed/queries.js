@@ -32,7 +32,8 @@ exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
-    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)", params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
+    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)"
+        , params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -159,7 +160,7 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{score:3,totalScore:3}]->(r)", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
@@ -211,7 +212,8 @@ exports.Get_restaurant_info  = function (name, callback) {
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);",params = {ep:email,rp:RestaurantName}, function (err, results) {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES{score:9}]->(rest);"
+    , params = {ep:email,rp:RestaurantName}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
