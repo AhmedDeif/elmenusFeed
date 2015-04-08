@@ -50,50 +50,18 @@ exports.createResturant  = function (name) {
     });
 }
 
-    /*
-	Sprint #-0-US-5
-<<<<<<< HEAD
-	Sprint #-1-US-28
-    Sprint #-1-US-30
-=======
-	Sprint #-1-US-30
-    Sprint #-1-US-33
->>>>>>> master
-	I can like a dish in a specific restaurant.
-    The function takes an email and Dish name and match the user and the dish.
-    Then it creates a Relation LIKES_DISH Relation between the user and a dish,
-	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
-	in this case the value is TRUE, therefore a like is created.
-	the score attribute in the LIKES_DISH relation indicates the value that
-	affects the overall score of the relationship between the users.
-
-<<<<<<< HEAD
-    The function also creates another relation (LikeCuisine). 
-    When a user likes a dish in a restaurant, this means he likes 
-    the cuisine of this restaurant. So this function finds the restaurant containing this dish,
-    then it finds the cuisines of this restaurant, and finally creates relation "LikeCuisine" 
-    between the user and the these cuisines. It also adds a score of 5 points between the user 
-    and the cuisine (as described in story 23). 
-    */
-exports.createrLikeUserDish  = function (UserEmail,DishName) {
-//match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
-=======
-    Story 33:
+ /*
+	Story 33:
     When a user likes  dish in a restaurant, then a check is made to find
     if any of his followees like the same cuisine as that of this restaurant.
     If so, the score between the follower and the followee is increased by
     the score of common cuisine(Which is 5 in this case)* number of total 
     common cuisine likes. The relation is checked both ways to make sure that
-    the score is added for each relation in case 2 users follow each other.
+    the score is added for each relation in case 2 users follow each other. 
     */
 exports.createrLikeUserDish  = function (UserEmail,DishName) {
 //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
      db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
-<<<<<<< HEAD
-=======
->>>>>>> master
->>>>>>> master
      	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -204,8 +172,35 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS {score: 4, totalScore: 0}]->(r)", params = {e1p:FollowerEmail
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {e1p:FollowerEmail
             ,e2p:FolloweeEmail}
+            , function (err, results) {
+        if (err){  console.log('Error');
+
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/* Sprint #-1-US-29
+    visitFollowUser(FollowerEmail,FolloweeEmail):
+    This function takes as an input the email of 
+    the user who is already logged in now which is
+    "FollowerEmail" and the email of the user he 
+    is following  "FolloweeEmail" and each time 
+    the follower visits the followee's profile
+    the numberOFVisits which is a property in
+    the relation follow will be incremented
+    by one.
+    This function is to get the number of
+    how many times a user visits another user's
+    profile but there should be a relation follow
+    between them.
+    */
+exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
+    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5",
+     params = {e1p:FollowerEmail,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -255,7 +250,7 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
      and replaced by a yuck.
 */
 
-     exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
+exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
      db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", 
         params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
         if (err) throw err;
@@ -263,7 +258,7 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
     });
 }
 
-<<<<<<< HEAD
+
 /*  Sprint #-1-US-6
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -278,8 +273,6 @@ exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
     });
 }
 
-=======
->>>>>>> master
 
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
@@ -442,10 +435,6 @@ exports.UserSharesDish = function (UserEmail,DishName) {
         else console.log("Done");
     });
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 
 /*
   Sprint #-1-US-20
@@ -580,9 +569,21 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
                 }
         else console.log("Done");
     });
-
 }
-<<<<<<< HEAD
-=======
+///////////////////////////////////////////////////////////////////
+/*  Sprint #-1-US-1
+     The user can see his activity log.
+     This function takes the User Email as an input.
+     It matches the user with all other nodes that he has a relation with.
+     then it returns all these nodes with the relations he has with them.
+     
+*/
 
->>>>>>> master
+exports.showOldActionsHistory  = function (UserEmail) {
+    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {ep:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
