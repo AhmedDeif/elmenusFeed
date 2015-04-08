@@ -167,7 +167,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     "FollowerEmail" and the email of the user he 
     is following  "FolloweeEmail" and each time 
     the follower visits the followee's profile
-    the numberOFVisits which is an attribute in
+    the numberOFVisits which is a property in
     the relation follow will be incremented
     by one.
     This function is to get the number of
