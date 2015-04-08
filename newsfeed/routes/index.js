@@ -22,6 +22,7 @@ exports.newDish = function(req, res){
 exports.signUp = function(req, res){
 	res.render('signup')
 };
+
 exports.newReview = function(req, res){
 	res.render('add_review')
 };
