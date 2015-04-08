@@ -200,7 +200,7 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
 exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
-     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT]->(restaurant)", 
+     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", 
         params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -213,7 +213,7 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
 exports.UserSharesDish = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH]->(dish)", 
+     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", 
         params = {ep:UserEmail,dn:DishName}, function (err, results) {
         if (err) throw err;
         console.log('done');
@@ -227,7 +227,7 @@ exports.UserSharesDish = function (UserEmail,DishName) {
      It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
 */
 exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO]->(photo)", 
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", 
         params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
          if (err){  console.log('Error');
                  throw err;
