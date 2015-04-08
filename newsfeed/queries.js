@@ -185,8 +185,14 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
 }
 
 
+<<<<<<< HEAD
+=======
 
 var ret;
+<<<<<<< Updated upstream
+=======
+>>>>>>> origin/shareRestaurant
+>>>>>>> Stashed changes
 /*	Get_restaurant_info(name, req, res):
     This function takes as an input the name of 
     the restaurant that the user is requesting
