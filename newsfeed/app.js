@@ -43,17 +43,17 @@ app.post('/new_dish', function(req, res) {
 	queries.addDishToRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
 })
-app.get('/costChange/:tagName', routes.costChange);
-app.post('/costChange/:tagName', function(req, res) {
+app.get('/costChange', routes.costChange);
+app.post('/costChange', function(req, res) {
   var cost = req.body.cost;
-  var relation = req.param["tagName"];
-  queries.costChange(relation, cost);
+  var relation = req.body.relation;
+  queries.changeRelationCost(relation, cost);
   res.redirect('/Relations');
 })
 app.get('/Relations', routes.Relations);
 app.post('/Relations', function(req, res) {
-  var relation = req.body.restaurant;
-  res.redirect('/costChange/:'+relation);
+  var relation = req.param("select");
+  res.redirect('/costChange');
 })
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {

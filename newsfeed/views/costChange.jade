@@ -1,5 +1,6 @@
-
-label New Cost: 
-		input(type="text", name="cost")
-
-input(type="submit", value="Change")
+form(action="/costChange", method="post")
+	label Relation:
+	input(type="text", value="relation", name="relation")
+	label New Cost:
+	input(type="text", name="cost")
+	input(type="submit", value="Change")
