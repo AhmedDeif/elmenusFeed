@@ -1,4 +1,5 @@
 var neo4j = require('neo4j');
+var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
@@ -218,6 +219,49 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
+
+var relations;
+exports.getRelations = function(callback) {
+    db.query("MATCH ()-[r]->() return distinct type(r);", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        relations = results.map(function(result) {
+            return result['type(r)'];
+        });
+        relations = JSON.stringify(relations);
+        relations = JSON.parse(relations);
+        callback(relations);
+    });
+}
+
+var rel;
+exports.Get_relation_info  = function (r, req, res) {
+    var query = "match (u) -[:" + r + "]-> (m) return distinct labels(u) , labels(m)";
+     db.query(query, function (err, results) {
+         if (err){  console.log('Error');
+                  throw err;
+                 }
+                
+            data1 = results.map(function (result) {
+             return result['labels(u)'];
+            });
+ 
+             data2 = results.map(function (result) {
+             return result['labels(m)'];
+             });
+ 
+            data1 = ' \"Source\":' + JSON.stringify(data1);
+             data2 = ' \"Destination\":' + JSON.stringify(data2);
+             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+           indexjs.Get_relation_info_cont(req, res, rel);
+     });
+    
+    
+    return rel;
+}
+
 /////////////////////////////////////////
 /*
     Sprint 1  US 21
@@ -288,7 +332,6 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
         else console.log("Done");
     });
 }
-///////////////////////////////////////////////////////////////////
 
 
 
