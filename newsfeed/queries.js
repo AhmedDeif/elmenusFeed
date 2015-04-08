@@ -176,22 +176,23 @@ exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
     });
 
 }
-
-exports.getRelations = function(){
-    db.query("MATCH (n)-[R]->(d) return distinct type(R);", 
-        params={},function(err,results){
-            if (err){  console.log('Error');
-                 throw err;
-                }
-                var Relations = results.map(function (results) {
-                    return results[type(R)];
-                })
-                Relations = JSON.stringify(Relations);
-                ret = JSON.parse(Relations);
-                console.log(ret.type(R));
+var relations;
+exports.getRelations = function(callback) {
+    db.query("MATCH (u)-[r]->(m) return distinct type(r);",
+     params = {}, function(err, results) {
+        if (err){
+            throw err;
+        }
+        relations = results.map(function(result) {
+            return result['type(r)'];
         });
+        relations = JSON.stringify(relations);
+        relations = JSON.parse(relations);
+        console.log(relations[0]);
+        console.log(relations[1]);
+        console.log(relations.length);
+    });
 }
-
 
 exports.changeRelationCost = function (name, cost) {
     db.query("MATCH (n)-[R:{nam}]->(d) UPDATE R.cost = c;",

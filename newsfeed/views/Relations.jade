@@ -1,0 +1,9 @@
+form(action="/Relations", method="post")
+div
+		label Relations: 
+		select(id='relSel', name='rels', style='min-width:300px')
+				each rel in rl
+					option(value=rel)= rel
+
+div
+		input(type="submit", value="Choose relation")

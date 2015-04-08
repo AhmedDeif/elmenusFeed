@@ -23,7 +23,7 @@ exports.signUp = function(req, res){
 	res.render('signup')
 };
 exports.newReview = function(req, res){
-	res.render('add_review')
+	res.render('add_review');
 };
 
 exports.costChange = function(req, res){
@@ -31,6 +31,7 @@ exports.costChange = function(req, res){
 };
 
 exports.Relations = function(req, res){
-	var x = query.getRelations();
-	res.render('Relations');
+		query.getRelations(function(relations) {
+			res.render('Relations', {rl:relations});
+		});
 };
