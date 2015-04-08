@@ -5,12 +5,20 @@
 
  var express = require('express')
   , routes = require('./routes');
+<<<<<<< HEAD
+var neo4j = require('neo4j');
+var queries = require('./queries.js');
+var db = new neo4j.GraphDatabase('http://localhost:7474');
+var fs = require('fs');
+var app = module.exports = express.createServer();
+=======
 
  var neo4j = require('neo4j');
  var queries = require('./queries.js');
  var db = new neo4j.GraphDatabase('http://localhost:7474');
  var app = module.exports = express.createServer();
 
+>>>>>>> master
 
 module.exports = {
   app: app
@@ -44,13 +52,12 @@ app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
 })
-app.get('/add_dish', routes.newDish);
+app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
-	var dishName = req.body.dishName;
-	var restaurant = req.body.restaurant;
-	queries.createDish(dishName);
-	queries.addDishToRestaurant(dishName, restaurant);
-	res.redirect('/add_dish');
+  var dishName = req.body.dishName;
+  var restaurant = req.param("rests");
+  queries.createDishAndRestaurant(dishName, restaurant);
+  res.redirect('/add_dish');
 });
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
