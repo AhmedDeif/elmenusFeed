@@ -160,7 +160,9 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
 /*  Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "ADD_YUM" to it.
+     It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
+     If this relationship has a value true, then a yum is added. If it's false, then it's a yuck.
+     The property "score" determines the weight of the action of adding a photo yum. It's to be used while getting the common photo yums between 2 users.
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
