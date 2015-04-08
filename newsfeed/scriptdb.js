@@ -8,6 +8,7 @@ var connection = mysql.createConnection({
   database : 'neo4j2'
 });
 
+
 connection.connect();
 // To delete old CSVs
 var fs = require('fs');  
