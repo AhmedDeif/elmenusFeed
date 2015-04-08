@@ -1,4 +1,5 @@
 var neo4j = require('neo4j');
+var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
@@ -194,25 +195,29 @@ exports.getRelations = function(callback) {
 }
 
 var rel;
-exports.Get_relation_info  = function (relation) {
-    db.query("match (u) -[:r]-> (m) return distinct labels(u) , labels(m)", params = {r:relation}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
+exports.Get_relation_info  = function (r, req, res) {
+    var query = "match (u) <-[:" + r + "]- (m) return distinct labels(u) , labels(m)";
+     db.query(query, function (err, results) {
+         if (err){  console.log('Error');
+                  throw err;
+                 }
                 
             data1 = results.map(function (result) {
-            return result['labels(u)'];
+             return result['labels(u)'];
             });
-
-            data2 = results.map(function (result) {
-            return result['labels(m)'];
-            });
-
+ 
+             data2 = results.map(function (result) {
+             return result['labels(m)'];
+             });
+ 
             data1 = ' \"Source\":' + JSON.stringify(data1);
-            data2 = ' \"Destination\":' + JSON.stringify(data2);
-            rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
-            console.log(rel);
-    });
+             data2 = ' \"Destination\":' + JSON.stringify(data2);
+             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+             console.log(rel.Source[0]);
+             console.log(rel.Destination[0]);
+           indexjs.Get_relation_info_cont(req, res, rel);
+     });
+    
     
     return rel;
 }
