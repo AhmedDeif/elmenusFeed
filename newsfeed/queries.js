@@ -201,7 +201,39 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     these two users.
 */
 exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
+<<<<<<< HEAD
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {e1p:FollowerEmail
+            ,e2p:FolloweeEmail}
+            , function (err, results) {
+        if (err){  console.log('Error');
+
+                 throw err;
+                }
+        else console.log("Done");
+    });
+
+}
+
+/* Sprint #-1-US-29
+    visitFollowUser(FollowerEmail,FolloweeEmail):
+    This function takes as an input the email of 
+    the user who is already logged in now which is
+    "FollowerEmail" and the email of the user he 
+    is following  "FolloweeEmail" and each time 
+    the follower visits the followee's profile
+    the numberOFVisits which is a property in
+    the relation follow will be incremented
+    by one.
+    This function is to get the number of
+    how many times a user visits another user's
+    profile but there should be a relation follow
+    between them.
+    */
+exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
+    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5", params = {e1p:FollowerEmail
+=======
     db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS {score: 4, totalScore: 0}]->(r)", params = {e1p:FollowerEmail
+>>>>>>> master
             ,e2p:FolloweeEmail}
             , function (err, results) {
         if (err){  console.log('Error');
@@ -516,6 +548,28 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
                 }
         else console.log("Done");
     });
+<<<<<<< HEAD
+}
+///////////////////////////////////////////////////////////////////
+/*  Sprint #-1-US-1
+     The user can see his activity log.
+     This function takes the User Email as an input.
+     It matches the user with all other nodes that he has a relation with.
+     then it returns all these nodes with the relations he has with them.
+     
+*/
+
+exports.showOldActionsHistory  = function (UserEmail) {
+    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {ep:UserEmail}, function (err, results) {
+        if (err){  console.error('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+///////////////////////////////////////////////////////////////////
+=======
 
 }
+>>>>>>> master
 
