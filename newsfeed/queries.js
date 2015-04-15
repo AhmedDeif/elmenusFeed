@@ -259,11 +259,11 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
     arguments passed.
 */
 
-// Must fix the callback hell problem.
+// Must fix the callback hell problem for better performance
 
 var commonFollowers;
 exports.findCommonFollowers = function(firstUser,secondUser,total) {
-var relationScore;
+    var relationScore;
     var totalScore;
     db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;",
         params = {u1:firstUser, u2:secondUser}, function(err,results) {
@@ -275,33 +275,35 @@ var relationScore;
                 return result['total']
             });
             console.log("The number of common Followers is " + commonFollowers);
-        });
-    db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;",
-        params = {}, function(err,results) {
-            if(err){
-                console.log("couldnot get secure of follow relationship");
-                throw err;
-            }
-            relationScore = results.map(function(result){
+
+            db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;",
+                params = {}, function(err,results) {
+                if(err){
+                    console.log("couldnot get secure of follow relationship");
+                    throw err;
+                }
+                relationScore = results.map(function(result){
                 return result['score']
+                });
+                console.log("The value of following relation is " + relationScore);
+                totalScore = commonFollowers*relationScore;
+                console.log(total);
+                console.log(totalScore);
+                total = totalScore;
+                db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};",
+                    params = {u1:firstUser, u2:secondUser,value:total}, function(err,results){
+                    if(err){
+                        console.log("Error in setting new totalScore for follow relation");
+                        throw err;
+                    }
+                    else {
+                        console.log("The total should be "  + total );
+                        console.log("Set new totalScore successfully");
+                    }
+                });
+
             });
-            console.log("The value of following relation is " + relationScore);
-            totalScore = commonFollowers*relationScore;
-            console.log(total);
-            console.log(totalScore);
-            total = totalScore;
-        });
-    db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};",
-        params = {u1:firstUser, u2:secondUser,value:total}, function(err,results){
-            if(err){
-                console.log("Error in setting new totalScore for follow relation");
-                throw err;
-            }
-            else {
-                console.log("The total should be "  + total );
-                console.log("Set new totalScore successfully");
-            }
-       });
+        });  
 }
 
 exports.removeFavouriteResturant = function(email,resName){
