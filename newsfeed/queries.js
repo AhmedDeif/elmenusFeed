@@ -49,7 +49,6 @@ exports.createResturant  = function (name) {
         else console.log("Done");
     });
 
-
     /*
 	Sprint #-0-US-7
 	Sprint #-1-US-31
@@ -286,6 +285,7 @@ exports.UserSharesDish = function (UserEmail,DishName) {
     });
 }
 
+
 /*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
@@ -303,9 +303,6 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
-
-
-
 /*  Sprint #-1-US-26
      The user can see posts on the news feed prioritized by the common photo yucks 
      between that user and other users he's following.
@@ -323,6 +320,7 @@ exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
+
 
 
 var ret;
