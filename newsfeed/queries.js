@@ -519,6 +519,48 @@ exports.Get_relation_info  = function (r, req, res) {
     return rel;
 }
 
+var users;
+exports.getUsers = function(callback) {
+    db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        users = results.map(function(result) {
+            return result['user.email'];
+        });
+        users = JSON.stringify(users);
+        users = JSON.parse(users);
+        callback(users);
+    });
+}
+
+var usr;
+exports.Get_user_info  = function (r, req, res) {
+    var query = "match (u:User {email: {r}}) return u.email ";
+     db.query(query, function (err, results) {
+         if (err){  console.log('Error');
+                  throw err;
+                 }
+                
+            data1 = results.map(function (result) {
+             return result['labels(u)'];
+            });
+ 
+             data2 = results.map(function (result) {
+             return result['labels(m)'];
+             });
+ 
+            data1 = ' \"Source\":' + JSON.stringify(data1);
+             data2 = ' \"Destination\":' + JSON.stringify(data2);
+             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+           indexjs.Get_relation_info_cont(req, res, rel);
+     });
+    
+    
+    return usr;
+}
+
 
 /*
     Sprint 1  US 21

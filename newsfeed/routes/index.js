@@ -36,6 +36,13 @@ exports.relationsView = function(req, res) {
 		});
 	};
 
+
+exports.usersView = function(req, res) {
+	query.getUsers(function(users) {
+		res.render('users_view', {us:users});
+	});
+};
+
 exports.Get_relation_info = function(req, res){
 	query.Get_relation_info(req.param("tagId"), req, res);
 };

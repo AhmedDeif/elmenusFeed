@@ -1,0 +1,11 @@
+form(action="/users", method="post")
+	div
+		label Users: 
+		select(id='userSel', name='usrs', style='min-width:300px')
+			each usr in us				
+				option(value=usr)= usr
+
+	div
+		input(type="submit", value="Choose user")
+		//-- var select=null; if (rest == rests.title) select='selected';
+
