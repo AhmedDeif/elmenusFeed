@@ -258,9 +258,12 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
     each other and then if they do it finds the Users followed by the User 
     arguments passed.
 */
+
+// Must fix the callback hell problem.
+
 var commonFollowers;
-var relationScore;
 exports.findCommonFollowers = function(firstUser,secondUser,total) {
+var relationScore;
     var totalScore;
     db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;",
         params = {u1:firstUser, u2:secondUser}, function(err,results) {
@@ -301,6 +304,18 @@ exports.findCommonFollowers = function(firstUser,secondUser,total) {
        });
 }
 
+exports.removeFavouriteResturant = function(email,resName){
+    db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;",
+        params = {e:email, r:resName}, function(err,results){
+            if(err){
+                console.log("Error removing resturant from favourites");
+                throw err;
+            }
+            else{
+                console.log("resturant removed form favourites successfully");
+            }
+        });
+}
 
 exports.getUserFollowScore = function(){
     db.query("MATCH (n)-[f:Follows]->(u) return f.score;",params={},function(err,results) {
