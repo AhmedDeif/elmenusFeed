@@ -328,15 +328,14 @@ exports.UserSharesDish = function(UserEmail, DishName) {
      between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
 */
-exports.UserCommonYumsUser = function(UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", params = {
-        ep1: UserEmail,
-        ep2: UserEmailFollowed
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
+
+exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
     });
 }
 /*  Sprint #-1-US-26
@@ -347,15 +346,14 @@ exports.UserCommonYumsUser = function(UserEmail, UserEmailFollowed) {
      between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
 */
-exports.UserCommonYucksUser = function(UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", params = {
-        ep1: UserEmail,
-        ep2: UserEmailFollowed
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
+
+exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
     });
 }
 var ret;
@@ -481,6 +479,9 @@ exports.getRelations = function(callback) {
         callback(relations);
     });
 }
+
+
+var rel;
 exports.changeRelationCost = function(name, cost) {
     db.query("MATCH (n)-[R:nam]->(d) SET R.cost = {c} return R;", params = {
         nam: name,
@@ -551,13 +552,8 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
 }
 /*
     Sprint 1  US 23
-<<<<<<< HEAD
     createRelLikeCuisine(User Email,Cuisine name):
     This function takes as input the Cuisine's 
-=======
-        createRelLikeCuisine(User Email,Cuisine name):
-    This function takes as input the Cuisine's
->>>>>>> master
     name and User's email and finds them in the database when
     they are found the function
     create a like relation between user and
@@ -576,10 +572,7 @@ exports.createRelUserCuisine = function(UserEmail, CuisineName) {
 }
 /*
     createRelUserResCuisines(User email, Cuisine name):
-    Makes the user like all cuisines of restaurant 
-=======
-/*another method that make user like all cuisines of restaurant
->>>>>>> master
+    another method that make user like all cuisines of restaurant
     it finds the user and restaurant in the database then it gets
     all the cuisines of the restaurant and add a like cuisine relation
     between the user and the cuisines
