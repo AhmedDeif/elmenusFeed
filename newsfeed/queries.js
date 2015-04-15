@@ -1,100 +1,107 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
-
-
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
-exports.createUser  = function (email) {
-    db.query("CREATE (n:User { email:{ep} })return n", params = {ep:email}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
-});
+exports.createUser = function(email) {
+    db.query("CREATE (n:User { email:{ep} })return n", params = {
+        ep: email
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
+    });
 }
-
 //(S19) I can unfollow another user.
 //This function takes two parameters :
 //the follower email and the current user email
 //then it matches the two users and deletes the relationship follow between them
-exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d)-[rel:Follows]->(r)  WHERE d.email={e1p} AND r.email={e2p}  DELETE rel", params = {e1p:FollowerEmail,e2p:FolloweeEmail}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
+    db.query("MATCH (d)-[rel:Follows]->(r)  WHERE d.email={e1p} AND r.email={e2p}  DELETE rel", params = {
+        e1p: FollowerEmail,
+        e2p: FolloweeEmail
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 //(S5) The function takes the following parameters:
 //UserEmail, the restaurant name, the review title and the body of the review
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
-exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
- db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)"        , params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, ReviewTitle, ReviewBody) {
+    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)", params = {
+        ep: UserEmail,
+        rp: RestaurantName,
+        tp: ReviewTitle,
+        bp: ReviewBody
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
-exports.createResturant  = function (name) {
-    db.query("CREATE (:Restaurant { name:{np} })",
-     params = {np:name}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createResturant = function(name) {
+    db.query("CREATE (:Restaurant { name:{np} })", params = {
+        np: name
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
-
-    /*
-	Sprint #-0-US-7
-	Sprint #-1-US-31
-	I can dislike a dish in a specific restaurant.
+}
+/*
+    Sprint #-0-US-7
+    Sprint #-1-US-31
+    I can dislike a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
-	the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
-	in this case the value is FALSE, therefore a dislike is created.
-	the score attribute in the LIKES_DISH relation indicates the value that
-	affects the overall score of the relationship between the users.
+    the attribute likes which is a boolean value indicates whether a user likes or dislikes a dish,
+    in this case the value is FALSE, therefore a dislike is created.
+    the score attribute in the LIKES_DISH relation indicates the value that
+    affects the overall score of the relationship between the users.
     */
-
-exports.createrDisLikeUserDish  = function (UserEmail,DishName) {
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
-     	params = {ep:UserEmail,dnp:DishName}, function (err, results) {
+exports.createrDisLikeUserDish = function(UserEmail, DishName) {
+    db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", params = {
+        ep: UserEmail,
+        dnp: DishName
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
-
-
+}
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
     name and creates the corresponding dish in the
     database using a CYPHER CREATE query.
 */
-
-exports.createDish  = function (name) {
-    db.query("CREATE (:Dish { dish_name:{np} })", params = {np:name}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createDish = function(name) {
+    db.query("CREATE (:Dish { dish_name:{np} })", params = {
+        np: name
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
-exports.createrLikeUserDish  = function (UserEmail,DishName) {
-//match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
-     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
-       params = {ep:UserEmail,dnp:DishName}, function (err, results) {
+exports.createrLikeUserDish = function(UserEmail, DishName) {
+    //match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
+    db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", params = {
+        ep: UserEmail,
+        dnp: DishName
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
 /*  Sprint #-0-US-2
      addDishToRestaurant(dish, restaurant):
      this function takes as input the dishs and
@@ -102,20 +109,21 @@ exports.createrLikeUserDish  = function (UserEmail,DishName) {
      corresponding 'Has' relationship between this
      dish and this restaurant.
 */
-exports.addDishToRestaurant  = function (dish,restaurant) {
-    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:HAS]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log('Done');
+exports.addDishToRestaurant = function(dish, restaurant) {
+    db.query("MATCH (d:Dish),(r:Restaurant) WHERE d.dish_name={dp} AND r.name ={rp} CREATE (r)-[rl:HAS]->(d)", params = {
+        dp: dish,
+        rp: restaurant
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log('Done');
     });
 }
-
 var restaurants;
-
 exports.getRestaurants = function(callback) {
     db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
-        if (err){
+        if (err) {
             console.error('Error');
             throw err;
         }
@@ -127,16 +135,17 @@ exports.getRestaurants = function(callback) {
         callback(restaurants);
     });
 }
-
 exports.createDishAndRestaurant = function(dish, restaurant) {
-    db.query("MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)", params = {dp:dish,rp:restaurant}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log('Done');
+    db.query("MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)", params = {
+        dp: dish,
+        rp: restaurant
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log('Done');
     });
 }
-
 /*  Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
      This function takes the User Email, Restaurant Name and the Photo URL as an input
@@ -144,17 +153,18 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
      between the user and the photo. Another relationship "IN"
      shows that the photo is in this specific restaurant.
 */
-
-exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL) {
-    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);",
-        params = {ep:UserEmail,rp:RestaurantName,url:photoURL}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
+    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {
+        ep: UserEmail,
+        rp: RestaurantName,
+        url: photoURL
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /* Sprint #-0-US-18
     createFollowUser(FollowerEmail, FolloweeEmail):
     This function takes as an input the email of 
@@ -166,19 +176,17 @@ exports.UserAddsPhotoToRestaurant = function (UserEmail,RestaurantName,photoURL)
     the corresponding FOLLOWS relationship between
     these two users.
 */
-
-exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {e1p:FollowerEmail
-            ,e2p:FolloweeEmail}
-            , function (err, results) {
-        if (err){  console.log('Error');
-
-                 throw err;
-                }
-        else console.log("Done");
+exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {
+        e1p: FollowerEmail,
+        e2p: FolloweeEmail
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /* Sprint #-1-US-29
     visitFollowUser(FollowerEmail,FolloweeEmail):
     This function takes as an input the email of 
@@ -194,17 +202,17 @@ exports.createFollowUser = function (FollowerEmail,FolloweeEmail) {
     profile but there should be a relation follow
     between them.
     */
-exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
-    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5",
-     params = {e1p:FollowerEmail,e2p:FolloweeEmail}
-            , function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
+    db.query("MATCH (x) -[f:FOLLOWS]-> (y)  WHERE x.email={e1p} AND y.email = {e2p} AND x.email <> y.email SET f.numberOfVisits = f.numberOfVisits+1  SET f.totalScore = f.totalScore + 5", params = {
+        e1p: FollowerEmail,
+        e2p: FolloweeEmail
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*  Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -214,28 +222,31 @@ exports.visitFollowUser = function (FollowerEmail,FolloweeEmail) {
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
-exports.UserAddPhotoYums  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", 
-        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
+    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", params = {
+        ep: UserEmail,
+        url: PhotoURL
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
 /*  Sprint #-1-US-4
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
 */
-exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
+    db.query("MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {
+        em: UserEmail,
+        ur: PhotoURL
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*  Sprint #-1-US-5
      The user can add a photo yuck to a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -245,69 +256,70 @@ exports.UserDeletePhotoYum  = function (UserEmail, PhotoURL) {
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
-
-exports.UserAddPhotoYucks  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", 
-        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
+    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", params = {
+        ep: UserEmail,
+        url: PhotoURL
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
-
 /*  Sprint #-1-US-6
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: false' between them.
 */
-exports.UserDeletePhotoYuck  = function (UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {em:UserEmail,ur:PhotoURL}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
+    db.query("MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {
+        em: UserEmail,
+        ur: PhotoURL
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
-exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
-
-     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", 
-        params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
+exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
+    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
+        ep: UserEmail,
+        rn: RestaurantName
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
-exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
-     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", 
-        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
-         if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
+    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+        ep: UserEmail,
+        url: PhotoURL
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
-
 }
-
 /*  Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
-exports.UserSharesDish = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", 
-        params = {ep:UserEmail,dn:DishName}, function (err, results) {
+exports.UserSharesDish = function(UserEmail, DishName) {
+    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", params = {
+        ep: UserEmail,
+        dn: DishName
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
-
 /*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
@@ -316,13 +328,15 @@ exports.UserSharesDish = function (UserEmail,DishName) {
      between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
 */
-exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", 
-        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserCommonYumsUser = function(UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", params = {
+        ep1: UserEmail,
+        ep2: UserEmailFollowed
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
 /*  Sprint #-1-US-26
@@ -333,115 +347,108 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
      between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
 */
-exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", 
-        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.UserCommonYucksUser = function(UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.score = f.score+3;", params = {
+        ep1: UserEmail,
+        ep2: UserEmailFollowed
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
-
-
 var ret;
-/*	Get_restaurant_info(name, req, res):
+/*  Get_restaurant_info(name, req, res):
     This function takes as an input the name of 
     the restaurant that the user is requesting
-	then the reviews are fetched from the database.
-	the(req, res) parameters are passed from index.js
-	in order to be able to call the render function whenever
-	the query finishes and fetches the results.
-	the Get_restaurant_info_cont passes all these params to 
-	index.js and then executes render passing the page name and the 
-	output JSON object.
+    then the reviews are fetched from the database.
+    the(req, res) parameters are passed from index.js
+    in order to be able to call the render function whenever
+    the query finishes and fetches the results.
+    the Get_restaurant_info_cont passes all these params to 
+    index.js and then executes render passing the page name and the 
+    output JSON object.
 */
-
-exports.Get_restaurant_info  = function (name, callback) {
-    db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {na:name}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-				
-			data1 = results.map(function (result) {
+exports.Get_restaurant_info = function(name, callback) {
+    db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {
+        na: name
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        }
+        data1 = results.map(function(result) {
             return result['out'];
-			});
-
-            data2 = results.map(function (result) {
+        });
+        data2 = results.map(function(result) {
             return result['R'];
-            });
-
-			data1 = ' \"myData\":' + JSON.stringify(data1);
-            data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
-            ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
-            console.log(ret.RestaurantName[0]);
+        });
+        data1 = ' \"myData\":' + JSON.stringify(data1);
+        data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
+        ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        console.log(ret.RestaurantName[0]);
     });
-	
-	return ret;
+    return ret;
 }
-
-
-
-
 //14-I can add a restaurant to favourites.
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
-
-exports.createrFavouriteUserRestaurant  = function (email,RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);",params = {ep:email,rp:RestaurantName}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);", params = {
+        ep: email,
+        rp: RestaurantName
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
-
 /*  Sprint #-1-US-7
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
-exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
-     db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", 
-        params = {ep:UserEmail,rn:RestaurantName}, function (err, results) {
+exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
+    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
+        ep: UserEmail,
+        rn: RestaurantName
+    }, function(err, results) {
         if (err) throw err;
         console.log('done');
     });
 }
-
 /*  Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
-exports.UserSharesDish = function (UserEmail,DishName) {
-     db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", 
-        params = {ep:UserEmail,dn:DishName}, function (err, results) {
-         if (err){  console.log('Error');
-                          throw err;
-                }
-        else console.log("Done");
+exports.UserSharesDish = function(UserEmail, DishName) {
+    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", params = {
+        ep: UserEmail,
+        dn: DishName
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
-
-
 /*  Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
      It matches the user with all other nodes that he has a relation with.
      then it returns all these nodes with the relations he has with them.
      */
-
-exports.showOldActionsHistory  = function (UserEmail) {
-    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {ep:UserEmail}, function (err, results) {
-         if (err) throw err;
+exports.showOldActionsHistory = function(UserEmail) {
+    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {
+        ep: UserEmail
+    }, function(err, results) {
+        if (err) throw err;
         console.log('done');
     });
 }
-
 /*
   Sprint #-1-US-20
     commonFavoritedRestaurants():
@@ -451,65 +458,60 @@ exports.showOldActionsHistory  = function (UserEmail) {
       (in the :FOLLOWS relationship), incrementing it by the score in the
       :FAVORITES relationship.
 */
-exports.commonFavoritedRestaurants = function (user1, user2) {
-  db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}}),"
-  + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {usr1:user1, usr2:user2},
-  function (err, results) {
-    if (err)
-    {
-      console.log('Error');
-      throw err;
-    }
-    else console.log("Done");
-  });
-
+exports.commonFavoritedRestaurants = function(user1, user2) {
+    db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}})," + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {
+        usr1: user1,
+        usr2: user2
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
+    });
 }
 var relations;
 exports.getRelations = function(callback) {
-    db.query("MATCH (u)-[r]->(m) return distinct type(r);",
-     params = {}, function(err, results) {
-        if (err){
+    db.query("MATCH (u)-[r]->(m) return distinct type(r);", params = {}, function(err, results) {
+        if (err) {
             throw err;
         }
         relations = results.map(function(result) {
             return result['type(r)'];
         });
-		callback(relations);
+        callback(relations);
     });
 }
-
-exports.changeRelationCost = function (name, cost) {
-    db.query("MATCH (n)-[R:nam]->(d) SET R.cost = {c} return R;",
-     params={nam:name, c:cost}, function(err,results){
-       if (err){  console.log('Error');
-=======
-var rel;
-exports.Get_relation_info  = function (r, req, res) {
+exports.changeRelationCost = function(name, cost) {
+    db.query("MATCH (n)-[R:nam]->(d) SET R.cost = {c} return R;", params = {
+        nam: name,
+        c: cost
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            var rel;
+        }
+    });
+}
+exports.Get_relation_info = function(r, req, res) {
     var query = "match (u) -[:" + r + "]-> (m) return distinct labels(u) , labels(m)";
-     db.query(query, function (err, results) {
-         if (err){  console.log('Error');
-                  throw err;
-                 }
-                
-            data1 = results.map(function (result) {
-             return result['labels(u)'];
-            });
- 
-             data2 = results.map(function (result) {
-             return result['labels(m)'];
-             });
- 
-            data1 = ' \"Source\":' + JSON.stringify(data1);
-             data2 = ' \"Destination\":' + JSON.stringify(data2);
-             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
-           indexjs.Get_relation_info_cont(req, res, rel);
-     });
-    
-    
+    db.query(query, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        }
+        data1 = results.map(function(result) {
+            return result['labels(u)'];
+        });
+        data2 = results.map(function(result) {
+            return result['labels(m)'];
+        });
+        data1 = ' \"Source\":' + JSON.stringify(data1);
+        data2 = ' \"Destination\":' + JSON.stringify(data2);
+        rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        indexjs.Get_relation_info_cont(req, res, rel);
+    });
     return rel;
 }
-
-
 /*
     Sprint 1  US 21
         createCuisine(name):
@@ -517,16 +519,16 @@ exports.Get_relation_info  = function (r, req, res) {
     name and creates the corresponding cuisine in the
     database.
 */
-
-exports.createCuisine  = function (name) {
-    db.query("CREATE (:Cuisine { name:{np} })", params = {np:name}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createCuisine = function(name) {
+    db.query("CREATE (:Cuisine { name:{np} })", params = {
+        np: name
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*
     Sprint 1  US 22
         createRelCuisineRestaurant(Restaurant name,Cuisine name):
@@ -536,17 +538,17 @@ exports.createCuisine  = function (name) {
     creates the corresponding relation between
     cuisine and restaurant in the database.
 */
-
-exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)",
-             params = {cp:CuisineName,rp:RestaurantName}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
+    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {
+        cp: CuisineName,
+        rp: RestaurantName
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*
     Sprint 1  US 23
 <<<<<<< HEAD
@@ -561,17 +563,17 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
     create a like relation between user and
     cuisine
 */
-
-exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
-    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)",
-        params = {cp:CuisineName,np:UserEmail}, function (err, results) {
-            if (err){  console.error('Error');
-                 throw err;
-                }
-            else console.log("Done");
+exports.createRelUserCuisine = function(UserEmail, CuisineName) {
+    db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {
+        cp: CuisineName,
+        np: UserEmail
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
-
 /*
     createRelUserResCuisines(User email, Cuisine name):
     Makes the user like all cuisines of restaurant 
@@ -582,13 +584,15 @@ exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
     all the cuisines of the restaurant and add a like cuisine relation
     between the user and the cuisines
 */
-exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
-    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
-        params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
-            if (err){  console.error('Error');
-                throw err;
-                }
-            else console.log("Done");
+exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
+    db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)", params = {
+        rp: RestaurantName,
+        np: UserEmail
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
 /*
@@ -602,79 +606,77 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
     each other and then if they do it finds the Users followed by the User 
     arguments passed.
 */
-
 // Must fix the callback hell problem for better performance
-
 var commonFollowers;
-exports.findCommonFollowers = function(firstUser,secondUser,total) {
+exports.findCommonFollowers = function(firstUser, secondUser, total) {
     var relationScore;
     var totalScore;
-    db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;",
-        params = {u1:firstUser, u2:secondUser}, function(err,results) {
-            if(err){ 
-                console.log('Error');
-                throw err;
-            }
-            commonFollowers = results.map(function(result){
-                return result['total']
-            });
-            console.log("The number of common Followers is " + commonFollowers);
-
-            db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;",
-                params = {}, function(err,results) {
-                if(err){
-                    console.log("couldnot get secure of follow relationship");
-                    throw err;
-                }
-                relationScore = results.map(function(result){
-                return result['score']
-                });
-                console.log("The value of following relation is " + relationScore);
-                totalScore = commonFollowers*relationScore;
-                console.log(total);
-                console.log(totalScore);
-                total = totalScore;
-                db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};",
-                    params = {u1:firstUser, u2:secondUser,value:total}, function(err,results){
-                    if(err){
-                        console.log("Error in setting new totalScore for follow relation");
-                        throw err;
-                    }
-                    else {
-                        console.log("The total should be "  + total );
-                        console.log("Set new totalScore successfully");
-                    }
-                });
-
-            });
-        });  
-}
-
-exports.removeFavouriteResturant = function(email,resName){
-    db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;",
-        params = {e:email, r:resName}, function(err,results){
-            if(err){
-                console.log("Error removing resturant from favourites");
-                throw err;
-            }
-            else{
-                console.log("resturant removed form favourites successfully");
-            }
-        });
-}
-
-exports.getUserFollowScore = function(){
-    db.query("MATCH (n)-[f:Follows]->(u) return f.score;",params={},function(err,results) {
-        if (err){ console.error('Error');
+    db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
+        u1: firstUser,
+        u2: secondUser
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
             throw err;
+        }
+        commonFollowers = results.map(function(result) {
+            return result['total']
+        });
+        console.log("The number of common Followers is " + commonFollowers);
+        db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;", params = {}, function(err, results) {
+            if (err) {
+                console.log("couldnot get secure of follow relationship");
+                throw err;
             }
-        relationScore = results.map(function(result){
+            relationScore = results.map(function(result) {
+                return result['score']
+            });
+            console.log("The value of following relation is " + relationScore);
+            totalScore = commonFollowers * relationScore;
+            console.log(total);
+            console.log(totalScore);
+            total = totalScore;
+            db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};", params = {
+                u1: firstUser,
+                u2: secondUser,
+                value: total
+            }, function(err, results) {
+                if (err) {
+                    console.log("Error in setting new totalScore for follow relation");
+                    throw err;
+                } else {
+                    console.log("The total should be " + total);
+                    console.log("Set new totalScore successfully");
+                }
+            });
+        });
+    });
+}
+exports.removeFavouriteResturant = function(email, resName) {
+    db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;", params = {
+        e: email,
+        r: resName
+    }, function(err, results) {
+        if (err) {
+            console.log("Error removing resturant from favourites");
+            throw err;
+        } else {
+            console.log("resturant removed form favourites successfully");
+        }
+    });
+}
+exports.getUserFollowScore = function() {
+    db.query("MATCH (n)-[f:Follows]->(u) return f.score;", params = {}, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        }
+        relationScore = results.map(function(result) {
             return result['f.score']
         });
         newScore = relationScore * commonFollowers;
     });
 }
-
 /*  Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
@@ -682,13 +684,13 @@ exports.getUserFollowScore = function(){
      then it returns all these nodes with the relations he has with them.
      
 */
-
-exports.showOldActionsHistory  = function (UserEmail) {
-    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {ep:UserEmail}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
-                }
-        else console.log("Done");
+exports.showOldActionsHistory = function(UserEmail) {
+    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {
+        ep: UserEmail
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
     });
-
 }
