@@ -73,11 +73,5 @@ app.post('/new_review', function(req, res) {
   res.redirect('/add_review');
 })
 
-<<<<<<< HEAD
- app.listen(3000);
- console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-queries.findCommonFollowers("test 1","test 2",4);
-=======
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
->>>>>>> master
