@@ -1,54 +1,53 @@
-
 /*
  * GET home page.
  */
-
- var query = require('../queries');
- 
-exports.index = function(req, res){
-
-  res.render('index', { title: 'Express' })
+var query = require('../queries');
+exports.index = function(req, res) {
+    res.render('index', {
+        title: 'Express'
+    })
 };
 exports.addDish = function(req, res) {
-		query.getRestaurants(function(restaurants) {
-			res.render('add_dish', {rs:restaurants});
-		});
-	};
-
-
-exports.Get_restaurant_info = function(req, res){
-	query.Get_restaurant_info(req.param("tagId"),function renderRes(myRes){res.render('Get_restaurant_info', myRes);});
+    query.getRestaurants(function(restaurants) {
+        res.render('add_dish', {
+            rs: restaurants
+        });
+    });
 };
-
-exports.newDish = function(req, res){
-	res.render('add_dish')
+exports.Get_restaurant_info = function(req, res) {
+    query.Get_restaurant_info(req.param("tagId"), function renderRes(myRes) {
+        res.render('Get_restaurant_info', myRes);
+    });
 };
-
-exports.signUp = function(req, res){
-	res.render('signup')
+exports.newDish = function(req, res) {
+    res.render('add_dish')
 };
-exports.newReview = function(req, res){
-	res.render('add_review');
+exports.signUp = function(req, res) {
+    res.render('signup')
+};
+exports.newReview = function(req, res) {
+    res.render('add_review');
 };
 exports.relationsView = function(req, res) {
-		query.getRelations(function(relations) {
-			res.render('relations_view', {rl:relations});
-		});
-	};
-
-exports.Get_relation_info = function(req, res){
-	query.Get_relation_info(req.param("tagId"), req, res);
-
-exports.costChange = function(req, res){
-	res.render('costChange');
+    query.getRelations(function(relations) {
+        res.render('relations_view', {
+            rl: relations
+        });
+    });
 };
-
-exports.Get_relation_info_cont = function(req, res, x){
- 	res.render('Get_relation_info', x);
- };
-
-exports.Relations = function(req, res){
-		query.getRelations(function relations(myRes) {
-			res.render('Relations', {rl:myRes});
-		});
+exports.Get_relation_info = function(req, res) {
+    query.Get_relation_info(req.param("tagId"), req, res);
+};
+exports.costChange = function(req, res) {
+    res.render('costChange');
+};
+exports.Get_relation_info_cont = function(req, res, x) {
+    res.render('Get_relation_info', x);
+};
+exports.Relations = function(req, res) {
+    query.getRelations(function relations(myRes) {
+        res.render('Relations', {
+            rl: myRes
+        });
+    });
 };

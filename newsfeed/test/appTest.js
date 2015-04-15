@@ -1,5 +1,6 @@
 var app = require('../app.js');
-var request = require('supertest')
+var request = require('supertest');
+var queries = require('../queries.js');
 var expect = require('chai').expect;
 
 /** Tests for Sprint#-0-US-4 */
@@ -22,3 +23,4 @@ describe('Add Review Form Submit', function() {
 			.expect(302, done);
 	})
 });
+
