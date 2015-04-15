@@ -21,4 +21,4 @@ describe('Add Review Form Submit', function() {
 				, reviewTitle:'test review', reviewBody: 'This is a test review' } })
 			.expect(302, done);
 	})
-})
+});
