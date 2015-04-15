@@ -1,4 +1,5 @@
 var neo4j = require('neo4j');
+var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 
 
@@ -32,7 +33,7 @@ exports.deleterFollowUserUser  = function (FollowerEmail,FolloweeEmail) {
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurant = function (UserEmail,RestaurantName,ReviewTitle,ReviewBody) {
-    db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)", params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
+ db.query("MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)"        , params = {ep:UserEmail,rp:RestaurantName,tp:ReviewTitle,bp:ReviewBody}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -84,6 +85,16 @@ exports.createDish  = function (name) {
         else console.log("Done");
     });
 }
+
+exports.createrLikeUserDish  = function (UserEmail,DishName) {
+//match (n:User{email: 'kareem'}),(m:User{email: 'mohammed'}) merge (n) -[f:FOLLOWS]-> (m) set f.score = 20;
+     db.query("MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z", 
+       params = {ep:UserEmail,dnp:DishName}, function (err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
+
 /*  Sprint #-0-US-2
      addDishToRestaurant(dish, restaurant):
      this function takes as input the dishs and
@@ -270,6 +281,17 @@ exports.UserSharesRestaurant  = function (UserEmail,RestaurantName) {
         if (err) throw err;
         console.log('done');
     });
+}
+
+exports.UserSharesPhoto  = function (UserEmail,PhotoURL) {
+     db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", 
+        params = {ep:UserEmail,url:PhotoURL}, function (err, results) {
+         if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+
 }
 
 /*  Sprint #-1-US-8
