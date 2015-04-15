@@ -586,8 +586,13 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
 
 /*
     Sprint 1  US 23
+<<<<<<< HEAD
+    createRelLikeCuisine(User Email,Cuisine name):
+    This function takes as input the Cuisine's 
+=======
         createRelLikeCuisine(User Email,Cuisine name):
     This function takes as input the Cuisine's
+>>>>>>> master
     name and User's email and finds them in the database when
     they are found the function
     create a like relation between user and
@@ -596,29 +601,121 @@ exports.createRelCuisineRestaurant  = function (RestaurantName,CuisineName) {
 
 exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
     db.query("MATCH (c:Cuisine),(u:User) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine{score:5}]->(c)",
-             params = {cp:CuisineName,np:UserEmail}, function (err, results) {
-        if (err){  console.error('Error');
+        params = {cp:CuisineName,np:UserEmail}, function (err, results) {
+            if (err){  console.error('Error');
                  throw err;
                 }
-        else console.log("Done");
+            else console.log("Done");
     });
 }
 
+<<<<<<< HEAD
+/*
+    createRelUserResCuisines(User email, Cuisine name):
+    Makes the user like all cuisines of restaurant 
+=======
 /*another method that make user like all cuisines of restaurant
+>>>>>>> master
     it finds the user and restaurant in the database then it gets
     all the cuisines of the restaurant and add a like cuisine relation
     between the user and the cuisines
 */
-
 exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
     db.query("MATCH (u:User),(r:Restaurant)-[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:5}]->(c)",
-             params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
-        if (err){  console.error('Error');
-                 throw err;
+        params = {rp:RestaurantName,np:UserEmail}, function (err, results) {
+            if (err){  console.error('Error');
+                throw err;
                 }
-        else console.log("Done");
+            else console.log("Done");
     });
 }
+<<<<<<< HEAD
+/*
+    In this portion of code we will increase the totalScore between two users. First given the two emails we will get the number of common followers
+    and this will be set to the variable commonFollowers. A second Query will be called which calls gets the score of one follow and the calcualtes
+    the new score. then a third query will edit the totalScore in the required follow relation.
+*/
+/*
+    findCommonFollowers(User email, User email):
+    This function takes two emails, checks whether the two users follow
+    each other and then if they do it finds the Users followed by the User 
+    arguments passed.
+*/
+
+// Must fix the callback hell problem for better performance
+
+var commonFollowers;
+exports.findCommonFollowers = function(firstUser,secondUser,total) {
+    var relationScore;
+    var totalScore;
+    db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;",
+        params = {u1:firstUser, u2:secondUser}, function(err,results) {
+            if(err){ 
+                console.log('Error');
+                throw err;
+            }
+            commonFollowers = results.map(function(result){
+                return result['total']
+            });
+            console.log("The number of common Followers is " + commonFollowers);
+
+            db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;",
+                params = {}, function(err,results) {
+                if(err){
+                    console.log("couldnot get secure of follow relationship");
+                    throw err;
+                }
+                relationScore = results.map(function(result){
+                return result['score']
+                });
+                console.log("The value of following relation is " + relationScore);
+                totalScore = commonFollowers*relationScore;
+                console.log(total);
+                console.log(totalScore);
+                total = totalScore;
+                db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};",
+                    params = {u1:firstUser, u2:secondUser,value:total}, function(err,results){
+                    if(err){
+                        console.log("Error in setting new totalScore for follow relation");
+                        throw err;
+                    }
+                    else {
+                        console.log("The total should be "  + total );
+                        console.log("Set new totalScore successfully");
+                    }
+                });
+
+            });
+        });  
+}
+
+exports.removeFavouriteResturant = function(email,resName){
+    db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;",
+        params = {e:email, r:resName}, function(err,results){
+            if(err){
+                console.log("Error removing resturant from favourites");
+                throw err;
+            }
+            else{
+                console.log("resturant removed form favourites successfully");
+            }
+        });
+}
+
+exports.getUserFollowScore = function(){
+    db.query("MATCH (n)-[f:Follows]->(u) return f.score;",params={},function(err,results) {
+        if (err){ console.error('Error');
+            throw err;
+            }
+        relationScore = results.map(function(result){
+            return result['f.score']
+        });
+        newScore = relationScore * commonFollowers;
+    });
+}
+
+=======
+>>>>>>> master
 
 
 /*  Sprint #-1-US-1
