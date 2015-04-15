@@ -35,12 +35,16 @@
 
 app.get('/', routes.index);
 app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
+app.get('/relations_view', routes.relationsView);
+app.post('/relations', function(req, res) {
+  var relation = req.param("rels");
+  res.redirect('/Get_relation_info/' + relation);
+}
 app.get('/add_dish', routes.newDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
-	var restaurant = req.body.restaurant;
-	queries.createDish(dishName);
-	queries.addDishToRestaurant(dishName, restaurant);
+	var restaurant = req.param("rests");
+  queries.createDishAndRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
 })
 app.get('/costChange', routes.costChange);
