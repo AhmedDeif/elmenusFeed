@@ -609,7 +609,6 @@ exports.createRelUserCuisine  = function (UserEmail,CuisineName) {
     });
 }
 
-<<<<<<< HEAD
 /*
     createRelUserResCuisines(User email, Cuisine name):
     Makes the user like all cuisines of restaurant 
@@ -629,7 +628,6 @@ exports.createRelUserResCuisines  = function (UserEmail,RestaurantName) {
             else console.log("Done");
     });
 }
-<<<<<<< HEAD
 /*
     In this portion of code we will increase the totalScore between two users. First given the two emails we will get the number of common followers
     and this will be set to the variable commonFollowers. A second Query will be called which calls gets the score of one follow and the calcualtes
@@ -713,10 +711,6 @@ exports.getUserFollowScore = function(){
         newScore = relationScore * commonFollowers;
     });
 }
-
-=======
->>>>>>> master
-
 
 /*  Sprint #-1-US-1
      The user can see his activity log.
