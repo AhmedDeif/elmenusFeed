@@ -687,3 +687,18 @@ exports.showOldActionsHistory = function(UserEmail) {
         } else console.log("Done");
     });
 }
+
+exports.checkUserExists = function(email, callback) {
+    db.query("MATCH (n:User {email: {email}}) RETURN DISTINCT COUNT(n);", params = {
+        email: email
+    }, function(err, results) {
+        if (err) {
+            console.error("Error");
+            throw err;
+        }
+        var count = results.map(function(result) {
+            return result['COUNT(n)'];
+        });
+        callback(count[0]);
+    });
+}
