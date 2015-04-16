@@ -295,17 +295,7 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
         console.log('done');
     });
 }
-exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
-        ep: UserEmail,
-        url: PhotoURL
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
+
 /*  Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
@@ -318,6 +308,24 @@ exports.UserSharesDish = function(UserEmail, DishName) {
     }, function(err, results) {
         if (err) throw err;
         console.log('done');
+    });
+}
+
+
+/*  Sprint #-1-US-9
+     The user can share a photo on facebook or twitter.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+*/
+exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
+    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+        ep: UserEmail,
+        url: PhotoURL
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
     });
 }
 /*  Sprint #-1-US-25
@@ -403,36 +411,7 @@ exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-7
-     The user can share a restaurant on facebook or twitter.
-     This function takes the User Email and the Restaurant Name as an input.
-     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
-*/
-exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
-        ep: UserEmail,
-        rn: RestaurantName
-    }, function(err, results) {
-        if (err) throw err;
-        console.log('done');
-    });
-}
-/*  Sprint #-1-US-8
-     The user can share a dish on facebook or twitter.
-     This function takes the User Email and the Dish Name as an input.
-     It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
-*/
-exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", params = {
-        ep: UserEmail,
-        dn: DishName
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
+
 /*  Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
