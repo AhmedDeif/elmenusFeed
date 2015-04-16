@@ -537,23 +537,18 @@ exports.getUsers = function(callback) {
 
 var usr;
 exports.Get_user_info  = function (r, req, res) {
-    var query = "match (u:User {email: {r}}) return u.email ";
+    var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
      db.query(query, function (err, results) {
-         if (err){  console.log('Error');
-                  throw err;
-                 }
+         if (err){  
+            console.error('Error');
+            throw err;
+        }
                 
             data1 = results.map(function (result) {
-             return result['labels(u)'];
+             return result['u.email'];
             });
- 
-             data2 = results.map(function (result) {
-             return result['labels(m)'];
-             });
- 
             data1 = ' \"Source\":' + JSON.stringify(data1);
-             data2 = ' \"Destination\":' + JSON.stringify(data2);
-             rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+            rel = JSON.parse('{ ' + data1 + ' }');
            indexjs.Get_relation_info_cont(req, res, rel);
      });
     

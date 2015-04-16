@@ -36,17 +36,24 @@ exports.relationsView = function(req, res) {
 		});
 	};
 
-
-exports.usersView = function(req, res) {
-	query.getUsers(function(users) {
-		res.render('users_view', {us:users});
-	});
-};
-
 exports.Get_relation_info = function(req, res){
 	query.Get_relation_info(req.param("tagId"), req, res);
 };
 
 exports.Get_relation_info_cont = function(req, res, x){
  	res.render('Get_relation_info', x);
+ };
+
+ exports.usersView = function(req, res) {
+	query.getUsers(function(users) {
+		res.render('users_view', {us:users});
+	});
+};
+
+exports.Get_user_info = function(req, res){
+	query.Get_user_info(req.param("tagId"), req, res);
+};
+
+exports.Get_user_info_cont = function(req, res, x){
+ 	res.render('Get_user_info', x);
  };

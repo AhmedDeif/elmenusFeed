@@ -40,11 +40,17 @@ app.get('/', routes.index);
 app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
 app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
 app.get('/relations_view', routes.relationsView);
-app.get('/users_view', routes.usersView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
 })
+
+app.get('/users_view', routes.usersView);
+app.post('/users', function(req, res) {
+  var info = req.param("usrs");
+  res.redirect('/Get_user_info/' + info);
+})
+app.get('/Get_user_info/:tagId', routes.Get_user_info);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
   var dishName = req.body.dishName;
