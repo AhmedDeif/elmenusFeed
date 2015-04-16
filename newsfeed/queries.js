@@ -538,7 +538,7 @@ exports.getUsers = function(callback) {
 var usr;
 exports.Get_user_info  = function (r, req, res) {
     var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
-     db.query(query, function (err, results) {
+     db.query(query, params, function (err, results) {
          if (err){  
             console.error('Error');
             throw err;
@@ -548,14 +548,13 @@ exports.Get_user_info  = function (r, req, res) {
              return result['u.email'];
             });
             data1 = ' \"Source\":' + JSON.stringify(data1);
-            rel = JSON.parse('{ ' + data1 + ' }');
-           indexjs.Get_relation_info_cont(req, res, rel);
+            usr = JSON.parse('{ ' + data1 + ' }');
+           indexjs.Get_user_info_cont(req, res, usr);
      });
     
     
     return usr;
 }
-
 
 /*
     Sprint 1  US 21
