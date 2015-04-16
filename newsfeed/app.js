@@ -83,10 +83,15 @@ app.post('/new_review', function(req, res) {
 app.get('/login', routes.login);
 app.post('/log_in', function(req, res) {
   var email = req.body.email;
-  
-  //run queries maybe
-
-  res.redirect('/login'); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
+  queries.checkUserExists(email, function(count) {
+    if (count == 1)
+      res.redirect('/login'); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
+    else
+    {
+      console.log("User was not found!");
+      res.redirect('/login');
+    }
+  });
 });
 
  app.listen(3000);
