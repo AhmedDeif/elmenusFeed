@@ -177,7 +177,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
     these two users.
 */
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0, score:4 , totalScore :0}]->(r)", params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -330,7 +330,7 @@ exports.UserSharesDish = function(UserEmail, DishName) {
 */
 
 exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -348,7 +348,7 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
 */
 
 exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
