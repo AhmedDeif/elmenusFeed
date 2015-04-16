@@ -8,6 +8,6 @@
     "neo4j": "~1.1.1"
   },
   "devDependencies": {
-    "supertest": "^0.15.0"
-  }
-}
+   "supertest": "^0.15.0"
+   }
+ }
