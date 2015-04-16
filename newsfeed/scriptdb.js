@@ -410,7 +410,7 @@ if (fs.existsSync('C:/tmp/createDislikeUserDishRestaurant.csv')) {
     // then creating headers of (User,Dish and Restaurant) and
     //putting it in a csv file that each 
     // record of user,restaurant name and dish name  in one line
-  connection.query("select \'User\',\'Dish\',\'Restaurant\' UNION select u.email As User,d.name_en AS Dish,r.name_en AS Restaurant from items d,items_likes l , restaurants r , users u,menus m where  d.id = l.item_id and u.id = l.user_id and l.user_id>=0 and d.menu_id=m.id and m.restaurant_id=r.id and l.is_liked=0 INTO OUTFILE \'C:/tmp/createDislikeUserDishRestaurant.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  connection.query("select \'User\',\'Dish\',\'Restaurant\',\'Time\' UNION select u.email As User,d.name_en AS Dish,r.name_en AS Restaurant,l.created_at As \'Time\' from items d,items_likes l , restaurants r , users u,menus m where  d.id = l.item_id and u.id = l.user_id and l.user_id>=0 and d.menu_id=m.id and m.restaurant_id=r.id and l.is_liked=0 INTO OUTFILE \'C:/tmp/createDislikeUserDishRestaurant.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
   , function(err, rows, fields) {
   if (!err){
     setTimeout(function(){
@@ -419,7 +419,7 @@ if (fs.existsSync('C:/tmp/createDislikeUserDishRestaurant.csv')) {
     //then importing each record from CSV and saving each record
     //one by one in 'row' then extracting information from 
     //it by using headers (row.Restaurant and row.Dish)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {Name:row.Restaurant})-[:Has]->(d:Dish {Name:row.Dish}) match (u:User {Email:row.User}) MERGE (u) -[:Dislike]-> (d) return d limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {Name:row.Restaurant})-[:Has]->(d:Dish {Name:row.Dish}) match (u:User {Email:row.User}) MERGE (u) -[:LIKES_DISH{likes:FALSE,created_at:row.Time}]-> (d) return d limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -451,7 +451,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
     // then creating headers of (Follower and Followee) and
     //putting it in a csv file that each 
     // record of follower's email and followee's email  in one line
-  connection.query("select \'Follower\',\'Followee\' UNION select u1.email,u2.email from users u1,users u2,user_followers f where u1.id=f.user_id and u2.id=f.follower_id and u1.id<>u2.id INTO OUTFILE \'C:/tmp/createFollowUserUser.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  connection.query("select \'Follower\',\'Followee\',\'Time\' UNION select u1.email,u2.email,f.created_at from users u1,users u2,user_followers f where u1.id=f.user_id and u2.id=f.follower_id and u1.id<>u2.id INTO OUTFILE \'C:/tmp/createFollowUserUser.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
   , function(err, rows, fields) {
   if (!err){
     setTimeout(function(){
@@ -460,7 +460,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {Email:row.Follower}) match (u2:User {Email:row.Followee}) MERGE (u1) -[:Follow]-> (u2)", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {Email:row.Follower}) match (u2:User {Email:row.Followee}) MERGE (u1) -[:FOLLOWS{created_at:row.Time}]-> (u2)", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
