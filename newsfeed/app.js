@@ -39,7 +39,7 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
-}
+})
 app.get('/add_dish', routes.newDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
@@ -79,6 +79,15 @@ app.post('/new_review', function(req, res) {
   queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
   res.redirect('/add_review');
 })
+
+app.get('/login', routes.login);
+app.post('/log_in', function(req, res) {
+  var email = req.body.email;
+  
+  //run queries maybe
+
+  res.redirect('/login'); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
+});
 
  app.listen(3000);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
