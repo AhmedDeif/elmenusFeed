@@ -560,3 +560,38 @@ function restaurantHasCuisine(){
   }
 });
 }
+function CreatePhoto(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/createPhotos.csv')) {
+    fs.unlinkSync('C:/tmp/createPhotos.csv');
+}
+  //selecting users(name and email) from mysql database
+    //from users table and putting it in a csv file
+    //that each record of users(name and email) in one line 
+    //and creating headers of users
+  connection.query("select 'User','Photo','Restaurant' UNION SELECT distinct u.email, p.file , p.restaurant_name FROM  photos p,users u where p.user_id=u.id INTO OUTFILE '/tmp/createPhotos.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY \'\n';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating users with users(name and email) in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.UserName) and (row.UserEmail)
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createPhotos.csv\" AS row  MATCH (n:User { email:row.User }) (r:Restaurant { name:row.Restaurant }) MERGE (p:Photo { url :row.Photo }) MERGE (n) -[:addPhoto]->(p)-[:IN]->(r);  return c limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  console.error('Error');
+                 
+                }
+        else {
+          console.log('Photos Done');
+      //calling next method to make code run synchronous
+          //dishesInRestaurants();
+        }
+    });
+
+}
+  else{
+      throw err;
+  }
+});
+}
