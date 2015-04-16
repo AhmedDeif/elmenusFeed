@@ -463,7 +463,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) MERGE (u1) -[:FOLLOWS{created_at:row.Time}]-> (u2)", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) MERGE (u1) -[:FOLLOWS{created_at:row.Time,score:4}]-> (u2)", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
