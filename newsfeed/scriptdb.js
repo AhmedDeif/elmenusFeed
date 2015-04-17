@@ -660,8 +660,8 @@ if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
     // then creating headers of (Follower and Followee) and
     //putting it in a csv file that each 
     // record of follower's email and followee's email  in one line
-  connection.query("SELECT 'Email', 'Cuisine' UNION SELECT u.email, c.name_en FROM users u, items i, restaurants r, menus m, cuisines c, restaurants_cuisines rc, items_likes il where i.menu_id = m.id AND m.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id AND il.user_id = u.id AND i.id = il.item_id"
-+ "UNION  SELECT u.email, c.name_en FROM users u, restaurants r, user_favorites uf, cuisines c, restaurants_cuisines rc WHERE uf.user_id = u.id AND uf.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id INTO OUTFILE '/tmp/createUserLikeCuisine.csv'  FIELDS TERMINATED BY ','  ENCLOSED BY '"'  LINES TERMINATED BY \'\n\';"
+  connection.query("SELECT \'Email\', \'Cuisine\' UNION SELECT u.email, c.name_en FROM users u, items i, restaurants r, menus m, cuisines c, restaurants_cuisines rc, items_likes il where i.menu_id = m.id AND m.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id AND il.user_id = u.id AND i.id = il.item_id"
++ "UNION  SELECT u.email, c.name_en FROM users u, restaurants r, user_favorites uf, cuisines c, restaurants_cuisines rc WHERE uf.user_id = u.id AND uf.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id INTO OUTFILE \'/tmp/createUserLikeCuisine.csv\'  FIELDS TERMINATED BY \',\'  ENCLOSED BY \'\"\'  LINES TERMINATED BY \'\n\';"
   , function(err, rows, fields) {
   if (!err){
     setTimeout(function(){
