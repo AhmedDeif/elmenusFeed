@@ -1,12 +1,12 @@
 form(action="/new_dish", method="post")
 	div
 		label Dish Name: 
-		input(type="text", name="dishName", style='min-width:295px')
+		input(type="text", name="dishName", style='min-width:245px')
 		br
 	div
 		label Restaurant: 
-		select(id='restSel', name='rests', style='min-width:300px')
-		each rest in rs				
+		select(id='restSel', name='rests', style='min-width:250px')
+			each rest in rs				
 				option(value=rest)= rest
 	div
 		input(type="submit", value="Add Dish")

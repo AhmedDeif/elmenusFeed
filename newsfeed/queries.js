@@ -317,17 +317,7 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
         console.log('done');
     });
 }
-exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
-        ep: UserEmail,
-        url: PhotoURL
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
+
 /*  Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
@@ -342,6 +332,24 @@ exports.UserSharesDish = function(UserEmail, DishName) {
         console.log('done');
     });
 }
+
+
+/*  Sprint #-1-US-9
+     The user can share a photo on facebook or twitter.
+     This function takes the User Email and the Photo URL as an input.
+     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+*/
+exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
+    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+        ep: UserEmail,
+        url: PhotoURL
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
+    });
+}
 /*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
@@ -352,7 +360,7 @@ exports.UserSharesDish = function(UserEmail, DishName) {
 */
 
 exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -370,7 +378,7 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
 */
 
 exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+3;", 
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
@@ -425,50 +433,7 @@ exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-7
-     The user can share a restaurant on facebook or twitter.
-     This function takes the User Email and the Restaurant Name as an input.
-     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
-*/
-exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
-        ep: UserEmail,
-        rn: RestaurantName
-    }, function(err, results) {
-        if (err) throw err;
-        console.log('done');
-    });
-}
-/*  Sprint #-1-US-8
-     The user can share a dish on facebook or twitter.
-     This function takes the User Email and the Dish Name as an input.
-     It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
-*/
-exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", params = {
-        ep: UserEmail,
-        dn: DishName
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
-/*  Sprint #-1-US-1
-     The user can see his activity log.
-     This function takes the User Email as an input.
-     It matches the user with all other nodes that he has a relation with.
-     then it returns all these nodes with the relations he has with them.
-     */
-exports.showOldActionsHistory = function(UserEmail) {
-    db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {
-        ep: UserEmail
-    }, function(err, results) {
-        if (err) throw err;
-        console.log('done');
-    });
-}
+
 /*
   Sprint #-1-US-20
     commonFavoritedRestaurants():
@@ -535,6 +500,46 @@ exports.Get_relation_info = function(r, req, res) {
     });
     return rel;
 }
+
+
+var users;
+exports.getUsers = function(callback) {
+    db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
+        if (err){
+            console.error('Error');
+            throw err;
+        }
+        users = results.map(function(result) {
+            return result['user.email'];
+        });
+        users = JSON.stringify(users);
+        users = JSON.parse(users);
+        callback(users);
+    });
+}
+
+var usr;
+exports.Get_user_info  = function (r, req, res) {
+    var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
+     db.query(query, params, function (err, results) {
+         if (err){  
+            console.error('Error');
+            throw err;
+        }
+                
+            data1 = results.map(function (result) {
+             return result['u.email'];
+            });
+            data1 = ' \"Source\":' + JSON.stringify(data1);
+            usr = JSON.parse('{ ' + data1 + ' }');
+           indexjs.Get_user_info_cont(req, res, usr);
+     });
+    
+    
+    return usr;
+}
+
+
 /*
     Sprint 1  US 21
         createCuisine(name):
