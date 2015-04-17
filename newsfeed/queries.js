@@ -715,16 +715,35 @@ exports.checkUserExists = function(email, callback) {
     });
 }
 
-exports.getNewsfeed = function (email) {
+exports.getNewsfeed = function (email, callback) {
     db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),labels(x),x order by f.totalScore DESC", 
         params = {
             email:email
         }, function(err, results) {
             if(err){
                 console.log("error");
-            } else {
-                console.log("newsfeed fetched");
+                throw err;
             }
+            console.log("newsfeed fetched");
+            var emails = results.map(function(result) {
+                return result['u.email'];
+            });
+            var relationships = results.map(function(result) {
+                return result['type(z)'];
+            });
+            var typesOfNodes = results.map(function(result) {
+                return result['labels(x)'];
+            });
+            var nodes = results.map(function(result) {
+                return result['x'];
+            });
 
+            emails = '\"emails\":' + JSON.stringify(emails);
+            relationships = '\"relationships\":' + JSON.stringify(relationships);
+            typesOfNodes = '\"types\":' + JSON.stringify(typesOfNodes);
+            nodes = '\"nodes\":' + JSON.stringify(nodes);
+            
+            var actions = JSON.parse('{ ' + emails + ', ' + relationships + ', ' + typesOfNodes + ', ' + nodes + ' }');
+            callback(actions);
         });
 }
