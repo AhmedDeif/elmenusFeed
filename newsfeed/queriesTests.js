@@ -262,8 +262,8 @@ describe('I can dislike a dish in a specific restaurant', function () {
     name and creates the corresponding dish in the
     database using a CYPHER CREATE query.
 */
-describe('I can dislike a dish in a specific restaurant', function () {
- it('A dislike should be added and a score has to be added to follow relation', function (done) {
+describe('create a Dish', function () {
+ it('A dish should be created', function (done) {
 	 initialize();
 	 function initialize(){
 			test();
@@ -367,8 +367,8 @@ describe('I can like a dish in a specific restaurant', function () {
      corresponding 'Has' relationship between this
      dish and this restaurant.
 */
-describe('I can dislike a dish in a specific restaurant', function () {
- it('A dislike should be added and a score has to be added to follow relation', function (done) {
+describe('Add a Dish To a Restaurant', function () {
+ it('A relation between a dish to a restaurant is added', function (done) {
 	 initialize();
 	 function initialize(){
 		db.query('create (:Restaurant{name:{rp}}),(:Dish{dish_name:{dp}})', params = {
@@ -413,21 +413,16 @@ describe('I can dislike a dish in a specific restaurant', function () {
  });
 });
 
-/*  Sprint #-0-US-2
-     addDishToRestaurant(dish, restaurant):
-     this function takes as input the dishs and
-     the restaurants name and creates the
-     corresponding 'Has' relationship between this
-     dish and this restaurant.
+/*  
+	add a new Dish to a Restaurant.
 */
-/*
-describe('I can dislike a dish in a specific restaurant', function () {
- it('A dislike should be added and a score has to be added to follow relation', function (done) {
+
+describe('Add a new Dish to a Restaurant', function () {
+ it('A new dish should be added to the restaurant', function (done) {
 	 initialize();
 	 function initialize(){
-		db.query('create (:Restaurant{name:{rp}}),(:Dish{dish_name:{dp}})', params = {
-		rp: 'SteakOut',
-		dp: 'dish3'
+		db.query('create (:Restaurant{name:{rp}})', params = {
+		rp: 'pizzaHut'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -438,9 +433,9 @@ describe('I can dislike a dish in a specific restaurant', function () {
     });
 	}
 	 function test(){
-		db.query(queries.addDishToRestaurantQuery, params = {
-        dp: 'dish3',
-        rp: 'SteakOut'
+		db.query(queries.createDishAndRestaurantQuery, params = {
+        dp: 'dish4',
+        rp: 'pizzaHut'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -450,23 +445,146 @@ describe('I can dislike a dish in a specific restaurant', function () {
 		}
 	 });}
 	function verify(){
-		db.query('optional MATCH (d:Dish{dish_name:{dp}}),(r:Restaurant{name:{rp}}),(r)-[rel:HAS]->(d) return rel', params = {
-        dp: 'dish3',
-        rp: 'SteakOut'
+		db.query('optional MATCH (d:Dish{dish_name:{dp}}),(r:Restaurant{name:{rp}}),(r)-[rel:HAS]->(d) return rel,d', params = {
+        dp: 'dish4',
+        rp: 'pizzaHut'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
 			var rel = results.map(function(result) {return result['rel'];});
+			var dish = results.map(function(result) {return result['d'];});
 			should.exist(rel[0]);
+			should.exist(dish[0]);
 			done();
 		}
     });
 	}
  });
 });
+
+
+/*  Sprint #-1-US-2
+     The user can add a photo related to a specific restaurant.
+     This function takes the User Email, Restaurant Name and the Photo URL as an input
+     Then the node p of type Photo is created  and a relationship "addPhoto"  is created
+     between the user and the photo. Another relationship "IN"
+     shows that the photo is in this specific restaurant.
 */
+
+describe('The user can add a photo related to a specific restaurant', function () {
+ it('A photo should be added to a restaurant', function (done) {
+	 initialize();
+	 function initialize(){
+		db.query('create (:Restaurant{name:{rp}}),(:User{email:{up}})', params = {
+		up: 'kareemAdel8@mail.com',
+		rp: 'pizzaHut1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			test();
+		}
+    });
+	}
+	 function test(){
+		db.query(queries.UserAddsPhotoToRestaurantQuery, params = {
+        ep: 'kareemAdel8@mail.com',
+        rp: 'pizzaHut1',
+        url: 'http://example.com/photo.com'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			verify();
+		}
+	 });}
+	function verify(){
+		db.query('optional MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }), (photo:Photo { url : {url}}), (n) -[photoRel:addPhoto]->(photo)-[inRel:IN]->(r) return photoRel, photo, inRel', params = {
+        ep: 'kareemAdel8@mail.com',
+        rp: 'pizzaHut1',
+        url: 'http://example.com/photo.com'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			var photoRel = results.map(function(result) {return result['photoRel'];});
+			var photo = results.map(function(result) {return result['photo'];});
+			var inRel = results.map(function(result) {return result['inRel'];});
+			should.exist(photoRel[0]);
+			should.exist(photo[0]);
+			should.exist(inRel[0]);
+			done();
+		}
+    });
+	}
+ });
+});
+
+
+/* Sprint #-0-US-18
+    createFollowUser(FollowerEmail, FolloweeEmail):
+    This function takes as an input the email of 
+    the user that is requesting to follow another
+    user, and the email of the other user that is
+    being requested to be followed, then checks
+    that these two emails are not the same (a user
+    cannot follow his/herself). Finally, it creates
+    the corresponding FOLLOWS relationship between
+    these two users.
+*/
+
+describe('Follow a User', function () {
+ it('A user should be followed', function (done) {
+	 initialize();
+	 function initialize(){
+		db.query('create (:User{email:{u1}}),(:User{email:{u2}})', params = {
+		u1: 'kareemAdel9@mail.com',
+		u2: 'kareemAdel10@mail.com'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			test();
+		}
+    });
+	}
+	 function test(){
+		db.query(queries.createFollowUserQuery, params = {
+        e1p: 'kareemAdel9@mail.com',
+        e2p: 'kareemAdel10@mail.com'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			verify();
+		}
+	 });}
+	function verify(){
+		db.query('optional MATCH (u1:User{email:{e1p}}),(u2:User{email:{e2p}}), (u1)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(u2) return f.numberOfVisits, f.totalScore', params = {
+        e1p: 'kareemAdel9@mail.com',
+        e2p: 'kareemAdel10@mail.com'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			var numberOfVisits = results.map(function(result) {return result['f.numberOfVisits'];});
+			var totalScore = results.map(function(result) {return result['f.totalScore'];});
+			should(numberOfVisits[0] == 0).be.ok;
+			should(totalScore[0] == 5).be.ok;
+			done();
+		}
+    });
+	}
+ });
+});
 
 function formQuery(Query,params){
 	for (var key in params) {

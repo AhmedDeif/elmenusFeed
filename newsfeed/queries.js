@@ -153,8 +153,10 @@ exports.getRestaurants = function(callback) {
         callback(restaurants);
     });
 }
+
+exports.createDishAndRestaurantQuery = "MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)";
 exports.createDishAndRestaurant = function(dish, restaurant) {
-    db.query("MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)", params = {
+    db.query(createDishAndRestaurantQuery, params = {
         dp: dish,
         rp: restaurant
     }, function(err, results) {
@@ -171,8 +173,9 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
      between the user and the photo. Another relationship "IN"
      shows that the photo is in this specific restaurant.
 */
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
-    db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}) CREATE (n) -[:addPhoto]->(p)-[:IN]->(r);", params = {
+    db.query(UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         url: photoURL
@@ -194,8 +197,9 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
     the corresponding FOLLOWS relationship between
     these two users.
 */
+exports.createFollowUserQuery = "MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)";
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {
+    db.query(createFollowUserQuery, params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
