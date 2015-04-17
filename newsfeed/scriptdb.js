@@ -670,7 +670,7 @@ if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createUserLikeCuisine.csv\" AS row match (u:User{email:row.Email}), (c:Cuisine:{name:row.Cuisine}) MERGE (u)-[:LikeCuisine{score:5}]->(c) return c limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createUserLikeCuisine.csv\" AS row match (u:User{email:row.Email}), (c:Cuisine{name:row.Cuisine}) MERGE (u)-[:LikeCuisine{score:5}]->(c) return c limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
