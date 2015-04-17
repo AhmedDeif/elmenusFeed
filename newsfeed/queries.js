@@ -138,6 +138,7 @@ exports.addDishToRestaurant = function(dish, restaurant) {
         } else console.log('Done');
     });
 }
+
 var restaurants;
 exports.getRestaurants = function(callback) {
     db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
@@ -153,6 +154,15 @@ exports.getRestaurants = function(callback) {
         callback(restaurants);
     });
 }
+
+/*  Sprint #-0-US-2
+        createDishAndRestaurant(dish, restaurant):
+        this function takes as input the dish's and
+        restaurants name and creates the dish node,
+        afterwards it creates the
+        corresponding 'Has' relationship between this
+        dish and this restaurant.
+*/
 
 exports.createDishAndRestaurantQuery = "MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)";
 exports.createDishAndRestaurant = function(dish, restaurant) {
