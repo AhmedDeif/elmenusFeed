@@ -4,8 +4,8 @@ var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'CALLOFDUTY6',
-  database : 'test1'
+  password : '1234',
+  database : 'neo4j2'
 });
 
 
@@ -40,11 +40,34 @@ function uniqueRestaurant(){
                 }
         else {
           console.log('CONSTRAINT-Restaurant Done');
-          indexDishRes();
+          uniqueCuisine();
         }
     });
 }
 
+function uniqueCuisine(){
+  db.query("CREATE CONSTRAINT ON (x:Cuisine) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-Cuisine Done');
+          uniquePhoto();
+        }
+    });
+}
+
+function uniquePhoto(){
+  db.query("CREATE CONSTRAINT ON (x:Photo) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-Photo Done');
+          indexDishRes();
+        }
+    });
+}
 //------------------------------------------------------------------------------------
 //create indices
 /*
@@ -94,6 +117,30 @@ function indexDishName(){
                 }
         else {
           console.log('Index-Dish-Name Done');
+          indexCuisineName();
+        }
+    });
+}
+
+function indexCuisineName(){
+  db.query("create index on :Cuisine(name);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Cuisine-Name Done');
+          indexPhotoURL();
+        }
+    });
+}
+
+function indexPhotoURL(){
+  db.query("create index on :Photo(url);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Photo-URL Done');
           restaurants();
         }
     });
@@ -126,7 +173,7 @@ function users(){
         else {
           console.log('Users Done');
       //calling next method to make code run synchronous
-          dishesInRestaurants();
+          cuisines();
         }
     });
 
@@ -209,6 +256,46 @@ function dishes(){
         }
     });
     
+}
+  else{
+      throw err;
+  }
+});
+}
+
+//----------------------------------------------------------------------------------
+////////////////NEW////////////////// SPRINT 1////////////////////
+//Create cuisines
+function cuisines(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/createCuisines.csv')) {
+    fs.unlinkSync('C:/tmp/createCuisines.csv');
+}
+  //selecting users(name and email) from mysql database
+    //from users table and putting it in a csv file
+    //that each record of users(name and email) in one line 
+    //and creating headers of users
+  connection.query("SELECT \'Name\' UNION SELECT DISTINCT name_en FROM cuisines INTO OUTFILE \'/tmp/createCuisines.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating users with users(name and email) in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.UserName) and (row.UserEmail)
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createCuisines.csv\" AS row MERGE (c:Cuisine {name: row.Name}) return c limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  console.error('Error');
+                 
+                }
+        else {
+          console.log('Cuisines Done');
+      //calling next method to make code run synchronous
+          //dishesInRestaurants();
+          dishesInRestaurants();
+        }
+    });
+
 }
   else{
       throw err;
@@ -470,7 +557,8 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
         else {
           console.log('User-Follow-User Done');
           //Close mysql connection
-          connection.end();  
+          restaurantHasCuisine();
+           
         }
     });
   },400);
@@ -484,3 +572,120 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
 });
 }
 
+
+
+//-----------------------------------------------------------------------------
+// create relation restaurant has cuisine 
+function restaurantHasCuisine(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/createRelCuisineRestaurant.csv')) {
+    fs.unlinkSync('C:/tmp/createRelCuisineRestaurant.csv');
+}
+  //selecting users(name and email) from mysql database
+    //from users table and putting it in a csv file
+    //that each record of users(name and email) in one line 
+    //and creating headers of users
+  connection.query("select \'Cuisine\', \'Restaurant\' UNION select c.name_en, r.name_en from cuisines c, restaurants r, restaurants_cuisines rc where  c.id = rc.cuisine_id AND r.id = rc.restaurant_id INTO OUTFILE \'C:/tmp/createRelCuisineRestaurant.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating users with users(name and email) in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.UserName) and (row.UserEmail)
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createRelCuisineRestaurant.csv\" AS row MATCH (c:Cuisine),(r:Restaurant) WHERE c.name=row.Cuisine AND r.name =row.Restaurant MERGE (r)-[rl:HasCuisine]->(c) return r limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  console.error('Error');
+                 
+                }
+        else {
+          console.log('Restaurant-Cuisines Done');
+      //calling next method to make code run synchronous
+          //dishesInRestaurants();
+          CreatePhoto();
+        }
+    });
+
+}
+  else{
+      throw err;
+  }
+});
+}
+function CreatePhoto(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/createPhotos.csv')) {
+    fs.unlinkSync('C:/tmp/createPhotos.csv');
+}
+  //selecting users(name and email) from mysql database
+    //from users table and putting it in a csv file
+    //that each record of users(name and email) in one line 
+    //and creating headers of users
+  connection.query("select \'User\',\'Photo\',\'Restaurant\' UNION SELECT distinct u.email, p.file , p.restaurant_name FROM  photos p,users u where p.user_id=u.id INTO OUTFILE \'/tmp/createPhotos.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating users with users(name and email) in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.UserName) and (row.UserEmail)
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createPhotos.csv\" AS row  MATCH (n:User { email:row.User }), (r:Restaurant { name:row.Restaurant }) MERGE (p:Photo { url :row.Photo }) MERGE (n) -[:addPhoto]->(p)-[:IN]->(r)  return p limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                 
+                }
+        else {
+          console.log('Photos Done');
+      //calling next method to make code run synchronous
+          //dishesInRestaurants();
+          LikeCuisine();
+        }
+    });
+
+}
+  else{
+      throw err;
+  }
+});
+}
+function LikeCuisine(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
+    fs.unlinkSync('C:/tmp/createUserLikeCuisine.csv');
+}
+    //selecting follower's email and followee's email
+    //then linking them by using inner joins
+    // between users and followers tables
+    // then creating headers of (Follower and Followee) and
+    //putting it in a csv file that each 
+    // record of follower's email and followee's email  in one line
+  connection.query("SELECT \'Email\', \'Cuisine\' UNION SELECT u.email, c.name_en FROM users u, items i, restaurants r, menus m, cuisines c, restaurants_cuisines rc, items_likes il where i.menu_id = m.id AND m.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id AND il.user_id = u.id AND i.id = il.item_id UNION  SELECT u.email, c.name_en FROM users u, restaurants r, user_favorites uf, cuisines c, restaurants_cuisines rc WHERE uf.user_id = u.id AND uf.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id INTO OUTFILE \'/tmp/createUserLikeCuisine.csv\'  FIELDS TERMINATED BY \',\'  ENCLOSED BY \'\"\'  LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+    setTimeout(function(){
+      //creating relations between follower and followee of [:Follow] in Neo4j database
+      //by matching follower's email and followee's email
+      //then importing each record from CSV and saving each record
+      //one by one in 'row' then extracting information from 
+      //it by using headers (row.Follower and row.Followee)
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createUserLikeCuisine.csv\" AS row match (u:User{email:row.Email}), (c:Cuisine{name:row.Cuisine}) MERGE (u)-[:LikeCuisine{score:5}]->(c) return c limit 1;", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('User-Like_Cuisine Done');
+          //Close mysql connection
+          connection.end();  
+        }
+    });
+  },400);
+          
+      
+
+}
+  else{
+    throw err;
+  }
+});
+}
