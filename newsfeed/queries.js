@@ -566,8 +566,9 @@ exports.createCuisine = function(name) {
     creates the corresponding relation between
     cuisine and restaurant in the database.
 */
+exports.createRelCuisineRestaurantQuery = "MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)";
 exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {
+    db.query(createRelCuisineRestaurantQuery, params = {
         cp: CuisineName,
         rp: RestaurantName
     }, function(err, results) {
