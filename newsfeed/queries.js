@@ -174,10 +174,22 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
     that these two emails are not the same (a user
     cannot follow his/herself). Finally, it creates
     the corresponding FOLLOWS relationship between
-    these two users.
+    these two users. This FOLLOWS relationship has the following properties:
+     score, totalScore and numberOfVisits
+     The score is that of the relation itself.
+     numberOfVisits is incremented when a user visits the profile of another and the totalScore is incremented 
+     between User1 and User2
+     according to the following actions:
+        1) if User1 and User2 have common users followed.
+        2) if User1 and User2 have common favorited Restaurants.
+        3) if User1 and User2 have common photo yums on the same photo.
+        4) if User1 and User2 have common photo yucks on the same photo.
+        5) if User1 and User2 have common dish likes on the same dish.
+        6) if User1 and User2 have common dish dislikes on the same dish.
+
 */
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 ,score: 4, totalScore :0}]->(r)", params = {
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0, score:4 , totalScore :0}]->(r)", params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -668,6 +680,15 @@ exports.showOldActionsHistory = function(UserEmail) {
     });
 }
 
+/*
+     The user can see posts on the news feed prioritized by the common dish Likes 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having likes on the same dishes, and matches the users having a FOLLOWS relationship
+     between them.
+     This allows the total Score between two users to be increased by the score of the "like dish".
+*/
+
 exports.UserCommonLikesUser  = function (UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:LIKES_DISH{likes:TRUE}]->(dish:Dish)<- [y:LIKES_DISH {likes: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
@@ -677,6 +698,15 @@ exports.UserCommonLikesUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
+
+/*
+     The user can see posts on the news feed prioritized by the common dish disLikes 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having dislikes on the same dishes, and matches the users having a FOLLOWS relationship
+     between them.
+     This allows the total Score between two users to be increased by the score of the "like dish".
+*/
 exports.UserCommonDisLikesUser  = function (UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:LIKES_DISH{likes:FALSE}]->(dish:Dish)<- [y:LIKES_DISH {likes: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
@@ -686,6 +716,17 @@ exports.UserCommonDisLikesUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
+
+
+
+/*
+     The user can see posts on the news feed prioritized by the common followers 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users following the same user, and matches the users having a FOLLOWS relationship
+     between them.
+     This allows the total Score between two users to be increased by the score of the "FOLLOWS".
+*/
 exports.UserCommonFollowsUser  = function (UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:FOLLOWS]->(user:User)<- [x:FOLLOWS]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ x.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {

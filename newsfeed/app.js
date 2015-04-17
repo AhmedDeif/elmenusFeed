@@ -39,6 +39,7 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
+<<<<<<< HEAD
 }
 //app.get('/add_dish', routes.newDish);
 //app.post('/new_dish', function(req, res) {
@@ -47,24 +48,34 @@ app.post('/relations', function(req, res) {
   //queries.createDishAndRestaurant(dishName, restaurant);
 	//res.redirect('/add_dish');
 //})
+=======
+});
+app.get('/add_dish', routes.addDish);
+app.post('/new_dish', function(req, res) {
+	var dishName = req.body.dishName;
+	var restaurant = req.param("rests");
+  queries.createDishAndRestaurant(dishName, restaurant);
+	res.redirect('/add_dish');
+});
+>>>>>>> 791c68b066530ccd09e20166b566f50d88cb4991
 app.get('/costChange', routes.costChange);
 app.post('/costChange', function(req, res) {
   var cost = req.body.cost;
   var relation = req.body.relation;
   queries.changeRelationCost(relation, cost);
   res.redirect('/Relations');
-})
+});
 app.get('/Relations', routes.Relations);
 app.post('/Relations', function(req, res) {
   var relation = req.param("select");
   res.redirect('/costChange');
-})
+});
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
   var email = req.body.email;
   queries.createUser(email);
   res.redirect('/signup');
-})
+});
 
 app.get('/add_review', routes.newReview);
 app.post('/new_review', function(req, res) {
@@ -78,7 +89,7 @@ app.post('/new_review', function(req, res) {
 
   queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
   res.redirect('/add_review');
-})
+});
 
- app.listen(3000);
- console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
