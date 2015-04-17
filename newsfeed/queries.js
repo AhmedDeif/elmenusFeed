@@ -177,7 +177,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
     these two users.
 */
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)", params = {
+    db.query("MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :0 , score:5}]->(r)", params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -601,10 +601,10 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
 */
 // Must fix the callback hell problem for better performance
 var commonFollowers;
-exports.findCommonFollowers = function(firstUser, secondUser, total) {
+exports.findCommonFollowers = function(firstUser, secondUser) {
     var relationScore;
     var totalScore;
-    db.query("MATCH (a:User)-[:Follows]->(b:User) , (a)-[:Follows]->(c:User) , (b)-[:Follows]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
+    db.query("MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
         u1: firstUser,
         u2: secondUser
     }, function(err, results) {
@@ -615,8 +615,8 @@ exports.findCommonFollowers = function(firstUser, secondUser, total) {
         commonFollowers = results.map(function(result) {
             return result['total']
         });
-        console.log("The number of common Followers is " + commonFollowers);
-        db.query("match (n)-[f:Follows]->(u) return Distinct f.score as score;", params = {}, function(err, results) {
+        console.log("The number of common Followers between " + firstUser + " and " + secondUser + " is " + commonFollowers);
+        db.query("match (n)-[f:FOLLOWS]->(u) return Distinct f.score as score;", params = {}, function(err, results) {
             if (err) {
                 console.log("couldnot get secure of follow relationship");
                 throw err;
@@ -626,24 +626,36 @@ exports.findCommonFollowers = function(firstUser, secondUser, total) {
             });
             console.log("The value of following relation is " + relationScore);
             totalScore = commonFollowers * relationScore;
-            console.log(total);
+            //console.log(total);
             console.log(totalScore);
-            total = totalScore;
-            db.query("MATCH (a:User)-[f:Follows]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};", params = {
+           // total = totalScore;
+            db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};", params = {
                 u1: firstUser,
                 u2: secondUser,
-                value: total
+                value: totalScore
             }, function(err, results) {
                 if (err) {
                     console.log("Error in setting new totalScore for follow relation");
                     throw err;
                 } else {
-                    console.log("The total should be " + total);
+                    console.log("The total should be " + totalScore);
                     console.log("Set new totalScore successfully");
                 }
             });
         });
     });
+}
+
+exports.setFollowersScore = function(user1,user2) {
+    db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} SET f1.totalScore = total",
+        params = {u1:user1, u2:user2}, function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
+            }
+
+        });
 }
 exports.removeFavouriteResturant = function(email, resName) {
     db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;", params = {

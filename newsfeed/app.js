@@ -96,3 +96,83 @@ app.post('/log_in', function(req, res) {
 
  app.listen(3000);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+
+
+ // This part is for testing queries
+
+/*queries.createUser("test 1");
+queries.createUser("test 2");
+queries.createUser("test 3");
+queries.createUser("test 4");
+queries.createUser("test 5");
+queries.createResturant("Res 1");
+queries.createResturant("Res 2");
+queries.createResturant("Res 3");
+queries.createResturant("Res 4");
+queries.createResturant("Res 5");
+queries.createDish("Dish 1");
+queries.createDish("Dish 2");
+queries.createDish("Dish 3");
+queries.createDish("Dish 4");
+queries.createDish("Dish 5");
+queries.createDish("Dish 6");
+queries.createDish("Dish 7");
+
+
+queries.addDishToRestaurant("Dish 1","Res 1");
+queries.addDishToRestaurant("Dish 2","Res 1");
+queries.addDishToRestaurant("Dish 3","Res 1");
+queries.addDishToRestaurant("Dish 4","Res 2");
+queries.addDishToRestaurant("Dish 5","Res 2");
+queries.addDishToRestaurant("Dish 6","Res 3");
+queries.addDishToRestaurant("Dish 7","Res 3");
+queries.addDishToRestaurant("Dish 1","Res 3");
+queries.addDishToRestaurant("Dish 2","Res 4");
+queries.addDishToRestaurant("Dish 3","Res 5");
+queries.addDishToRestaurant("Dish 4","Res 5");
+
+
+// common 1 & 2 = 2
+// common 1 & 3 = 1
+// common 1 & 4 = 0
+// 
+// common 2 & 3 = 1
+// common 3 & 1 = 1
+
+queries.createFollowUser("test 1","test 2");
+queries.createFollowUser("test 1","test 3");
+queries.createFollowUser("test 1","test 4");
+queries.createFollowUser("test 1","test 5");
+//queries.createFollowUser("test 2","test 1");
+queries.createFollowUser("test 2","test 3");
+queries.createFollowUser("test 2","test 4");
+//queries.createFollowUser("test 3","test 1");
+queries.createFollowUser("test 3","test 4");
+queries.createFollowUser("test 4","test 1");
+queries.createFollowUser("test 5","test 2");
+
+
+
+
+queries.findCommonFollowers("test 1","test 2");
+queries.findCommonFollowers("test 1","test 3");
+queries.findCommonFollowers("test 1","test 4");
+queries.findCommonFollowers("test 1","test 5");
+queries.findCommonFollowers("test 2","test 3");
+queries.findCommonFollowers("test 2","test 4");
+queries.findCommonFollowers("test 3","test 4");
+queries.findCommonFollowers("test 2","test 5");
+
+*/
+
+queries.setFollowersScore("test 1","test 2");
+queries.setFollowersScore("test 1","test 3");
+queries.setFollowersScore("test 1","test 4");
+queries.setFollowersScore("test 1","test 5");
+queries.setFollowersScore("test 2","test 3");
+queries.setFollowersScore("test 2","test 4");
+queries.setFollowersScore("test 3","test 4");
+queries.setFollowersScore("test 2","test 5");
+
+
+
