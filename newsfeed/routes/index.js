@@ -9,18 +9,13 @@ exports.index = function(req, res) {
 };
 exports.addDish = function(req, res) {
     query.getRestaurants(function(restaurants) {
-        res.render('add_dish', {
-            rs: restaurants
-        });
+        res.render('add_dish', {rs: restaurants});
     });
 };
 exports.Get_restaurant_info = function(req, res) {
     query.Get_restaurant_info(req.param("tagId"), function renderRes(myRes) {
         res.render('Get_restaurant_info', myRes);
     });
-};
-exports.newDish = function(req, res) {
-    res.render('add_dish')
 };
 exports.signUp = function(req, res) {
     res.render('signup')
