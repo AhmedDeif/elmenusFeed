@@ -500,46 +500,6 @@ exports.Get_relation_info = function(r, req, res) {
     });
     return rel;
 }
-
-
-var users;
-exports.getUsers = function(callback) {
-    db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
-        if (err){
-            console.error('Error');
-            throw err;
-        }
-        users = results.map(function(result) {
-            return result['user.email'];
-        });
-        users = JSON.stringify(users);
-        users = JSON.parse(users);
-        callback(users);
-    });
-}
-
-var usr;
-exports.Get_user_info  = function (r, req, res) {
-    var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
-     db.query(query, params, function (err, results) {
-         if (err){  
-            console.error('Error');
-            throw err;
-        }
-                
-            data1 = results.map(function (result) {
-             return result['u.email'];
-            });
-            data1 = ' \"Source\":' + JSON.stringify(data1);
-            usr = JSON.parse('{ ' + data1 + ' }');
-           indexjs.Get_user_info_cont(req, res, usr);
-     });
-    
-    
-    return usr;
-}
-
-
 /*
     Sprint 1  US 21
         createCuisine(name):
