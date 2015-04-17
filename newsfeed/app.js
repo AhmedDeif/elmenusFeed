@@ -39,16 +39,7 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
-<<<<<<< HEAD
-}
-//app.get('/add_dish', routes.newDish);
-//app.post('/new_dish', function(req, res) {
-	//var dishName = req.body.dishName;
-	//var restaurant = req.param("rests");
-  //queries.createDishAndRestaurant(dishName, restaurant);
-	//res.redirect('/add_dish');
-//})
-=======
+
 });
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
@@ -57,7 +48,6 @@ app.post('/new_dish', function(req, res) {
   queries.createDishAndRestaurant(dishName, restaurant);
 	res.redirect('/add_dish');
 });
->>>>>>> 791c68b066530ccd09e20166b566f50d88cb4991
 app.get('/costChange', routes.costChange);
 app.post('/costChange', function(req, res) {
   var cost = req.body.cost;
