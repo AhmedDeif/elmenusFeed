@@ -57,5 +57,7 @@ exports.login = function(req, res) {
 }
 
 exports.showNewsfeed = function(req, res) {
-    
+    query.getNewsfeed(req.param("email"), function(actions) {
+        res.render('newsfeed', {actions: actions});
+    });
 }
