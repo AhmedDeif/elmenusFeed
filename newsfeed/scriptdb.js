@@ -40,11 +40,34 @@ function uniqueRestaurant(){
                 }
         else {
           console.log('CONSTRAINT-Restaurant Done');
-          indexDishRes();
+          uniqueCuisine();
         }
     });
 }
 
+function uniqueCuisine(){
+  db.query("CREATE CONSTRAINT ON (x:Cuisine) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-Cuisine Done');
+          uniquePhoto();
+        }
+    });
+}
+
+function uniquePhoto(){
+  db.query("CREATE CONSTRAINT ON (x:Photo) ASSERT x.id IS UNIQUE;", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('CONSTRAINT-Photo Done');
+          indexDishRes();
+        }
+    });
+}
 //------------------------------------------------------------------------------------
 //create indices
 /*
@@ -94,6 +117,30 @@ function indexDishName(){
                 }
         else {
           console.log('Index-Dish-Name Done');
+          indexCuisineName();
+        }
+    });
+}
+
+function indexCuisineName(){
+  db.query("create index on :Cuisine(name);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Cuisine-Name Done');
+          indexPhotoURL();
+        }
+    });
+}
+
+function indexPhotoURL(){
+  db.query("create index on :Photo(url);", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Index-Photo-URL Done');
           restaurants();
         }
     });
@@ -126,7 +173,7 @@ function users(){
         else {
           console.log('Users Done');
       //calling next method to make code run synchronous
-          dishesInRestaurants();
+          cuisines();
         }
     });
 
@@ -209,6 +256,46 @@ function dishes(){
         }
     });
     
+}
+  else{
+      throw err;
+  }
+});
+}
+
+//----------------------------------------------------------------------------------
+////////////////NEW////////////////// SPRINT 1////////////////////
+//Create cuisines
+function cuisines(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/createCuisines.csv')) {
+    fs.unlinkSync('C:/tmp/createCuisines.csv');
+}
+  //selecting users(name and email) from mysql database
+    //from users table and putting it in a csv file
+    //that each record of users(name and email) in one line 
+    //and creating headers of users
+  connection.query("SELECT \'Name\' UNION SELECT DISTINCT name_en FROM cuisines INTO OUTFILE \'/tmp/createCuisines.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating users with users(name and email) in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.UserName) and (row.UserEmail)
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createCuisines.csv\" AS row MERGE (c:Cuisine {name: row.Name}) return c limit 1;", params = {}, function (err, results) {
+        if (err){  
+                  console.error('Error');
+                 
+                }
+        else {
+          console.log('Cuisines Done');
+      //calling next method to make code run synchronous
+          //dishesInRestaurants();
+          dishesInRestaurants();
+        }
+    });
+
 }
   else{
       throw err;
@@ -470,7 +557,8 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
         else {
           console.log('User-Follow-User Done');
           //Close mysql connection
-          connection.end();  
+          restaurantHasCuisine();
+           
         }
     });
   },400);
@@ -484,44 +572,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
 });
 }
 
-//----------------------------------------------------------------------------------
-////////////////NEW//////////////////
-//Create cuisines
-function cuisines(){
-    //check if the csv file exists if it exists delete
-    //it as it isnt deleted mysql will crash
-  if (fs.existsSync('C:/tmp/createCuisines.csv')) {
-    fs.unlinkSync('C:/tmp/createCuisines.csv');
-}
-  //selecting users(name and email) from mysql database
-    //from users table and putting it in a csv file
-    //that each record of users(name and email) in one line 
-    //and creating headers of users
-  connection.query("SELECT \'Name\' UNION SELECT DISTINCT name_en FROM cuisines INTO OUTFILE \'/tmp/createCuisines.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
-  , function(err, rows, fields) {
-  if (!err){
-  //creating users with users(name and email) in Neo4j database
-    //by importing each record from CSV and saving each record
-    //one by one in 'row' then extracting information from 
-    //it by using headers (row.UserName) and (row.UserEmail)
-          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createCuisines.csv\" AS row MERGE (c:Cuisine {name: row.Name}) return c limit 1;", params = {}, function (err, results) {
-        if (err){  
-                  console.error('Error');
-                 
-                }
-        else {
-          console.log('Cuisines Done');
-      //calling next method to make code run synchronous
-          //dishesInRestaurants();
-        }
-    });
 
-}
-  else{
-      throw err;
-  }
-});
-}
 
 //-----------------------------------------------------------------------------
 // create relation restaurant has cuisine 
@@ -548,9 +599,10 @@ function restaurantHasCuisine(){
                  
                 }
         else {
-          console.log('Cuisines Done');
+          console.log('Restaurant-Cuisines Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
+          CreatePhoto();
         }
     });
 
@@ -570,22 +622,23 @@ function CreatePhoto(){
     //from users table and putting it in a csv file
     //that each record of users(name and email) in one line 
     //and creating headers of users
-  connection.query("select 'User','Photo','Restaurant' UNION SELECT distinct u.email, p.file , p.restaurant_name FROM  photos p,users u where p.user_id=u.id INTO OUTFILE '/tmp/createPhotos.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY \'\n';"
+  connection.query("select \'User\',\'Photo\',\'Restaurant\' UNION SELECT distinct u.email, p.file , p.restaurant_name FROM  photos p,users u where p.user_id=u.id INTO OUTFILE \'/tmp/createPhotos.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
   , function(err, rows, fields) {
   if (!err){
   //creating users with users(name and email) in Neo4j database
     //by importing each record from CSV and saving each record
     //one by one in 'row' then extracting information from 
     //it by using headers (row.UserName) and (row.UserEmail)
-          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createPhotos.csv\" AS row  MATCH (n:User { email:row.User }) (r:Restaurant { name:row.Restaurant }) MERGE (p:Photo { url :row.Photo }) MERGE (n) -[:addPhoto]->(p)-[:IN]->(r);  return c limit 1;", params = {}, function (err, results) {
+          db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createPhotos.csv\" AS row  MATCH (n:User { email:row.User }), (r:Restaurant { name:row.Restaurant }) MERGE (p:Photo { url :row.Photo }) MERGE (n) -[:addPhoto]->(p)-[:IN]->(r)  return p limit 1;", params = {}, function (err, results) {
         if (err){  
-                  console.error('Error');
+                  throw err;
                  
                 }
         else {
           console.log('Photos Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
+          connection.end(); 
         }
     });
 
