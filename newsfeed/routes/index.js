@@ -59,11 +59,3 @@ exports.Get_user_info_cont = function(req, res, x){
 exports.costChange = function(req, res) {
     res.render('costChange');
 }
-
-exports.Relations = function(req, res) {
-    query.getRelations(function relations(myRes) {
-        res.render('Relations', {
-            rl: myRes
-        });
-    });
-}
