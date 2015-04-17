@@ -732,6 +732,5 @@ exports.getNewsfeed = function (email, callback) {
             });
             
             callback(actions);
-            console.log(actions[0].label[0]);
         });
 }

@@ -1,4 +1,15 @@
 div
 	each a in actions
-		if (a.label[0] == 'Restaurant')
-			h3 #{a.email} #{a.rel} #{a.node.name}
+		case a.rel
+			when 'Review'
+				h3 #{a.email} reviewed #{a.node.name}
+			when 'FAVORITES'
+				h3 #{a.email} favorited #{a.node.name}
+			when 'LIKES_DISH'
+				h3 #{a.email} liked a dish: #{a.node.dish_name}
+			when 'FOLLOWS'
+				h3 #{a.email} followed #{a.node.email}
+			when 'addPhoto'
+				h3 #{a.email} added a photo: #{a.node.url}
+			when 'LikeCuisine'
+				h3 #{a.email} liked a cuisine: #{a.node.name}

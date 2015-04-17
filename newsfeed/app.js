@@ -85,7 +85,7 @@ app.post('/log_in', function(req, res) {
   var email = req.body.email;
   queries.checkUserExists(email, function(count) {
     if (count == 1)
-      res.redirect('/login'); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
+      res.redirect('/newsfeed/' + email); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
     else
     {
       console.log("User was not found!");
