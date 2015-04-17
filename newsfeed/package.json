@@ -9,12 +9,18 @@
   },
   "devDependencies": {
 <<<<<<< HEAD
+<<<<<<< HEAD
    "supertest": "^0.15.0"
    }
  }
 =======
+=======
+>>>>>>> f87ae9de475d34f6e28529eddee13343bbc3dc99
     "should": "^6.0.1",
     "supertest": "^0.15.0"
   }
 }
+<<<<<<< HEAD
+>>>>>>> f87ae9de475d34f6e28529eddee13343bbc3dc99
+=======
 >>>>>>> f87ae9de475d34f6e28529eddee13343bbc3dc99
