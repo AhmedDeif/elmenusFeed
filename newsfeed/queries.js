@@ -415,9 +415,9 @@ exports.Get_restaurant_info = function(name, callback) {
         data1 = ' \"myData\":' + JSON.stringify(data1);
         data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
         ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        callback(ret);
         console.log(ret.RestaurantName[0]);
     });
-    return ret;
 }
 //14-I can add a restaurant to favourites.
 //The function takes as inputs the email of the user and the name of the restaurant 
