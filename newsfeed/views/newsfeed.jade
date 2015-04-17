@@ -1,2 +1,4 @@
 div
-	
+	each a in actions
+		if (a.label[0] == 'Restaurant')
+			h3 #{a.email} #{a.rel} #{a.node.name}
