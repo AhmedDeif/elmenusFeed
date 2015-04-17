@@ -15,10 +15,13 @@ exports.createUser = function(email) {
         } else console.log("Done");
     });
 }
-//(S19) I can unfollow another user.
-//This function takes two parameters :
-//the follower email and the current user email
-//then it matches the two users and deletes the relationship follow between them
+
+/*  User Story 19
+    Sprint #-0-US-12
+    This function removes the follow relation between two users
+    This function takes two parameters (FollowerEmail: String , FollowerEmail, String)
+    then it matches the two users and deletes the relationship follow between them.
+*/
 exports.deleterFollowUserUserQuery = "MATCH (d)-[rel:FOLLOWS]->(r)  WHERE d.email={e1p} AND r.email={e2p}  DELETE rel";
 exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
     db.query(deleterFollowUserUserQuery, params = {
@@ -31,6 +34,7 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
         } else console.log("Done");
     });
 }
+
 //(S5) The function takes the following parameters:
 //UserEmail, the restaurant name, the review title and the body of the review
 //then it matches the user with the restaurant
@@ -50,6 +54,11 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
     });
 }
 
+/*  User Story 29
+    Sprint #0-1-US-1
+    This function creates a new Restaurant and adds it to the database.
+    The function takes (name: String), this parameter is the restaurant name.
+*/
 exports.createResturantQuery = "CREATE (:Restaurant { name:{np} })";
 exports.createResturant = function(name) {
     db.query("CREATE (:Restaurant { name:{np} })", params = {
@@ -82,10 +91,10 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         console.log('done');
     });
 }
-/* Sprint #-0-US-2
+/*  User Story 30
+    Sprint #-0-US-2
     createDish(name):
-    This function takes as input the dish's 
-    name and creates the corresponding dish in the
+    This function takes (name: String) and creates the corresponding dish in the
     database using a CYPHER CREATE query.
 */
 exports.createDishQuery = "CREATE (:Dish { dish_name:{np} })";
@@ -209,6 +218,7 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
         } else console.log("Done");
     });
 }
+
 /* Sprint #-1-US-29
     visitFollowUser(FollowerEmail,FolloweeEmail):
     This function takes as an input the email of 
@@ -303,13 +313,15 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-7
-     The user can share a restaurant on facebook or twitter.
-     This function takes the User Email and the Restaurant Name as an input.
-     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
+/*  User Story 14
+    Sprint #-1-US-7
+    The user can share a restaurant on facebook or twitter.
+    This function takes (UserEmail: String, RestaurantName: String).
+    It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
 */
-exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
+exports.UserShareRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)";
+exports.UserShareRestaurant = function(UserEmail, RestaurantName) {
+    db.query(UserShareRestaurantQuery, params = {
         ep: UserEmail,
         rn: RestaurantName
     }, function(err, results) {
@@ -318,13 +330,15 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
     });
 }
 
-/*  Sprint #-1-US-8
-     The user can share a dish on facebook or twitter.
-     This function takes the User Email and the Dish Name as an input.
-     It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
+/*  User Story 21
+    Sprint #-1-US-8
+    The user can share a dish on facebook or twitter.
+    This function takes (UserEmail: String, DishName: String)
+    It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
+exports.UserSharesDishQuery = "MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)";
 exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)", params = {
+    db.query(UserSharesDishQuery, params = {
         ep: UserEmail,
         dn: DishName
     }, function(err, results) {
@@ -333,14 +347,15 @@ exports.UserSharesDish = function(UserEmail, DishName) {
     });
 }
 
-
-/*  Sprint #-1-US-9
-     The user can share a photo on facebook or twitter.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+/*  User Story 20
+    Sprint #-1-US-9
+    The user can share a photo on facebook or twitter.
+    This function takes (UserEmail: String, PhotoURL: String).
+    It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
 */
+exports.UserSharesPhotoQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)";
 exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+    db.query(UserSharesPhotoQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -350,6 +365,7 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
+
 /*  Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
@@ -467,7 +483,11 @@ exports.getRelations = function(callback) {
     });
 }
 
-
+/*  User Story 25
+    Sprint #-1-US-35
+    This function changes a given function cost to the new value given
+    the paramters are (name: String, cost: int)
+*/
 var rel;
 exports.changeRelationCost = function(name, cost) {
     db.query("MATCH (n)-[R:nam]->(d) SET R.cost = {c} return R;", params = {
@@ -480,6 +500,7 @@ exports.changeRelationCost = function(name, cost) {
         }
     });
 }
+
 exports.Get_relation_info = function(r, req, res) {
     var query = "match (u) -[:" + r + "]-> (m) return distinct labels(u) , labels(m)";
     db.query(query, function(err, results) {
