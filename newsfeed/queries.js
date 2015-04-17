@@ -714,3 +714,17 @@ exports.checkUserExists = function(email, callback) {
         callback(count[0]);
     });
 }
+
+exports.getNewsfeed = function (email) {
+    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),labels(x),x order by f.totalScore DESC", 
+        params = {
+            email:email
+        }, function(err, results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("newsfeed fetched");
+            }
+
+        });
+}

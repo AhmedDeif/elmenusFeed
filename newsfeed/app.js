@@ -165,7 +165,7 @@ queries.findCommonFollowers("test 2","test 4");
 queries.findCommonFollowers("test 3","test 4");
 queries.findCommonFollowers("test 2","test 5");
 
-*/
+
 
 queries.setFollowersScore("test 1","test 2");
 queries.setFollowersScore("test 1","test 3");
@@ -176,5 +176,17 @@ queries.setFollowersScore("test 2","test 4");
 queries.setFollowersScore("test 3","test 4");
 queries.setFollowersScore("test 2","test 5");
 
+
+
+
+queries.createrFavouriteUserRestaurant("test 2","Res 2");
+queries.createrFavouriteUserRestaurant("test 2","Res 1");
+queries.createrFavouriteUserRestaurant("test 2","Res 3");
+queries.createrFavouriteUserRestaurant("test 3","Res 1");
+queries.createrFavouriteUserRestaurant("test 4","Res 4");
+queries.createrFavouriteUserRestaurant("test 2","Res 3");
+queries.createrFavouriteUserRestaurant("test 1","Res 5");
+
+*/
 
 
