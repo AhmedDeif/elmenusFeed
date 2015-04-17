@@ -39,17 +39,6 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
-})
-
-app.get('/users_view', routes.usersView);
-app.post('/users', function(req, res) {
-  var info = req.param("usrs");
-  res.redirect('/Get_user_info/' + info);
-})
-app.get('/Get_user_info/:tagId', routes.Get_user_info);
-app.get('/add_dish', routes.addDish);
-}
-app.get('/add_dish', routes.newDish);
 });
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
