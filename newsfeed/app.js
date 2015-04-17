@@ -35,6 +35,7 @@
 
 app.get('/', routes.index);
 app.get('/Get_restaurant_info/:tagId', routes.Get_restaurant_info);
+app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
 app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
