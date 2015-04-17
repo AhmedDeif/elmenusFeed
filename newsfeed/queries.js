@@ -716,7 +716,7 @@ exports.checkUserExists = function(email, callback) {
 }
 
 exports.getNewsfeed = function (email, callback) {
-    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),labels(x),x order by f.totalScore DESC", 
+    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),x order by f.totalScore DESC", 
         params = {
             email:email
         }, function(err, results) {
@@ -725,25 +725,13 @@ exports.getNewsfeed = function (email, callback) {
                 throw err;
             }
             console.log("newsfeed fetched");
-            var emails = results.map(function(result) {
-                return result['u.email'];
-            });
-            var relationships = results.map(function(result) {
-                return result['type(z)'];
-            });
-            var typesOfNodes = results.map(function(result) {
-                return result['labels(x)'];
-            });
-            var nodes = results.map(function(result) {
-                return result['x'];
-            });
 
-            emails = '\"emails\":' + JSON.stringify(emails);
-            relationships = '\"relationships\":' + JSON.stringify(relationships);
-            typesOfNodes = '\"types\":' + JSON.stringify(typesOfNodes);
-            nodes = '\"nodes\":' + JSON.stringify(nodes);
+            var actions = results.map(function(result) {
+                return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) 
+                    + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
+            });
             
-            var actions = JSON.parse('{ ' + emails + ', ' + relationships + ', ' + typesOfNodes + ', ' + nodes + ' }');
             callback(actions);
+            console.log(actions[0].label[0]);
         });
 }
