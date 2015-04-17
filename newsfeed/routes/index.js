@@ -55,3 +55,7 @@ exports.Relations = function(req, res) {
 exports.login = function(req, res) {
     res.render('login');
 }
+
+exports.showNewsfeed = function(req, res) {
+    
+}
