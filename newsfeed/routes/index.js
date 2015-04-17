@@ -56,16 +56,8 @@ exports.Get_user_info_cont = function(req, res, x){
  	res.render('Get_user_info', x);
 }
 
-exports.Get_relation_info = function(req, res) {
-    query.Get_relation_info(req.param("tagId"), req, res);
-}
-
 exports.costChange = function(req, res) {
     res.render('costChange');
-}
-
-exports.Get_relation_info_cont = function(req, res, x) {
-    res.render('Get_relation_info', x);
 }
 
 exports.Relations = function(req, res) {

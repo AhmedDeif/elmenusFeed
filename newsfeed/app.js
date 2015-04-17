@@ -40,6 +40,7 @@ app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
 })
+app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
