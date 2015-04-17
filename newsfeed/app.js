@@ -39,8 +39,8 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
-}
-app.get('/add_dish', routes.newDish);
+})
+app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
 	var restaurant = req.param("rests");
