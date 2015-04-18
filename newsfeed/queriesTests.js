@@ -614,7 +614,7 @@ describe('A user can share a photo', function () {
  it('new photo added with relation to user', function (done) {
      initialize();
      function initialize(){
-        db.query('create (:email{email:{ep}}) , (:Photo{url:{url}})', 
+        db.query('create (:User{email:{ep}}) , (:Photo{url:{url}})', 
             params = {
                 ep: 'doolatest@mail.com',
                 url: 'photo@url.com'
@@ -645,7 +645,7 @@ describe('A user can share a photo', function () {
     }
 
     function verify(){
-        db.query('optional MATCH (d:User{email:{ep}})-[:SHARE_PHOTO]->(p:Photo{url:{url}}) return d.email,p.url;', 
+        db.query('optional MATCH (d:User{email:{ep}})-[:SHARE_PHOTO]->(p:Photo{url:{url}}) return d,p;', 
             params = {
                 ep:'doolatest@mail.com',
                 url:'photo@url.com'
@@ -654,10 +654,127 @@ describe('A user can share a photo', function () {
                     console.error('Error');
                     throw err;
                 } else {
-                    var user = results.map(function(result) {return result['d'];});
-                    var photo = results.map(function(result) {return result['p'];});
-                    should(user[0] == "doolatest@mail.com").be.ok;
-                    should(photo[0] == "photo@url.com").be.ok;
+                    var users = results.map(function(result) {return result['d'];});
+                    var photos = results.map(function(result) {return result['p'];});
+                    should.exist(users[0]);
+                    should.exist(photos[0]);
+                    done();
+                }
+        });
+    }
+ });
+});
+
+/*
+    User Story 29
+    Sprint #0-US-1
+*/
+
+describe('A restaurant can be created', function () {
+ it('A node representing a restaurant should be made', function (done) {
+    test();
+    function test(){
+        db.query(queries.createResturantQuery, 
+            params = {
+                np: 'Pizza Hut'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    verify();
+                }
+        });
+   }
+    function verify(){
+        db.query('match (n:Restaurant) where n.name ={r1} return n.name ', 
+            params = {
+                r1: 'Pizza Hut'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    var resName = results.map(function(result) {return result['n.name'];});
+                    should(resName[0] == 'Pizza Hut').be.ok;
+                    done();
+                }
+        });
+    }
+ });
+});
+
+/*  
+    User Story 30
+    Sprint #-0-US-2
+*/
+
+describe('A dish can be created', function () {
+ it('', function (done) {
+    test();
+    function test(){
+        db.query(queries.createDishQuery, 
+            params = {
+                np: 'Chicken Masala'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    verify();
+                }
+        });
+   }
+    function verify(){
+        db.query('match (n:Dish) where n.dish_name ={r1} return n.dish_name; ', 
+            params = {
+                r1: 'Chicken Masala'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    var dishName = results.map(function(result) {return result['n.dish_name'];});
+                    should(dishName[0] == 'Chicken Masala').be.ok;
+                    done();
+                }
+        });
+    }
+ });
+});
+
+/*
+    User Story 31
+    Sprint #-0-US-3
+*/
+
+describe('A User can be created', function () {
+ it('', function (done) {
+    test();
+    function test(){
+        db.query(queries.createUserQuery, 
+            params = {
+                ep: 'TestUser'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    verify();
+                }
+        });
+   }
+    function verify(){
+        db.query('match (n:User) where n.email ={u1} return n.email; ', 
+            params = {
+                u1: 'TestUser'
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    var userName = results.map(function(result) {return result['n.email'];});
+                    should(userName[0] == 'TestUser').be.ok;
                     done();
                 }
         });

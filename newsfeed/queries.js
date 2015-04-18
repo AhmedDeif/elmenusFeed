@@ -8,7 +8,7 @@ var queries = require('./queries.js');
     This function creates a new user and adds it to the graph,
     the parameters of the function are (email: String).
 */
-exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
+exports.createUserQuery = "CREATE (n:User { email:{ep} })";
 exports.createUser = function(email) {
     db.query(queries.createUserQuery, params = {
         ep: email
@@ -59,7 +59,7 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
 }
 
 /*  User Story 29
-    Sprint #0-1-US-1
+    Sprint #0-US-1
     This function creates a new Restaurant and adds it to the database.
     The function takes (name: String), this parameter is the restaurant name.
 */
@@ -367,7 +367,9 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
         if (err) {
             console.log('Error');
             throw err;
-        } else console.log("Done");
+        } else {
+            console.log("Done");
+        }
     });
 }
 
