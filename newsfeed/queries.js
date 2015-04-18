@@ -369,13 +369,15 @@ exports.UserSharesDish = function(UserEmail, DishName) {
 }
 
 
-/*  Sprint #-1-US-9
-     The user can share a photo on facebook or twitter.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+/*  User Story 20
+    Sprint #-1-US-9
+    The user can share a photo on facebook or twitter.
+    This function takes the User Email and the Photo URL as an input.
+    It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
 */
+exports.UserSharesPhotoQuery="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)";
 exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+    db.query(UserSharesPhotoQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -593,16 +595,18 @@ exports.createCuisine = function(name) {
     });
 }
 /*
-    Sprint 1  US 22
-        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    User Story 32
+    Sprint #-1-US-22
+    createRelCuisineRestaurant(Restaurant name,Cuisine name):
     This function takes as input the Cuisine's
     name and restaurant's name and search for them in
     database then when they are found the function
     creates the corresponding relation between
     cuisine and restaurant in the database.
 */
+exports.createRelCuisineRestaurantQuery = "MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)";
 exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {
+    db.query(createRelCuisineRestaurantQuery, params = {
         cp: CuisineName,
         rp: RestaurantName
     }, function(err, results) {
