@@ -116,22 +116,22 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
-        if{ 
-            (err) throw err;
+        if (err){ 
+             throw err;
           }
         else{
             db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine) MERGE (u)-[l:LikeCuisine{score:5}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LikeCuisine]->(c) set f.totalScore = f.totalScore + l.score", params = {
-        ep: UserEmail,
-        dnp: DishName
-    }, function(err, results) {
-        if{ 
-            (err) throw err;
-          }
-        else{
-             console.log('Done')
-            }
-    });
-            }
+                ep: UserEmail,
+                dnp: DishName
+                }, function(err, results) {
+                    if (err) { 
+                        throw err;
+                    }
+                    else{
+                        console.log('Done')
+                    }
+            });
+        }
     });
 }
 /*  Sprint #-0-US-2
@@ -275,7 +275,9 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
-        if (err) throw err;
+        if (err) {
+            throw err;
+        }
         console.log('done');
     });
 }
@@ -309,7 +311,9 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
-        if (err) throw err;
+        if (err){
+            throw err;
+        }
         console.log('done');
     });
 }
@@ -411,9 +415,10 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
 exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
+        if (err){  
+            console.log('Error');
+            throw err;
+        }
         else console.log("Done");
     });
 }
