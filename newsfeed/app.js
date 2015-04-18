@@ -82,6 +82,22 @@ app.post('/users', function(req, res) {
 })
 app.get('/Get_user_info/:tagId', routes.Get_user_info);
 
+app.js
+
+app.get('/login', routes.login);
+app.post('/log_in', function(req, res) {
+  var email = req.body.email;
+  queries.checkUserExists(email, function(count) {
+    if (count == 1)
+      res.redirect('/newsfeed/' + email); //should redirect to newsfeed passing user email by :tagId (like in /relations_view)
+    else
+    {
+      console.log("User was not found!");
+      res.redirect('/login');
+    }
+  });
+});
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
