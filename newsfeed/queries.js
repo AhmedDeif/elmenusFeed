@@ -85,7 +85,7 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
 }
 
 /*
-	main backlog S7
+	User Story 7
     Sprint #-0-US-8
    this method take two strings of user email and dish name 
    it delete the dislike relation between  user and dish by matching the given user and dish 
@@ -266,7 +266,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
     });
 }
 /* 
-	main backlog US 8
+	User Story 8
 	Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -287,7 +287,7 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     });
 }
 /*  
-	backlog US 9
+	User Story 9
 	Sprint #-1-US-4
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
@@ -327,7 +327,7 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
     });
 }
 /*  
-	main backlog US 11
+	User Story 11
 	Sprint #-1-US-6
 	function takes two strings a user email and photo url
      The user can delete a photo yuck in a certain photo.
@@ -469,7 +469,7 @@ exports.Get_restaurant_info = function(name, callback) {
     });
 }
 //14-
-//main backlog US 12
+//User Story 12
 //Sprint #-0-US-9
 //I can add a restaurant to favourites.
 //The function takes as inputs the email of the user and the name of the restaurant 
