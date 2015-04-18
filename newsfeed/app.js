@@ -39,8 +39,9 @@ app.get('/relations_view', routes.relationsView);
 app.post('/relations', function(req, res) {
   var relation = req.param("rels");
   res.redirect('/Get_relation_info/' + relation);
-}
-app.get('/add_dish', routes.newDish);
+})
+app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
+app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
 	var dishName = req.body.dishName;
 	var restaurant = req.param("rests");
@@ -53,11 +54,6 @@ app.post('/costChange', function(req, res) {
   var relation = req.body.relation;
   queries.changeRelationCost(relation, cost);
   res.redirect('/Relations');
-})
-app.get('/Relations', routes.Relations);
-app.post('/Relations', function(req, res) {
-  var relation = req.param("select");
-  res.redirect('/costChange');
 })
 app.get('/signup', routes.signUp);
 app.post('/sign_up', function(req, res) {
@@ -79,6 +75,12 @@ app.post('/new_review', function(req, res) {
   queries.createrReviewUserToRestaurant(Email,restaurantName,reviewTitle,reviewBody);
   res.redirect('/add_review');
 })
+app.get('/users_view', routes.usersView);
+app.post('/users', function(req, res) {
+  var user = req.param("usrs");
+  res.redirect('/Get_user_info/' + user);   
+})
+app.get('/Get_user_info/:tagId', routes.Get_user_info);
 
- app.listen(3000);
- console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+app.listen(3000);
+console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
