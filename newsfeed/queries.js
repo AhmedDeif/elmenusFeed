@@ -187,7 +187,8 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         } else console.log("Done");
     });
 }
-/* Sprint #-0-US-18
+/*  US-18
+    Sprint # 0 us 18
     createFollowUser(FollowerEmail, FolloweeEmail):
     This function takes as an input the email of 
     the user that is requesting to follow another
