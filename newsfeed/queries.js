@@ -1,12 +1,14 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
+var queries = require('./queries');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
 exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
 exports.createUser = function(email) {
-    db.query(createUserQuery, params = {
+	var q = require('./queries');
+    db.query(q.createUserQuery, params = {
         ep: email
     }, function(err, results) {
         if (err) {
@@ -81,6 +83,24 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         if (err) throw err;
         console.log('done');
     });
+}
+
+/*
+	main backlog S7
+    Sprint #-0-US-8
+   this method take two strings of user email and dish name 
+   it delete the dislike relation between  user and dish by matching the given user and dish 
+    */
+exports.deleterDisLikeUserDishQuery="match (u:User{email:{ep})-[L:LIKES_DISH{likes:FALSE}]->(d:Dish {dish_name:{dnp}}) DELETE L;"
+exports.deleterDisLikeUserDish=function(userEmail,DishName){
+	db.query(queries.deleterDisLikeUserDishQuery,params = {
+		ep:userEmail,
+		dnp:DishName
+	}, function(err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+	
 }
 /* Sprint #-0-US-2
     createDish(name):
@@ -235,7 +255,9 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-3
+/* 
+	main backlog US 8
+	Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
@@ -244,8 +266,9 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
+exports.UserAddPhotoYumsQuery="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) MERGE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE}]->(photo) Delete x;";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", params = {
+    db.query(queries.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -253,13 +276,16 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         console.log('done');
     });
 }
-/*  Sprint #-1-US-4
+/*  
+	backlog US 9
+	Sprint #-1-US-4
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
 */
+exports.UserDeletePhotoYumQuery="MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel"
 exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {
+    db.query(queries.UserDeletePhotoYumQuery, params = {
         em: UserEmail,
         ur: PhotoURL
     }, function(err, results) {
@@ -269,7 +295,9 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-5
+/*  
+	Backlog US 10
+	Sprint #-1-US-5
      The user can add a photo yuck to a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
@@ -278,8 +306,9 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
+exports.UserAddPhotoYucks="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) MERGE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE}]->(photo) Delete x;";
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;", params = {
+    db.query(queries.UserAddPhotoYucks, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -287,13 +316,17 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
         console.log('done');
     });
 }
-/*  Sprint #-1-US-6
+/*  
+	main backlog US 11
+	Sprint #-1-US-6
+	function takes two strings a user email and photo url
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: false' between them.
 */
+exports.UserDeletePhotoYuckQuery="MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel";
 exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {
+    db.query(queries.UserDeletePhotoYuckQuery, params = {
         em: UserEmail,
         ur: PhotoURL
     }, function(err, results) {
@@ -303,7 +336,10 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-7
+/*  
+	main Backlog US 12
+	Sprint #-1-US-7
+	function takes two strings a user email and restaurant name
      The user can share a restaurant on facebook or twitter.
      This function takes the User Email and the Restaurant Name as an input.
      It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
@@ -397,6 +433,7 @@ var ret;
     the Get_restaurant_info_cont passes all these params to 
     index.js and then executes render passing the page name and the 
     output JSON object.
+	
 */
 exports.Get_restaurant_info = function(name, callback) {
     db.query("match (R:Restaurant{name:{na}}) <-[out:Review]- () return out , R", params = {
@@ -419,11 +456,15 @@ exports.Get_restaurant_info = function(name, callback) {
     });
     return ret;
 }
-//14-I can add a restaurant to favourites.
+//14-
+//main backlog US 12
+//Sprint #-0-US-9
+//I can add a restaurant to favourites.
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
+exports.createrFavouriteUserRestaurantQuery="MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) MERGE (user)-[:FAVORITES]->(rest);";
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);", params = {
+    db.query(queries.createrFavouriteUserRestaurantQuery, params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
