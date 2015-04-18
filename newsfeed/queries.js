@@ -532,9 +532,10 @@ exports.Get_relation_info = function(r, req, res) {
 }
 
 
+exports.getUsersQuery = "MATCH (user:User) return distinct user.email;";
 var users;
 exports.getUsers = function(callback) {
-    db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
+    db.query(exports.getUsersQuery, params = {}, function(err, results) {
         if (err){
             console.error('Error');
             throw err;
