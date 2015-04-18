@@ -667,7 +667,7 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
 */
 // Must fix the callback hell problem for better performance
 var commonFollowers;
-exports.findCommonFollowers = function(firstUser, secondUser, total) {
+exports.findCommonFollowers = function(firstUser, secondUser) {
     var relationScore;
     var totalScore;
     db.query("MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
@@ -681,6 +681,7 @@ exports.findCommonFollowers = function(firstUser, secondUser, total) {
         commonFollowers = results.map(function(result) {
             return result['total']
         });
+        console.log("The number of common Followers between " + firstUser + " and " + secondUser + " is " + commonFollowers);
         console.log("The number of common Followers is " + commonFollowers);
         db.query("match (n)-[f:FOLLOWS]->(u) return Distinct f.score as score;", params = {}, function(err, results) {
             if (err) {
@@ -692,25 +693,38 @@ exports.findCommonFollowers = function(firstUser, secondUser, total) {
             });
             console.log("The value of following relation is " + relationScore);
             totalScore = commonFollowers * relationScore;
-            console.log(total);
+            //console.log(total);
             console.log(totalScore);
-            total = totalScore;
+           // total = totalScore;
             db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};", params = {
                 u1: firstUser,
                 u2: secondUser,
-                value: total
+                value: totalScore
             }, function(err, results) {
                 if (err) {
                     console.log("Error in setting new totalScore for follow relation");
                     throw err;
                 } else {
-                    console.log("The total should be " + total);
+                    console.log("The total should be " + totalScore);
                     console.log("Set new totalScore successfully");
                 }
             });
         });
     });
 }
+
+exports.setFollowersScore = function(user1,user2) {
+    db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} SET f1.totalScore = total",
+        params = {u1:user1, u2:user2}, function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
+            }
+
+        });
+}
+
 /*
 User Story 13
 SPRINT#0 US 15
@@ -762,4 +776,39 @@ exports.showOldActionsHistory = function(UserEmail) {
             throw err;
         } else console.log("Done");
     });
+}
+
+exports.checkUserExists = function(email, callback) {
+    db.query("MATCH (n:User {email: {email}}) RETURN DISTINCT COUNT(n);", params = {
+        email: email
+    }, function(err, results) {
+        if (err) {
+            console.error("Error");
+            throw err;
+        }
+        var count = results.map(function(result) {
+            return result['COUNT(n)'];
+        });
+        callback(count[0]);
+    });
+}
+
+exports.getNewsfeed = function (email, callback) {
+    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),x order by f.totalScore DESC", 
+        params = {
+            email:email
+        }, function(err, results) {
+            if(err){
+                console.log("error");
+                throw err;
+            }
+            console.log("newsfeed fetched");
+
+            var actions = results.map(function(result) {
+                return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) 
+                    + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
+            });
+            
+            callback(actions);
+        });
 }

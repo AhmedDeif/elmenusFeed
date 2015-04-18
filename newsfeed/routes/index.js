@@ -59,3 +59,13 @@ exports.Get_user_info_cont = function(req, res, x){
 exports.costChange = function(req, res) {
     res.render('costChange');
 }
+
+exports.login = function(req, res) {
+    res.render('login');
+}
+
+exports.showNewsfeed = function(req, res) {
+    query.getNewsfeed(req.param("email"), function(actions) {
+        res.render('newsfeed', {actions: actions});
+    });
+}
