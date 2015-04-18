@@ -1,6 +1,7 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
+var queries = require('./queries.js');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
@@ -196,7 +197,8 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         } else console.log("Done");
     });
 }
-/* Sprint #-0-US-18
+/*  User Story 18
+    Sprint # 0 us 18
     createFollowUser(FollowerEmail, FolloweeEmail):
     This function takes as an input the email of 
     the user that is requesting to follow another
@@ -313,13 +315,18 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-7
-     The user can share a restaurant on facebook or twitter.
-     This function takes the User Email and the Restaurant Name as an input.
-     It matches the user and the restaurant and creates the relationship "SHARE_RESTAURANT" between them.
+/*  
+    User Story 14 & 15
+    Sprint #-1-US-7
+    This Function takes as parameters user's email and restaurant's name.
+    Then it matches the user by email and the restaurant by name. If found,
+    it creates a relation between them called [SHARE_RESTAURANT] which has a score
+    of 5 points that is to be added to the total score between users who follow
+    each other and shared the same restaurant.
 */
+exports.UserSharesRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) MERGE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)";
 exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)", params = {
+    db.query(exports.UserSharesRestaurantQuery, params = {
         ep: UserEmail,
         rn: RestaurantName
     }, function(err, results) {
@@ -681,8 +688,18 @@ exports.findCommonFollowers = function(firstUser, secondUser, total) {
         });
     });
 }
+/*
+User Story 13
+SPRINT#0 US 15
+This function removes a specific restaurant from user's favourites
+It takes as parameters the email of the user and restaurant's name.
+It matches the user by email and the restaurant by name. Then it findes if the 
+user favourites this restaurant. If so, it removes the relation [:FAVORITES]
+from the database.
+*/
+exports.removeFavouriteResturantQuery = "MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;";
 exports.removeFavouriteResturant = function(email, resName) {
-    db.query("MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;", params = {
+    db.query(exports.removeFavouriteResturantQuery, params = {
         e: email,
         r: resName
     }, function(err, results) {
