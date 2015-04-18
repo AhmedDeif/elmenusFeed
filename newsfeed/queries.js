@@ -1,6 +1,5 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
-var queries = require('./queries');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
@@ -91,9 +90,9 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
    this method take two strings of user email and dish name 
    it delete the dislike relation between  user and dish by matching the given user and dish 
     */
-exports.deleterDisLikeUserDishQuery="match (u:User{email:{ep})-[L:LIKES_DISH{likes:FALSE}]->(d:Dish {dish_name:{dnp}}) DELETE L;"
+exports.deleterDisLikeUserDishQuery="match (u:User{email:{ep}})-[L:LIKES_DISH{likes:FALSE}]->(d:Dish {dish_name:{dnp}}) DELETE L;"
 exports.deleterDisLikeUserDish=function(userEmail,DishName){
-	db.query(queries.deleterDisLikeUserDishQuery,params = {
+	db.query(exports.deleterDisLikeUserDishQuery,params = {
 		ep:userEmail,
 		dnp:DishName
 	}, function(err, results) {
@@ -268,7 +267,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
 */
 exports.UserAddPhotoYumsQuery="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) MERGE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE}]->(photo) Delete x;";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
-    db.query(queries.UserAddPhotoYumsQuery, params = {
+    db.query(exports.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -285,7 +284,7 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
 */
 exports.UserDeletePhotoYumQuery="MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel"
 exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
-    db.query(queries.UserDeletePhotoYumQuery, params = {
+    db.query(exports.UserDeletePhotoYumQuery, params = {
         em: UserEmail,
         ur: PhotoURL
     }, function(err, results) {
@@ -308,7 +307,7 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
 */
 exports.UserAddPhotoYucks="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) MERGE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE}]->(photo) Delete x;";
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
-    db.query(queries.UserAddPhotoYucks, params = {
+    db.query(exports.UserAddPhotoYucks, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -326,7 +325,7 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
 */
 exports.UserDeletePhotoYuckQuery="MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel";
 exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
-    db.query(queries.UserDeletePhotoYuckQuery, params = {
+    db.query(exports.UserDeletePhotoYuckQuery, params = {
         em: UserEmail,
         ur: PhotoURL
     }, function(err, results) {
@@ -337,7 +336,6 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
     });
 }
 /*  
-	main Backlog US 12
 	Sprint #-1-US-7
 	function takes two strings a user email and restaurant name
      The user can share a restaurant on facebook or twitter.
@@ -464,7 +462,7 @@ exports.Get_restaurant_info = function(name, callback) {
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurantQuery="MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) MERGE (user)-[:FAVORITES]->(rest);";
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query(queries.createrFavouriteUserRestaurantQuery, params = {
+    db.query(exports.createrFavouriteUserRestaurantQuery, params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
