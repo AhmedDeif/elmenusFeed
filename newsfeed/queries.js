@@ -87,8 +87,8 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
 /*
 	User Story 7
     Sprint #-0-US-8
-   this method take two strings of user email and dish name 
-   it delete the dislike relation between  user and dish by matching the given user and dish 
+    this method take two strings of user email and dish name 
+    it delete the dislike relation between  user and dish by matching the given user and dish 
     */
 exports.deleterDisLikeUserDishQuery="match (u:User{email:{ep}})-[L:LIKES_DISH{likes:FALSE}]->(d:Dish {dish_name:{dnp}}) DELETE L;"
 exports.deleterDisLikeUserDish=function(userEmail,DishName){
@@ -289,9 +289,9 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
 /*  
 	User Story 9
 	Sprint #-1-US-4
-     The user can delete a photo yuck in a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
+    The user can delete a photo yuck in a certain photo.
+    This function takes the User Email and the Photo URL as an input.
+    It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
 */
 exports.UserDeletePhotoYumQuery="MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel"
 exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
@@ -306,8 +306,8 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
     });
 }
 /*  
-	Backlog US 10
-	Sprint #-1-US-5
+	 User Story 10
+	 Sprint #-1-US-5
      The user can add a photo yuck to a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
@@ -330,9 +330,9 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
 	User Story 11
 	Sprint #-1-US-6
 	function takes two strings a user email and photo url
-     The user can delete a photo yuck in a certain photo.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: false' between them.
+    The user can delete a photo yuck in a certain photo.
+    This function takes the User Email and the Photo URL as an input.
+    It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: false' between them.
 */
 exports.UserDeletePhotoYuckQuery="MATCH (n)-[rel:YUM_YUCK {value:FALSE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel";
 exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
@@ -468,7 +468,7 @@ exports.Get_restaurant_info = function(name, callback) {
         console.log(ret.RestaurantName[0]);
     });
 }
-//14-
+
 //User Story 12
 //Sprint #-0-US-9
 //I can add a restaurant to favourites.
