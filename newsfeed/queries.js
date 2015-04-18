@@ -197,7 +197,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         } else console.log("Done");
     });
 }
-/*  US-18
+/*  User Story 18
     Sprint # 0 us 18
     createFollowUser(FollowerEmail, FolloweeEmail):
     This function takes as an input the email of 
@@ -326,7 +326,7 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
 */
 exports.UserSharesRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) MERGE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)";
 exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
-    db.query(queries.UserSharesRestaurantQuery, params = {
+    db.query(exports.UserSharesRestaurantQuery, params = {
         ep: UserEmail,
         rn: RestaurantName
     }, function(err, results) {
@@ -699,7 +699,7 @@ from the database.
 */
 exports.removeFavouriteResturantQuery = "MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;";
 exports.removeFavouriteResturant = function(email, resName) {
-    db.query(queries.removeFavouriteResturantQuery, params = {
+    db.query(exports.removeFavouriteResturantQuery, params = {
         e: email,
         r: resName
     }, function(err, results) {
