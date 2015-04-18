@@ -81,7 +81,6 @@ app.post('/users', function(req, res) {
   res.redirect('/Get_user_info/' + user);   
 })
 app.get('/Get_user_info/:tagId', routes.Get_user_info);
-
 app.get('/login', routes.login);
 app.post('/log_in', function(req, res) {
   var email = req.body.email;
