@@ -586,6 +586,65 @@ describe('Follow a User', function () {
  });
 });
 
+/*
+    Sprint 1  US 22
+        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    This function takes as input the Cuisine's
+    name and restaurant's name and search for thehem in
+    database then when they are found the function
+    creates the corresponding relation between
+    cuisine and restaurant in the database.
+*/
+
+describe('Add a new cuisine to a restaurant', function() {
+    it('A new relationship HasCuisine should be added between the restaurant and the cuisine', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:Restaurant {name: {rn}}), (:Cuisine {name: {cn}})", params = {
+                rn: 'test restaurant',
+                cn: 'test cuisine'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.createRelCuisineRestaurantQuery, params = {
+                cp: 'test restaurant',
+                rp: 'test cuisine'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("OPTIONAL MATCH (r:Restaurant {name: {rn}})-[rel:HasCuisine]->(c:Cuisine {name: {cn}}) RETURN rel;", params = {
+                rn: 'test restaurant',
+                cn: 'test cuisine'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var relationship = results.map(function(result) {
+                    return result['rel'];
+                });
+                should.exist(relationship);
+                done();
+            });
+        }
+    });
+});
+
 function formQuery(Query,params){
 	for (var key in params) {
 	if (params.hasOwnProperty(key)) {
