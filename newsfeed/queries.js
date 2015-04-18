@@ -1,12 +1,16 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
-//(S3) I can sign up.
-//The function takes the email of the user as an input.
-//and it creates a new user.
+var queries = require('./queries.js');
+
+/*  User Story 31
+    Sprint #-0-US-3
+    This function creates a new user and adds it to the graph,
+    the parameters of the function are (email: String).
+*/
 exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
 exports.createUser = function(email) {
-    db.query(createUserQuery, params = {
+    db.query(queries.createUserQuery, params = {
         ep: email
     }, function(err, results) {
         if (err) {
@@ -24,7 +28,7 @@ exports.createUser = function(email) {
 */
 exports.deleterFollowUserUserQuery = "MATCH (d)-[rel:FOLLOWS]->(r)  WHERE d.email={e1p} AND r.email={e2p}  DELETE rel";
 exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
-    db.query(deleterFollowUserUserQuery, params = {
+    db.query(queries.deleterFollowUserUserQuery, params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -41,7 +45,7 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurantQuery = "MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)";
 exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, ReviewTitle, ReviewBody) {
-    db.query(createrReviewUserToRestaurantQuery, params = {
+    db.query(queries.createrReviewUserToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         tp: ReviewTitle,
@@ -61,7 +65,7 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
 */
 exports.createResturantQuery = "CREATE (:Restaurant { name:{np} })";
 exports.createResturant = function(name) {
-    db.query("CREATE (:Restaurant { name:{np} })", params = {
+    db.query(queries.createResturantQuery, params = {
         np: name
     }, function(err, results) {
         if (err) {
@@ -83,7 +87,7 @@ exports.createResturant = function(name) {
     */
 exports.createrDisLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z";
 exports.createrDisLikeUserDish = function(UserEmail, DishName) {
-    db.query(createrDisLikeUserDishQuery, params = {
+    db.query(queries.createrDisLikeUserDishQuery, params = {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
@@ -91,6 +95,7 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         console.log('done');
     });
 }
+
 /*  User Story 30
     Sprint #-0-US-2
     createDish(name):
@@ -99,7 +104,7 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
 */
 exports.createDishQuery = "CREATE (:Dish { dish_name:{np} })";
 exports.createDish = function(name) {
-    db.query(createDishQuery, params = {
+    db.query(queries.createDishQuery, params = {
         np: name
     }, function(err, results) {
         if (err) {
@@ -120,7 +125,7 @@ exports.createDish = function(name) {
     */
 exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z";
 exports.createrLikeUserDish = function(UserEmail, DishName) {
-    db.query(createrLikeUserDishQuery, params = {
+    db.query(queries.createrLikeUserDishQuery, params = {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
@@ -137,7 +142,7 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
 */
 exports.addDishToRestaurantQuery = "match (d:Dish{dish_name:{dp}}),(r:Restaurant{name:{rp}}) merge (r)-[:HAS]->(d)";
 exports.addDishToRestaurant = function(dish, restaurant) {
-    db.query(addDishToRestaurantQuery, params = {
+    db.query(queries.addDishToRestaurantQuery, params = {
         dp: dish,
         rp: restaurant
     }, function(err, results) {
@@ -165,7 +170,7 @@ exports.getRestaurants = function(callback) {
 
 exports.createDishAndRestaurantQuery = "MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)";
 exports.createDishAndRestaurant = function(dish, restaurant) {
-    db.query(createDishAndRestaurantQuery, params = {
+    db.query(queries.createDishAndRestaurantQuery, params = {
         dp: dish,
         rp: restaurant
     }, function(err, results) {
@@ -184,7 +189,7 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
 */
 exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
-    db.query(UserAddsPhotoToRestaurantQuery, params = {
+    db.query(queries.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         url: photoURL
@@ -208,7 +213,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
 */
 exports.createFollowUserQuery = "MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)";
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query(createFollowUserQuery, params = {
+    db.query(queries.createFollowUserQuery, params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -321,7 +326,7 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
 */
 exports.UserShareRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) CREATE (user)-[:SHARE_RESTAURANT {score:5}]->(restaurant)";
 exports.UserShareRestaurant = function(UserEmail, RestaurantName) {
-    db.query(UserShareRestaurantQuery, params = {
+    db.query(queries.UserShareRestaurantQuery, params = {
         ep: UserEmail,
         rn: RestaurantName
     }, function(err, results) {
@@ -338,7 +343,7 @@ exports.UserShareRestaurant = function(UserEmail, RestaurantName) {
 */
 exports.UserSharesDishQuery = "MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) CREATE (user)-[:SHARE_DISH {score:5}]->(dish)";
 exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query(UserSharesDishQuery, params = {
+    db.query(queries.UserSharesDishQuery, params = {
         ep: UserEmail,
         dn: DishName
     }, function(err, results) {
@@ -355,7 +360,7 @@ exports.UserSharesDish = function(UserEmail, DishName) {
 */
 exports.UserSharesPhotoQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)";
 exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query(UserSharesPhotoQuery, params = {
+    db.query(queries.UserSharesPhotoQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
