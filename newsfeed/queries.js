@@ -116,22 +116,22 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
-        if{ 
-            (err) throw err;
+        if (err){ 
+             throw err;
           }
         else{
             db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine) MERGE (u)-[l:LikeCuisine{score:5}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LikeCuisine]->(c) set f.totalScore = f.totalScore + l.score", params = {
-        ep: UserEmail,
-        dnp: DishName
-    }, function(err, results) {
-        if{ 
-            (err) throw err;
-          }
-        else{
-             console.log('Done')
-            }
-    });
-            }
+                ep: UserEmail,
+                dnp: DishName
+                }, function(err, results) {
+                    if (err) { 
+                        throw err;
+                    }
+                    else{
+                        console.log('Done')
+                    }
+            });
+        }
     });
 }
 /*  Sprint #-0-US-2
@@ -275,7 +275,9 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
-        if (err) throw err;
+        if (err) {
+            throw err;
+        }
         console.log('done');
     });
 }
@@ -309,7 +311,9 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
-        if (err) throw err;
+        if (err){
+            throw err;
+        }
         console.log('done');
     });
 }
@@ -365,13 +369,15 @@ exports.UserSharesDish = function(UserEmail, DishName) {
 }
 
 
-/*  Sprint #-1-US-9
-     The user can share a photo on facebook or twitter.
-     This function takes the User Email and the Photo URL as an input.
-     It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
+/*  User Story 20
+    Sprint #-1-US-9
+    The user can share a photo on facebook or twitter.
+    This function takes the User Email and the Photo URL as an input.
+    It matches the user and the photo and creates the relationship "SHARE_PHOTO" between them.
 */
+exports.UserSharesPhotoQuery="MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)";
 exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:SHARE_PHOTO {score:5}]->(photo)", params = {
+    db.query(UserSharesPhotoQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -411,9 +417,10 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
 exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
         params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
+        if (err){  
+            console.log('Error');
+            throw err;
+        }
         else console.log("Done");
     });
 }
@@ -588,16 +595,18 @@ exports.createCuisine = function(name) {
     });
 }
 /*
-    Sprint 1  US 22
-        createRelCuisineRestaurant(Restaurant name,Cuisine name):
+    User Story 32
+    Sprint #-1-US-22
+    createRelCuisineRestaurant(Restaurant name,Cuisine name):
     This function takes as input the Cuisine's
     name and restaurant's name and search for them in
     database then when they are found the function
     creates the corresponding relation between
     cuisine and restaurant in the database.
 */
+exports.createRelCuisineRestaurantQuery = "MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)";
 exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
-    db.query("MATCH (c:Cuisine),(r:Restaurant) WHERE c.name={cp} AND r.name ={rp} CREATE (r)-[rl:HasCuisine]->(c)", params = {
+    db.query(createRelCuisineRestaurantQuery, params = {
         cp: CuisineName,
         rp: RestaurantName
     }, function(err, results) {

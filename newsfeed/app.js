@@ -188,4 +188,5 @@ queries.createrFavouriteUserRestaurant("test 4","Res 4");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
 queries.createrFavouriteUserRestaurant("test 1","Res 5");
 
+<<<<<<< HEAD
 */
