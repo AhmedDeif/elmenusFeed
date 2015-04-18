@@ -7,7 +7,7 @@ var queries = require('./queries.js');
 //and it creates a new user.
 exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
 exports.createUser = function(email) {
-    db.query(createUserQuery, params = {
+    db.query(exports.createUserQuery, params = {
         ep: email
     }, function(err, results) {
         if (err) {
@@ -22,7 +22,7 @@ exports.createUser = function(email) {
 //then it matches the two users and deletes the relationship follow between them
 exports.deleterFollowUserUserQuery = "MATCH (d)-[rel:FOLLOWS]->(r)  WHERE d.email={e1p} AND r.email={e2p}  DELETE rel";
 exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
-    db.query(deleterFollowUserUserQuery, params = {
+    db.query(exports.deleterFollowUserUserQuery, params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -38,7 +38,7 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
 //and adds the review to this restaurant
 exports.createrReviewUserToRestaurantQuery = "MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)";
 exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, ReviewTitle, ReviewBody) {
-    db.query(createrReviewUserToRestaurantQuery, params = {
+    db.query(exports.createrReviewUserToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         tp: ReviewTitle,
@@ -75,7 +75,7 @@ exports.createResturant = function(name) {
     */
 exports.createrDisLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) merge (u)-[x:LIKES_DISH]->(d) set x.likes=FALSE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:FALSE}]-> (d) <-[:LIKES_DISH{likes:FALSE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z";
 exports.createrDisLikeUserDish = function(UserEmail, DishName) {
-    db.query(createrDisLikeUserDishQuery, params = {
+    db.query(exports.createrDisLikeUserDishQuery, params = {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
@@ -91,7 +91,7 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
 */
 exports.createDishQuery = "CREATE (:Dish { dish_name:{np} })";
 exports.createDish = function(name) {
-    db.query(createDishQuery, params = {
+    db.query(exports.createDishQuery, params = {
         np: name
     }, function(err, results) {
         if (err) {
@@ -112,7 +112,7 @@ exports.createDish = function(name) {
     */
 exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) OPTIONAL MATCH (c:Cuisine)<-[:HasCuisine]-(r:Restaurant)-[:HAS]->(d) MERGE (u)-[:LikeCuisine{score:5}]->(c) with u, c, d OPTIONAL MATCH (u)-[l:LikeCuisine]->(c)<-[:LikeCuisine]-(yc:User) OPTIONAL MATCH (u)-[z1:FOLLOWS]->(yc) OPTIONAL MATCH (u)<-[z2:FOLLOWS]-(yc) SET z1.totalScore = z1.totalScore + l.score SET z2.totalScore = z2.totalScore + l.score merge (u)-[x:LIKES_DISH]->(d) set x.likes=TRUE set x.score=7 with u,d,x optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + x.score return u,x,d,z";
 exports.createrLikeUserDish = function(UserEmail, DishName) {
-    db.query(createrLikeUserDishQuery, params = {
+    db.query(exports.createrLikeUserDishQuery, params = {
         ep: UserEmail,
         dnp: DishName
     }, function(err, results) {
@@ -129,7 +129,7 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
 */
 exports.addDishToRestaurantQuery = "match (d:Dish{dish_name:{dp}}),(r:Restaurant{name:{rp}}) merge (r)-[:HAS]->(d)";
 exports.addDishToRestaurant = function(dish, restaurant) {
-    db.query(addDishToRestaurantQuery, params = {
+    db.query(exports.addDishToRestaurantQuery, params = {
         dp: dish,
         rp: restaurant
     }, function(err, results) {
@@ -139,6 +139,7 @@ exports.addDishToRestaurant = function(dish, restaurant) {
         } else console.log('Done');
     });
 }
+
 var restaurants;
 exports.getRestaurants = function(callback) {
     db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
@@ -155,9 +156,18 @@ exports.getRestaurants = function(callback) {
     });
 }
 
+/*  Sprint #-0-US-2
+        createDishAndRestaurant(dish, restaurant):
+        this function takes as input the dish's and
+        restaurants name and creates the dish node,
+        afterwards it creates the
+        corresponding 'Has' relationship between this
+        dish and this restaurant.
+*/
+
 exports.createDishAndRestaurantQuery = "MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)";
 exports.createDishAndRestaurant = function(dish, restaurant) {
-    db.query(createDishAndRestaurantQuery, params = {
+    db.query(exports.createDishAndRestaurantQuery, params = {
         dp: dish,
         rp: restaurant
     }, function(err, results) {
@@ -176,7 +186,7 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
 */
 exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
-    db.query(UserAddsPhotoToRestaurantQuery, params = {
+    db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         url: photoURL
@@ -201,7 +211,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
 */
 exports.createFollowUserQuery = "MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)";
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
-    db.query(createFollowUserQuery, params = {
+    db.query(exports.createFollowUserQuery, params = {
         e1p: FollowerEmail,
         e2p: FolloweeEmail
     }, function(err, results) {
@@ -422,9 +432,9 @@ exports.Get_restaurant_info = function(name, callback) {
         data1 = ' \"myData\":' + JSON.stringify(data1);
         data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
         ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        callback(ret);
         console.log(ret.RestaurantName[0]);
     });
-    return ret;
 }
 //14-I can add a restaurant to favourites.
 //The function takes as inputs the email of the user and the name of the restaurant 
@@ -477,13 +487,12 @@ exports.getRelations = function(callback) {
 
 var rel;
 exports.changeRelationCost = function(name, cost) {
-    db.query("MATCH (n)-[R:nam]->(d) SET R.cost = {c} return R;", params = {
-        nam: name,
+    db.query("MATCH (n)-[R:" + name + "]->(d) SET R.score = {c}", params = {
         c: cost
     }, function(err, results) {
         if (err) {
             console.log('Error');
-            var rel;
+            throw err;
         }
     });
 }
