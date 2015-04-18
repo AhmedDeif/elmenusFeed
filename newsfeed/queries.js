@@ -1,12 +1,13 @@
 var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
+var queries = require('./queries.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
 exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
 exports.createUser = function(email) {
-    db.query(createUserQuery, params = {
+    db.query(queries.createUserQuery, params = {
         ep: email
     }, function(err, results) {
         if (err) {
@@ -31,13 +32,14 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
         } else console.log("Done");
     });
 }
+//User Story 3
 //(S5) The function takes the following parameters:
 //UserEmail, the restaurant name, the review title and the body of the review
 //then it matches the user with the restaurant
 //and adds the review to this restaurant
-exports.createrReviewUserToRestaurantQuery = "MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) CREATE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)";
+exports.createrReviewUserToRestaurantQuery = "MATCH (n:User { email:{ep}}),(r:Restaurant { name:{rp}}) MERGE (n) -[:Review { title:{tp} , body:{bp} }]-> (r)";
 exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, ReviewTitle, ReviewBody) {
-    db.query(createrReviewUserToRestaurantQuery, params = {
+    db.query(queries.createrReviewUserToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         tp: ReviewTitle,
@@ -49,10 +51,14 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
         } else console.log("Done");
     });
 }
-
+	/*
+    Sprint #-0-US-1
+    I can create a new restaurant in the database having (name) as
+	a parameter specifying the restaurant name.
+    */
 exports.createResturantQuery = "CREATE (:Restaurant { name:{np} })";
 exports.createResturant = function(name) {
-    db.query("CREATE (:Restaurant { name:{np} })", params = {
+    db.query(createResturantQuery, params = {
         np: name
     }, function(err, results) {
         if (err) {
@@ -82,6 +88,29 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         console.log('done');
     });
 }
+
+/*
+    User Story 5
+	Sprint #-0-US-5
+    I can unlike a dish in a specific restaurant.
+    The function takes an email and Dish name and match the user and the dish.
+    Then it removes the Relation LIKES_DISH Relation between the user and a dish.
+    the score attribute in the LIKES_DISH relation indicates the value that
+    affects the overall score of the relationship between the users.
+    */
+exports.deleterLikeUserDishQuery = "MATCH (u:User {email: 'kareem2'}) , (d:Dish {dish_name: 'dish1'}) with u,d optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) with u,d,z optional match (u)-[x:LIKES_DISH]->(d) SET z.totalScore = z.totalScore - x.score delete x with u,d,z optional match (u)-[x1:LIKES_DISH]->() return x1 ";
+exports.deleterLikeUserDish = function(UserEmail, DishName) {
+    db.query(queries.deleterLikeUserDishQuery, params = {
+        ep: UserEmail,
+        dnp: DishName
+    }, function(err, results) {
+        if (err) throw err;
+		var rel = results.map(function(result) {
+            return result['x1'];
+        });
+    });
+}
+
 /* Sprint #-0-US-2
     createDish(name):
     This function takes as input the dish's 
@@ -101,6 +130,8 @@ exports.createDish = function(name) {
 }
 
 /*
+	User Story 4
+	Sprint #-0-US-5
     I can like a dish in a specific restaurant.
     The function takes an email and Dish name and match the user and the dish.
     Then it creates a Relation LIKES_DISH Relation between the user and a dish,
@@ -166,16 +197,17 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
         } else console.log('Done');
     });
 }
-/*  Sprint #-1-US-2
+/*  User Story 2
+	Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
      This function takes the User Email, Restaurant Name and the Photo URL as an input
      Then the node p of type Photo is created  and a relationship "addPhoto"  is created
      between the user and the photo. Another relationship "IN"
      shows that the photo is in this specific restaurant.
 */
-exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) merge (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
-    db.query(UserAddsPhotoToRestaurantQuery, params = {
+    db.query(queries.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
         rp: RestaurantName,
         url: photoURL

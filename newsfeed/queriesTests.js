@@ -60,7 +60,7 @@ describe('I can unfollow another user', function () {
  it('the user should unfollow another user', function (done) {
 	 initialize();
 	 function initialize(){
-		db.query('create (:User{name:{ep1}}),(:User{name:{ep2}})', params = {
+		db.query('create (:User{name:{ep1}})-[:FOLLOW]->(:User{name:{ep2}})', params = {
         ep1: 'kareemAdel1@mail.com',
 		ep2: 'kareemAdel2@mail.com'
     }, function(err, results) {

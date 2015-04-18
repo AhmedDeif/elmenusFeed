@@ -50,12 +50,7 @@ exports.Get_user_info = function(req, res){
 exports.Get_user_info_cont = function(req, res, x){
  	res.render('Get_user_info', x);
  };
-    query.getRelations(function(relations) {
-        res.render('relations_view', {
-            rl: relations
-        });
-    });
-};
+ 
 exports.Get_relation_info = function(req, res) {
     query.Get_relation_info(req.param("tagId"), req, res);
 };
