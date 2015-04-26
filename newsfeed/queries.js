@@ -2,6 +2,7 @@ var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 var queries = require('./queries.js');
+
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
@@ -154,14 +155,13 @@ exports.addDishToRestaurant = function(dish, restaurant) {
     });
 }
 
-var restaurants;
 exports.getRestaurants = function(callback) {
     db.query("MATCH (r:Restaurant) RETURN r.name;", params = {}, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         }
-        restaurants = results.map(function(result) {
+        var restaurants = results.map(function(result) {
             return result['r.name'];
         });
         restaurants = JSON.stringify(restaurants);
@@ -424,7 +424,7 @@ exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
         else console.log("Done");
     });
 }
-var ret;
+
 /*  Get_restaurant_info(name, req, res):
     This function takes as an input the name of 
     the restaurant that the user is requesting
@@ -452,7 +452,7 @@ exports.Get_restaurant_info = function(name, callback) {
         });
         data1 = ' \"myData\":' + JSON.stringify(data1);
         data2 = ' \"RestaurantName\":' + JSON.stringify(data2);
-        ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        var ret = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
         callback(ret);
         console.log(ret.RestaurantName[0]);
     });
@@ -492,21 +492,23 @@ exports.commonFavoritedRestaurants = function(user1, user2) {
         } else console.log("Done");
     });
 }
-var relations;
+// the methode query all relations and show the distinct ones only
+//
+
 exports.getRelations = function(callback) {
     db.query("MATCH (u)-[r]->(m) return distinct type(r);", params = {}, function(err, results) {
         if (err) {
             throw err;
         }
-        relations = results.map(function(result) {
+
+        var relations = results.map(function(result) {
             return result['type(r)'];
         });
         callback(relations);
     });
 }
-
-
-var rel;
+//the methode takes the name of the relation and it's new cost and add them to and query the database
+// to get all the relations with the same label and change it's new cost
 exports.changeRelationCost = function(name, cost) {
     db.query("MATCH (n)-[R:" + name + "]->(d) SET R.score = {c}", params = {
         c: cost
@@ -539,14 +541,13 @@ exports.Get_relation_info = function(r, req, res) {
 }
 
 
-var users;
 exports.getUsers = function(callback) {
     db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
         if (err){
             console.error('Error');
             throw err;
         }
-        users = results.map(function(result) {
+        var users = results.map(function(result) {
             return result['user.email'];
         });
         users = JSON.stringify(users);
@@ -555,7 +556,6 @@ exports.getUsers = function(callback) {
     });
 }
 
-var usr;
 exports.Get_user_info  = function (r, req, res) {
     var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
      db.query(query, params, function (err, results) {
@@ -568,7 +568,7 @@ exports.Get_user_info  = function (r, req, res) {
              return result['u.email'];
             });
             data1 = ' \"Source\":' + JSON.stringify(data1);
-            usr = JSON.parse('{ ' + data1 + ' }');
+           var usr = JSON.parse('{ ' + data1 + ' }');
            indexjs.Get_user_info_cont(req, res, usr);
      });
     
@@ -666,10 +666,11 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
     arguments passed.
 */
 // Must fix the callback hell problem for better performance
-var commonFollowers;
+
 exports.findCommonFollowers = function(firstUser, secondUser) {
     var relationScore;
     var totalScore;
+    var commonFollowers;
     db.query("MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
         u1: firstUser,
         u2: secondUser
