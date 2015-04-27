@@ -845,11 +845,54 @@ describe('Add a new cuisine to a restaurant', function() {
     });
 });
 
-function formQuery(Query,params){
-	for (var key in params) {
-	if (params.hasOwnProperty(key)) {
-	Query = Query.replace("{" + key + "}","'" + params[key] + "'");
-	}
-	}
-	return Query;
-}
+//-------------------------------------------------------------------------------
+/////////////////// User Stories from 13 to 18 ///////////////////
+// User story 13, SPRINT#0 US 15
+describe('I can remove a restaurant from favourites.', function() {
+    it('Restaurant should have been removed from favourite', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (n:User { email:{ep} })-[:FAVORITES]->(:Restaurant { name:{np} })", params = {
+                ep: 'removeFavUser',
+                np: 'removeFavRes'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.removeFavouriteResturantQuery, params = {
+                e: 'removeFavUser',
+                r: 'removeFavRes'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("OPTIONAL MATCH (:User { email:{e} })-[r:FAVORITES]->(:Restaurant { name:{r} }) return r", params = {
+                e: 'removeFavUser',
+                r: 'removeFavRes'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var relationship = results.map(function(result) {
+                    return result['rel'];
+                });
+                should.not.exist(relationship[0]);
+                done();
+            });
+        }
+    });
+});
