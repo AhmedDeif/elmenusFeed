@@ -621,6 +621,19 @@ exports.createCuisine = function(name) {
         } else console.log("Done");
     });
 }
+
+exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[:Score]->(c)";
+exports.newAddedCuisineToUsers = function(cuisine) {
+    db.query(exports.newAddedCuisineToUsersQuery, params = {
+        np: cuisine
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
+    });
+}
+
 /*
     User Story 32
     Sprint #-1-US-22
