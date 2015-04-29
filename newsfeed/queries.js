@@ -19,7 +19,9 @@ exports.createUser = function(email) {
         }
     });
 }
-
+//(S3) linking a user to all cuisines in the database.
+//The function takes the email of the user as an input.
+//and it creates relation TOTALSCORE between this user and each cuisine in the database and setting the initial score to 0 between this user and all cuisines.
 exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
@@ -82,7 +84,10 @@ exports.createResturant = function(name,cuisine) {
     });
 }
 
-exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:Score]->(c)";
+//(S3) linking a restaurant to a cuisine in the database.
+//The function takes the name of the restaurant and the name of the cuisine as inputs.
+//and it creates relation LINKEDTO between this restaurant and this cuisine in the database.
+exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:LINKEDTO]->(c)";
 exports.linkRestaurantToCuisine = function(name,cuisine) {
     db.query(exports.linkRestaurantToCuisineQuery , params = {
         np: name,
@@ -631,7 +636,10 @@ exports.createCuisine = function(name) {
     });
 }
 
-exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[:Score]->(c)";
+//(S2US4) linking a newly added cuisine to all the users in the database.
+//The function takes the name of the cuisine as an input.
+//and it creates relation TOTALSCORE between this cuisine and each user in the database and setting the initial score to 0 between each user and this cuisine.
+exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
 exports.newAddedCuisineToUsers = function(cuisine) {
     db.query(exports.newAddedCuisineToUsersQuery, params = {
         np: cuisine
