@@ -9,8 +9,11 @@ var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
+//(S2US4) linking a user to all cuisines in the database.
+//The function takes the email of the user as an input.
+//and it creates relation TOTALSCORE between this user and each cuisine in the database and setting the initial score to 0 between this user and all cuisines.
 describe('I can sign up', function () {
- it('Should add a user to the database', function (done) {
+ it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
         db.query('match n optional match ()-[r]-() delete r,n', params = {}
@@ -36,7 +39,7 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} })return n', params = {
+        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->() return n,r', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
@@ -44,7 +47,9 @@ describe('I can sign up', function () {
             throw err;
         } else {
             var user = results.map(function(result) {return result['n'];});
+            var relation = results.map(function(result) {return result['r'];});
             should.exist(user[0]);
+            should.exist(relation[0]);
             done();
         }
     });
@@ -157,18 +162,21 @@ describe('I can create Review on a Restaurant', function () {
  });
 });
 
-    /*
-    I can create a restaurant
-    */
-describe('I can create a restaurant', function () {
- it('A restaurant should be created', function (done) {
+//creating a new restaurant and linking it to a cuisine.
+//(S2US4) linking a restaurant to a cuisine in the database.
+//The function takes the name of the restaurant and the name of the cuisine as inputs.
+//and it creates relation LINKEDTO between this restaurant and this cuisine in the database.
+
+describe('I can create a restaurant and link it to a certain cuisine already in the database', function () {
+ it('A restaurant should be created and a relation LINKEDTO between this created restaurant and the chosen cuisine', function (done) {
      initialize();
      function initialize(){
             test();
     }
      function test(){
         db.query(queries.createResturantQuery, params = {
-        np: 'Peking'
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -178,15 +186,20 @@ describe('I can create a restaurant', function () {
         }
      });}
     function verify(){
-        db.query('optional MATCH (Res:Restaurant { name:{np} }) return Res', params = {
-        np: 'Peking'
+        db.query('optional MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) , (r)-[l:LINKEDTO]->(c) return r,c,l', params = {
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var Res = results.map(function(result) {return result['Res'];});
-            should.exist(Res[0]);
+            var restaurant = results.map(function(result) {return result['r'];});
+            var cuisine = results.map(function(result) {return result['c'];});
+            var relation = results.map(function(result) {return result['l'];});
+            should.exist(restaurant[0]);
+            should.exist(cuisine[0]);
+            should.exist(relation[0]);
             done();
         }
     });
@@ -843,6 +856,61 @@ describe('Add a new cuisine to a restaurant', function() {
             });
         }
     });
+});
+
+/*
+    Sprint 1  US 21
+    createCuisine(name):
+    This function takes as input the Cuisine's
+    name and creates the corresponding cuisine in the
+    database.
+    (S2US4) linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database and setting the initial score to 0 between each user and this cuisine.
+*/
+describe('I can create a cuisine', function () {
+ it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
+     initialize();
+     function initialize(){
+        db.query('match n optional match ()-[r]-() delete r,n', params = {}
+        , function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            test();
+        }
+    });
+    }
+   function test(){
+        db.query(queries.createCuisineQuery, params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query('optional match (c:Cuisine { name:{np} }) ()-[r:TOTALSCORE]->(c) return c,r', params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var cuisine = results.map(function(result) {return result['c'];});
+            var relation = results.map(function(result) {return result['r'];});
+            should.exist(cuisine[0]);
+            should.exist(relation[0]);
+            done();
+        }
+    });
+    }
+ });
 });
 
 function formQuery(Query,params){

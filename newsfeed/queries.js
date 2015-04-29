@@ -19,7 +19,7 @@ exports.createUser = function(email) {
         }
     });
 }
-//(S3) linking a user to all cuisines in the database.
+//(S2US4) linking a user to all cuisines in the database.
 //The function takes the email of the user as an input.
 //and it creates relation TOTALSCORE between this user and each cuisine in the database and setting the initial score to 0 between this user and all cuisines.
 exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
@@ -84,7 +84,7 @@ exports.createResturant = function(name,cuisine) {
     });
 }
 
-//(S3) linking a restaurant to a cuisine in the database.
+//(S2US4) linking a restaurant to a cuisine in the database.
 //The function takes the name of the restaurant and the name of the cuisine as inputs.
 //and it creates relation LINKEDTO between this restaurant and this cuisine in the database.
 exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:LINKEDTO]->(c)";
@@ -622,8 +622,9 @@ exports.Get_user_info  = function (r, req, res) {
     name and creates the corresponding cuisine in the
     database.
 */
+exports.createCuisineQuery = "CREATE (:Cuisine { name:{np} })";
 exports.createCuisine = function(name) {
-    db.query("CREATE (:Cuisine { name:{np} })", params = {
+    db.query(createCuisineQuery , params = {
         np: name
     }, function(err, results) {
         if (err) {
