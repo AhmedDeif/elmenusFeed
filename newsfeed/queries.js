@@ -16,6 +16,19 @@ exports.createUser = function(email) {
         } else console.log("Done");
     });
 }
+
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[:Score]->(c)";
+exports.linkUserToCuisines = function(email) {
+    db.query(exports.linkUserToCuisinesQuery, params = {
+        ep: email
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
+    });
+}
+
 //(S19) I can unfollow another user.
 //This function takes two parameters :
 //the follower email and the current user email
@@ -52,7 +65,7 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
 }
 
 exports.createResturantQuery = "CREATE (:Restaurant { name:{np} })";
-exports.createResturant = function(name) {
+exports.createResturant = function(name,cuisine) {
     db.query("CREATE (:Restaurant { name:{np} })", params = {
         np: name
     }, function(err, results) {
@@ -62,6 +75,20 @@ exports.createResturant = function(name) {
         } else console.log("Done");
     });
 }
+
+exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:Score]->(c)";
+exports.linkRestaurantToCuisine = function(name,cuisine) {
+    db.query(exports.linkRestaurantToCuisineQuery , params = {
+        np: name
+        cp:cuisine
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else console.log("Done");
+    });
+}
+
 /*
     Sprint #-0-US-7
     Sprint #-1-US-31
