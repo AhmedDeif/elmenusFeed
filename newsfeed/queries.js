@@ -223,7 +223,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
     the corresponding FOLLOWS relationship between
     these two users.
 */
-exports.createFollowUserQuery = "MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5}]->(r)";
+exports.createFollowUserQuery = "MATCH (d:User),(r:User)  WHERE d.email={e1p} AND r.email = {e2p} AND d.email <> r.email   CREATE (d)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5 , commonFollowers :0, commonFavourites :0, commonYumYuck :0}]->(r)";
 exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
     db.query(exports.createFollowUserQuery, params = {
         e1p: FollowerEmail,
@@ -232,9 +232,121 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
         if (err) {
             console.log('Error');
             throw err;
+        } else {
+            console.log("Done");
+        }
+    });
+}
+
+/*  Sprint #-1-US-25
+     The user can see posts on the news feed prioritized by the common photo yums 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
+     This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
+*/
+
+exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
+        if (err){  console.log('Error');
+                 throw err;
+                }
+        else console.log("Done");
+    });
+}
+
+/*  Sprint #-1-US-26
+     The user can see posts on the news feed prioritized by the common photo yucks 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yucks on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
+     This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
+*/
+
+exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
+        if (err){  
+            console.log('Error');
+            throw err;
+        }
+        else console.log("Done");
+    });
+}
+
+/*
+  Sprint #-1-US-20
+    commonFavoritedRestaurants():
+      This function takes as input 2 users. It matches these 2 users in the database
+      if they are following each other and have favorited the same restaurant,
+      and increases the corresponding totalScore between these two users
+      (in the :FOLLOWS relationship), incrementing it by the score in the
+      :FAVORITES relationship.
+*/
+exports.commonFavoritedRestaurants = function(user1, user2) {
+    db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}})," + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {
+        usr1: user1,
+        usr2: user2
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
         } else console.log("Done");
     });
 }
+
+
+/*
+    In this portion of code we will increase the totalScore between two users. First given the two emails we will get the number of common followers
+    and this will be set to the variable commonFollowers. A second Query will be called which calls gets the score of one follow and the calcualtes
+    the new score. then a third query will edit the totalScore in the required follow relation.
+*/
+/*
+    findCommonFollowers(User email, User email):
+    This function takes two emails, checks whether the two users follow
+    each other and then if they do it finds the Users followed by the User 
+    arguments passed.
+*/
+// Must fix the callback hell problem for better performance
+var findCommonFollowersQuery = "MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} with  count(Distinct c) as total Match (a)-[f:FOLLOWS]->(b) where a.email={u1} and b.email={u2} set f.commonFollowers = total";
+exports.findCommonFollowers = function(firstUser, secondUser) {
+    var relationScore;
+    var commonFollowers;
+    var totalScore;
+    db.query(findCommonFollowersQuery, params = {
+        u1: firstUser,
+        u2: secondUser
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        }
+    });
+}
+
+/*
+    User Story 
+    Sprint  #1-US-27
+    This query takes two emails and finds the common followers between the two users. 
+    It then updates the score by using the common followers score in the FOLLOWS relation.
+*/
+
+exports.setFollowersScore = function(user1,user2) {
+    db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} SET f1.totalScore = total",
+        params = {u1:user1, u2:user2}, function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
+            }
+
+        });
+}
+
+
 /* Sprint #-1-US-29
     visitFollowUser(FollowerEmail,FolloweeEmail):
     This function takes as an input the email of 
@@ -387,43 +499,8 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-25
-     The user can see posts on the news feed prioritized by the common photo yums 
-     between that user and other users he's following.
-     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
-     It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
-     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
-     This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
-*/
 
-exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
-        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  console.log('Error');
-                 throw err;
-                }
-        else console.log("Done");
-    });
-}
-/*  Sprint #-1-US-26
-     The user can see posts on the news feed prioritized by the common photo yucks 
-     between that user and other users he's following.
-     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
-     It matches the two users having yucks on the same photos, and matches the users having a FOLLOWS relationship
-     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
-     This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
-*/
 
-exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
-    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
-        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
-        if (err){  
-            console.log('Error');
-            throw err;
-        }
-        else console.log("Done");
-    });
-}
 var ret;
 /*  Get_restaurant_info(name, req, res):
     This function takes as an input the name of 
@@ -472,26 +549,7 @@ exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
     });
 }
 
-/*
-  Sprint #-1-US-20
-    commonFavoritedRestaurants():
-      This function takes as input 2 users. It matches these 2 users in the database
-      if they are following each other and have favorited the same restaurant,
-      and increases the corresponding totalScore between these two users
-      (in the :FOLLOWS relationship), incrementing it by the score in the
-      :FAVORITES relationship.
-*/
-exports.commonFavoritedRestaurants = function(user1, user2) {
-    db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}})," + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {
-        usr1: user1,
-        usr2: user2
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
+
 var relations;
 exports.getRelations = function(callback) {
     db.query("MATCH (u)-[r]->(m) return distinct type(r);", params = {}, function(err, results) {
@@ -653,76 +711,6 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
             throw err;
         } else console.log("Done");
     });
-}
-/*
-    In this portion of code we will increase the totalScore between two users. First given the two emails we will get the number of common followers
-    and this will be set to the variable commonFollowers. A second Query will be called which calls gets the score of one follow and the calcualtes
-    the new score. then a third query will edit the totalScore in the required follow relation.
-*/
-/*
-    findCommonFollowers(User email, User email):
-    This function takes two emails, checks whether the two users follow
-    each other and then if they do it finds the Users followed by the User 
-    arguments passed.
-*/
-// Must fix the callback hell problem for better performance
-var commonFollowers;
-exports.findCommonFollowers = function(firstUser, secondUser) {
-    var relationScore;
-    var totalScore;
-    db.query("MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} return count(Distinct c) as total;", params = {
-        u1: firstUser,
-        u2: secondUser
-    }, function(err, results) {
-        if (err) {
-            console.log('Error');
-            throw err;
-        }
-        commonFollowers = results.map(function(result) {
-            return result['total']
-        });
-        console.log("The number of common Followers between " + firstUser + " and " + secondUser + " is " + commonFollowers);
-        console.log("The number of common Followers is " + commonFollowers);
-        db.query("match (n)-[f:FOLLOWS]->(u) return Distinct f.score as score;", params = {}, function(err, results) {
-            if (err) {
-                console.log("couldnot get secure of follow relationship");
-                throw err;
-            }
-            relationScore = results.map(function(result) {
-                return result['score']
-            });
-            console.log("The value of following relation is " + relationScore);
-            totalScore = commonFollowers * relationScore;
-            //console.log(total);
-            console.log(totalScore);
-           // total = totalScore;
-            db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) where a.email ={u1} and b.email ={u2} set f.totalScore ={value};", params = {
-                u1: firstUser,
-                u2: secondUser,
-                value: totalScore
-            }, function(err, results) {
-                if (err) {
-                    console.log("Error in setting new totalScore for follow relation");
-                    throw err;
-                } else {
-                    console.log("The total should be " + totalScore);
-                    console.log("Set new totalScore successfully");
-                }
-            });
-        });
-    });
-}
-
-exports.setFollowersScore = function(user1,user2) {
-    db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} SET f1.totalScore = total",
-        params = {u1:user1, u2:user2}, function (err,results) {
-            if(err){
-                console.log("error");
-            } else {
-                console.log("updated total score");
-            }
-
-        });
 }
 
 /*
