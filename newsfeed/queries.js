@@ -13,11 +13,14 @@ exports.createUser = function(email) {
         if (err) {
             console.error('Error');
             throw err;
-        } else console.log("Done");
+        } else{ 
+            console.log("Done");
+            exports.linkUserToCuisines(email);
+        }
     });
 }
 
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[:Score]->(c)";
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
@@ -72,14 +75,17 @@ exports.createResturant = function(name,cuisine) {
         if (err) {
             console.log('Error');
             throw err;
-        } else console.log("Done");
+        } else{ 
+            console.log("Done");
+            exports.linkRestaurantToCuisine(name,cuisine);
+        }
     });
 }
 
 exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:Score]->(c)";
 exports.linkRestaurantToCuisine = function(name,cuisine) {
     db.query(exports.linkRestaurantToCuisineQuery , params = {
-        np: name
+        np: name,
         cp:cuisine
     }, function(err, results) {
         if (err) {
@@ -618,7 +624,10 @@ exports.createCuisine = function(name) {
         if (err) {
             console.error('Error');
             throw err;
-        } else console.log("Done");
+        } else {
+            console.log("Done");
+            exports.newAddedCuisineToUsers(name);
+        }
     });
 }
 
@@ -630,7 +639,7 @@ exports.newAddedCuisineToUsers = function(cuisine) {
         if (err) {
             console.error('Error');
             throw err;
-        } else console.log("Done");
+        } else  console.log("Done");
     });
 }
 
