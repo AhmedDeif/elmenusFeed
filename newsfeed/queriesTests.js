@@ -16,7 +16,7 @@ describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match ()-[r]-() delete r,n', params = {}
+        db.query('match n optional match (n:User)-[]-() delete n', params = {}
         , function(err, results) {
         if (err) {
             console.error('Error');
@@ -872,7 +872,7 @@ describe('I can create a cuisine', function () {
  it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match ()-[r]-() delete r,n', params = {}
+        db.query('match n optional match (n:Cuisine)-[]-() delete n', params = {}
         , function(err, results) {
         if (err) {
             console.error('Error');
