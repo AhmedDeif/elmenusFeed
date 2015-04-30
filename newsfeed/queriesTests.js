@@ -937,7 +937,7 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
+        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:LINKEDTO]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
         ep: 'khaled',
         np: 'Sushi'
     }, function(err, results) {
@@ -945,12 +945,10 @@ describe('I can create a cuisine', function () {
             console.error('Error');
             throw err;
         } else {
-            var user = results.map(function(result) {return result['n'];});
-            var relation = results.map(function(result) {return result['r'];});
-            var cuisine = results.map(function(result) {return result['c'];});
-            should.exist(user[0]);
-            should.exist(relation[0]);
-            should.exist(cuisine[0]);
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
