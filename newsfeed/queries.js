@@ -904,3 +904,17 @@ exports.getLatestActionTime = function (callback) {
         callback(createdAt);
     });
 }
+
+exports.createTimeDecay = function (scale) {
+    exports.getLatestActionTime(function(latest) {
+        db.query("MATCH (a)-[r2:FAVORITES]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Donee");
+        });
+        //repeat query for all relations
+    });
+}
