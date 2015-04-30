@@ -134,13 +134,12 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
         }
     });
 }
-/*  User Story
-    Sprint #-0-US-2
-    addDishToRestaurant(dish, restaurant):
-    this function takes as input the dishs and
-    the restaurants name and creates the
-    corresponding 'Has' relationship between this
-    dish and this restaurant.
+/*  Sprint #-0-US-2
+     addDishToRestaurant(dish, restaurant):
+     this function takes as input the dishs and
+     the restaurants name and creates the
+     corresponding 'Has' relationship between this
+     dish and this restaurant.
 */
 exports.addDishToRestaurantQuery = "match (d:Dish{dish_name:{dp}}),(r:Restaurant{name:{rp}}) merge (r)-[:HAS]->(d)";
 exports.addDishToRestaurant = function(dish, restaurant) {
@@ -171,14 +170,13 @@ exports.getRestaurants = function(callback) {
     });
 }
 
-/*  User Story
-    Sprint #-0-US-2
-    createDishAndRestaurant(dish, restaurant):
-    this function takes as input the dish's and
-    restaurants name and creates the dish node,
-    afterwards it creates the
-    corresponding 'Has' relationship between this
-    dish and this restaurant.
+/*  Sprint #-0-US-2
+        createDishAndRestaurant(dish, restaurant):
+        this function takes as input the dish's and
+        restaurants name and creates the dish node,
+        afterwards it creates the
+        corresponding 'Has' relationship between this
+        dish and this restaurant.
 */
 
 exports.createDishAndRestaurantQuery = "MATCH (r:Restaurant {name: {rp}}) CREATE (d:Dish {dish_name: {dp}}), (r)-[:HAS]->(d)";
@@ -193,16 +191,14 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
         } else console.log('Done');
     });
 }
-/*  User Story
-    Sprint #-1-US-2
-    The user can add a photo related to a specific restaurant.
-    This function takes the User Email, Restaurant Name and the Photo URL as an input
-    Then the node p of type Photo is created  and a relationship "addPhoto"  is created
-    between the user and the photo. Another relationship "IN"
-    shows that the photo is in this specific restaurant.
+/*  Sprint #-1-US-2
+     The user can add a photo related to a specific restaurant.
+     This function takes the User Email, Restaurant Name and the Photo URL as an input
+     Then the node p of type Photo is created  and a relationship "addPhoto"  is created
+     between the user and the photo. Another relationship "IN"
+     shows that the photo is in this specific restaurant.
 */
-exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) "+
-                                    "CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -212,9 +208,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         if (err) {
             console.error('Error');
             throw err;
-        } else {
-            console.log("Done");
-        }
+        } else console.log("Done");
     });
 }
 /*  User Story 18
@@ -239,33 +233,23 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
             console.log('Error');
             throw err;
         } else {
-            exports.commonFavoritedRestaurants(FollowerEmail,FolloweeEmail);
-            exports.UserCommonYumsUser(FollowerEmail,FolloweeEmail);
-            exports.UserCommonYucksUser(FollowerEmail,FolloweeEmail);
-            exports.findCommonFollowers(FollowerEmail,FolloweeEmail);
-            exports.setFollowersScore(FollowerEmail,FolloweeEmail);
             console.log("Done");
         }
     });
 }
 
-/*  User Story
-    Sprint #-1-US-25
-    The user can see posts on the news feed prioritized by the common photo yums 
-    between that user and other users he's following.
-    This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
-    It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
-    between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
-    This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
+/*  Sprint #-1-US-25
+     The user can see posts on the news feed prioritized by the common photo yums 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
+     This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
 */
-var UserCommonYumsUserQuery = "MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-"+
-                            "(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score "+
-                            "set f.commonYumYuck = f.commonYumYuck + 1;";
+
 exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
-    db.query(UserCommonYumsUserQuery, 
-        params = {
-            ep1:UserEmail, ep2:UserEmailFollowed
-        }, function (err, results) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  console.log('Error');
                  throw err;
                 }
@@ -273,23 +257,18 @@ exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
     });
 }
 
-/*  User Story
-    Sprint #-1-US-26
-    The user can see posts on the news feed prioritized by the common photo yucks 
-    between that user and other users he's following.
-    This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
-    It matches the two users having yucks on the same photos, and matches the users having a FOLLOWS relationship
-    between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
-    This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
+/*  Sprint #-1-US-26
+     The user can see posts on the news feed prioritized by the common photo yucks 
+     between that user and other users he's following.
+     This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
+     It matches the two users having yucks on the same photos, and matches the users having a FOLLOWS relationship
+     between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
+     This allows the total Score between two users to be increased by 3 for each photo yuck-ed by both users.
 */
-var UserCommonYucksUserQuery = "MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)"+
-                            "<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) "+
-                            "set f.totalScore = f.totalScore+ y.score set f.commonYumYuck = f.commonYumYuck + 1;"
+
 exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
-    db.query(UserCommonYucksUserQuery, 
-        params = {
-            ep1:UserEmail, ep2:UserEmailFollowed
-        }, function (err, results) {
+    db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: FALSE}]->(photo:Photo)<- [y:YUM_YUCK {value: FALSE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", 
+        params = {ep1:UserEmail, ep2:UserEmailFollowed}, function (err, results) {
         if (err){  
             console.log('Error');
             throw err;
@@ -298,27 +277,24 @@ exports.UserCommonYucksUser  = function (UserEmail, UserEmailFollowed) {
     });
 }
 
-/*  User Story
-    Sprint #-1-US-20
+/*
+  Sprint #-1-US-20
     commonFavoritedRestaurants():
-    This function takes as input 2 users. It matches these 2 users in the database
-    if they are following each other and have favorited the same restaurant,
-    and increases the corresponding totalScore between these two users
-    (in the :FOLLOWS relationship), incrementing it by the score in the
-    :FAVORITES relationship.
+      This function takes as input 2 users. It matches these 2 users in the database
+      if they are following each other and have favorited the same restaurant,
+      and increases the corresponding totalScore between these two users
+      (in the :FOLLOWS relationship), incrementing it by the score in the
+      :FAVORITES relationship.
 */
-var commonFavoritedRestaurantsQuery = "MATCH (u1:User)-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User),(u1)-[fol:FOLLOWS]->(u2) "+
-                                        "where u1.email={usr1} and u2.email={usr2} set fol.commonFavourites = fol.commonFavourites + 1 "+
-                                        "SET fol.totalScore = fol.totalScore + fav.score return u1,u2,fol;";
 exports.commonFavoritedRestaurants = function(user1, user2) {
-    db.query(commonFavoritedRestaurantsQuery, params = {
+    db.query("MATCH (u1:User {email: {usr1}})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User {email: {usr2}})," + "(u1)-[fol:FOLLOWS]->(u2) SET fol.totalScore = fol.totalScore + fav.score;", params = {
         usr1: user1,
         usr2: user2
     }, function(err, results) {
         if (err) {
             console.log('Error');
             throw err;
-        } else console.log("common res");
+        } else console.log("Done");
     });
 }
 
@@ -331,9 +307,7 @@ exports.commonFavoritedRestaurants = function(user1, user2) {
     then set the value of common followers to commonFollowes atitribute in the FOLLOWS relation.
 */
 
-var findCommonFollowersQuery = "MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , "+
-                            "(b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} with  count(Distinct c) as total "+
-                            "Match (a)-[f:FOLLOWS]->(b) where a.email={u1} and b.email={u2} set f.commonFollowers = total";
+var findCommonFollowersQuery = "MATCH (a:User)-[:FOLLOWS]->(b:User) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) WHERE a.email={u1} and b.email={u2} with  count(Distinct c) as total Match (a)-[f:FOLLOWS]->(b) where a.email={u1} and b.email={u2} set f.commonFollowers = total";
 exports.findCommonFollowers = function(firstUser, secondUser) {
     var relationScore;
     var commonFollowers;
@@ -355,22 +329,17 @@ exports.findCommonFollowers = function(firstUser, secondUser) {
     This query takes two emails and finds the common followers between the two users. 
     It then updates the score by using the common followers score in the FOLLOWS relation.
 */
-var setFollowersScoreQuery = "MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , "+
-                        "(b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total "+
-                        "OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} "+
-                        "SET f1.totalScore = total"
+
 exports.setFollowersScore = function(user1,user2) {
-    db.query(setFollowersScoreQuery, params = {
-            u1:user1,
-            u2:user2
-        }, function (err,results) {
+    db.query("MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= {u1} and b.email= {u2} WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email= {u1} and b1.email= {u2} SET f1.totalScore = total",
+        params = {u1:user1, u2:user2}, function (err,results) {
             if(err){
                 console.log("error");
             } else {
                 console.log("updated total score");
             }
 
-    });
+        });
 }
 
 
@@ -563,7 +532,7 @@ exports.Get_restaurant_info = function(name, callback) {
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3}]->(rest);", params = {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES]->(rest);", params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
@@ -791,6 +760,49 @@ exports.showOldActionsHistory = function(UserEmail) {
     });
 }
 
+exports.checkUserExists = function(email, callback) {
+    db.query("MATCH (n:User {email: {email}}) RETURN DISTINCT COUNT(n);", params = {
+        email: email
+    }, function(err, results) {
+        if (err) {
+            console.error("Error");
+            throw err;
+        }
+        var count = results.map(function(result) {
+            return result['COUNT(n)'];
+        });
+        callback(count[0]);
+    });
+}
+
+exports.getNewsfeed = function (email, callback) {
+    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),x order by f.totalScore DESC", 
+        params = {
+            email:email
+        }, function(err, results) {
+            if(err){
+                console.log("error");
+                throw err;
+            }
+            console.log("newsfeed fetched");
+
+            var actions = results.map(function(result) {
+                return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) 
+                    + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
+            });
+            
+            callback(actions);
+        });
+}
+ db.query("MATCH (n:User)-[m]->(x) WHERE n.email={ep} RETURN n,m,x; ", params = {
+        ep: UserEmail
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else console.log("Done");
+    });
+}
 
 exports.checkUserExists = function(email, callback) {
     db.query("MATCH (n:User {email: {email}}) RETURN DISTINCT COUNT(n);", params = {
