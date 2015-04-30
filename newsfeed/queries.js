@@ -812,9 +812,15 @@ exports.getNewsfeed = function (email, callback) {
             callback(actions);
         });
 }
-exports.getCommonRestaurants = function(Restaurant, email){
+
+/*
+Sprint2-S3
+the query takes two params. the dish name and the user email to get similar ]
+restaurants with the same cuisine that this dish's restaurant belongs to.
+*/
+exports.getCommonRestaurants = function(Dish, email){
     db.query("match (n:User{email:"
-        + email "}), (c:Cuisine), (u:User) , (d:Dish),(di:Dish), (r:Restaurant{name:" + Restaurant "})
+        + email "}), (c:Cuisine), (u:User) , (d:Dish{name:"+ Dish +"}),(di:Dish), (r:Restaurant)
           ,(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d),
            (d)<-[:HAS]-(r) , (r)-[:OfferedBy]->(c), (re)-[:OfferedBy]->(c), 
          (u)-[:LIKES_DISH]->(di), (re)-[:HAS]->(di)  WHERE re <> r  return re.name;",
