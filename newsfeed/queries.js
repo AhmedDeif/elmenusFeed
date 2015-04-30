@@ -812,3 +812,16 @@ exports.getNewsfeed = function (email, callback) {
             callback(actions);
         });
 }
+
+
+exports.UserTimeUserQuery = "MATCH (user1 {email:{u1}})-[:LikeCuisine]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LikeCuisine]->(cui) set li.totalScore = li.totalScore + (ts*5) ";
+exports.UserTimeUser = function(UserEmail, UserViewingPost, TimeStamp) {
+    db.query(exports.UserTimeUserQuery, params = {
+        u1: UserEmail,
+        u2: UserViewingPost,
+        ts: TimeStamp
+    }, function(err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+} 
