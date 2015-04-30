@@ -5,7 +5,7 @@ var queries = require('./queries.js');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
-exports.createUserQuery = "CREATE (n:User { email:{ep} })return n";
+exports.createUserQuery = "CREATE (n:User { email:{ep} }) with n OPTIONAL MATCH (c:Cuisine) CREATE (n)-[r:TOTALSCORE]->(c)";
 exports.createUser = function(email) {
     db.query(exports.createUserQuery, params = {
         ep: email
