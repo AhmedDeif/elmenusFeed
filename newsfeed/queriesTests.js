@@ -52,19 +52,17 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c) return n,r,c', params = {
+        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:TOTALSCORE]->(c:Cuisine) RETURN rel;', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var user = results.map(function(result) {return result['n'];});
-            var relation = results.map(function(result) {return result['r'];});
-            var cuisine = results.map(function(result) {return result['c'];});
-            should.exist(user[0]);
-            should.exist(relation[0]);
-            should.exist(cuisine[0]);
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
@@ -937,8 +935,7 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:TOTALSCORE]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
-        ep: 'khaled',
+        db.query('OPTIONAL MATCH (u:User)-[rel:TOTALSCORE]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
         np: 'Sushi'
     }, function(err, results) {
         if (err) {
