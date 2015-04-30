@@ -261,7 +261,8 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
         } else console.log("Done");
     });
 }
-/*  Sprint #-1-US-3
+/*   User Story S8
+	 Sprint #-1-US-3
      The user can add a photo yum to a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and creates the relationship "YUM_YUCK" to it.
@@ -270,8 +271,9 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
+exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
-    db.query("MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;", params = {
+    db.query(exports.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
@@ -281,13 +283,14 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         console.log('done');
     });
 }
-/*  Sprint #-1-US-4
+/*   Sprint #-1-US-4
      The user can delete a photo yuck in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
 */
+exports.UserDeletePhotoYumQuery = "MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel";
 exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
-    db.query("MATCH (n)-[rel:YUM_YUCK {value: TRUE}]->(p:Photo) WHERE n.email={em} AND p.url={ur} DELETE rel", params = {
+    db.query(exports.UserDeletePhotoYumQuery, params = {
         em: UserEmail,
         ur: PhotoURL
     }, function(err, results) {

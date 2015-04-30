@@ -623,7 +623,6 @@ describe('A user can share a photo', function () {
                     console.error('Error');
                     throw err;
                 } else {
-                        console.log('created');
                         test();
                     }
         });
@@ -638,7 +637,6 @@ describe('A user can share a photo', function () {
                     console.error('Error');
                     throw err;
                 } else {
-                    console.log('found');
                     verify();
                 }
          });
@@ -704,11 +702,13 @@ describe('A restaurant can be created', function () {
  });
 });
 
+
+//already done
 /*  
     User Story 30
     Sprint #-0-US-2
 */
-
+/*
 describe('A dish can be created', function () {
  it('', function (done) {
     test();
@@ -742,7 +742,7 @@ describe('A dish can be created', function () {
     }
  });
 });
-
+*/
 /*
     User Story 31
     Sprint #-0-US-3
@@ -782,15 +782,6 @@ describe('A User can be created', function () {
  });
 });
 
-
-function formQuery(Query,params){
-    for (var key in params) {
-    if (params.hasOwnProperty(key)) {
-    Query = Query.replace("{" + key + "}","'" + params[key] + "'");
-    }
-    }
-    return Query;
-}
 /*
     User Story 32
     Sprint #-1-US-22
@@ -814,8 +805,8 @@ describe('Add a new cuisine to a restaurant', function() {
         }
         function test() {
             db.query(queries.createRelCuisineRestaurantQuery, params = {
-                cp: 'test restaurant',
-                rp: 'test cuisine'
+                rp: 'test restaurant',
+                cp: 'test cuisine'
             }, function(err, results) {
                 if (err)
                 {
@@ -838,18 +829,175 @@ describe('Add a new cuisine to a restaurant', function() {
                 var relationship = results.map(function(result) {
                     return result['rel'];
                 });
-                should.exist(relationship);
+                should.exist(relationship[0]);
                 done();
             });
         }
     });
 });
 
-function formQuery(Query,params){
-	for (var key in params) {
-	if (params.hasOwnProperty(key)) {
-	Query = Query.replace("{" + key + "}","'" + params[key] + "'");
-	}
-	}
-	return Query;
-}
+/*
+    User Story S8
+    Sprint #-1-US-3
+*/
+
+describe('The user can add a photo yum to a certain photo', function() {
+    it('A photo yum relation is added to a certain photo', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:Photo {url: {url}}),(:User {email: {ep}})", params = {
+                url: 'myPhotoURL',
+				ep: 'kareemAdel11@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserAddPhotoYumsQuery, params = {
+				ep: 'kareemAdel11@mail.com',
+				url: 'myPhotoURL'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) optional match (user)-[y2:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1,y2", params = {
+				ep: 'kareemAdel11@mail.com',
+				url: 'myPhotoURL'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+				var y2 = results.map(function(result) {
+                    return result['y2'];
+                });
+                should.exist(y1[0]);
+				should.not.exist(y2[0]);
+                done();
+            });
+        }
+    });
+});
+
+/*
+    User Story S9
+    Sprint #-1-US-4
+*/
+
+describe('The user can delete a photo yuck in a certain photo', function() {
+    it('a photo yuck relation should be removed', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
+                url: 'myPhotoURL1',
+				ep: 'kareemAdel12@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserAddPhotoYumsQuery, params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.not.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+
+/*
+    User Story S9
+    Sprint #-1-US-5
+*/
+
+describe('The user can delete a photo yuck in a certain photo', function() {
+    it('a photo yuck relation should be removed', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
+                url: 'myPhotoURL1',
+				ep: 'kareemAdel12@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserAddPhotoYumsQuery, params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.not.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
