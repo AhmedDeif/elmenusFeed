@@ -1,0 +1,70 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   '-g',
+1 verbose cli   'install',
+1 verbose cli   'mocha' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.36
+4 verbose node symlink C:\Program Files\nodejs\\node.exe
+5 verbose cache add [ 'mocha', null ]
+6 verbose cache add name=undefined spec="mocha" args=["mocha",null]
+7 verbose parsed url { protocol: null,
+7 verbose parsed url   slashes: null,
+7 verbose parsed url   auth: null,
+7 verbose parsed url   host: null,
+7 verbose parsed url   port: null,
+7 verbose parsed url   hostname: null,
+7 verbose parsed url   hash: null,
+7 verbose parsed url   search: null,
+7 verbose parsed url   query: null,
+7 verbose parsed url   pathname: 'mocha',
+7 verbose parsed url   path: 'mocha',
+7 verbose parsed url   href: 'mocha' }
+8 silly lockFile a619da43-mocha mocha
+9 verbose lock mocha C:\Users\FRRR\AppData\Roaming\npm-cache\a619da43-mocha.lock
+10 silly lockFile a619da43-mocha mocha
+11 silly lockFile a619da43-mocha mocha
+12 verbose addNamed [ 'mocha', '' ]
+13 verbose addNamed [ null, '*' ]
+14 silly lockFile b9899f31-mocha mocha@
+15 verbose lock mocha@ C:\Users\FRRR\AppData\Roaming\npm-cache\b9899f31-mocha.lock
+16 silly addNameRange { name: 'mocha', range: '*', hasData: false }
+17 verbose request where is /mocha
+18 verbose request registry https://registry.npmjs.org/
+19 verbose request id 43dcd8cc5d364068
+20 verbose url raw /mocha
+21 verbose url resolving [ 'https://registry.npmjs.org/', './mocha' ]
+22 verbose url resolved https://registry.npmjs.org/mocha
+23 verbose request where is https://registry.npmjs.org/mocha
+24 info trying registry request attempt 1 at 17:35:54
+25 http GET https://registry.npmjs.org/mocha
+26 info retry will retry, error on last attempt: Error: connect ECONNREFUSED
+27 info trying registry request attempt 2 at 17:36:05
+28 http GET https://registry.npmjs.org/mocha
+29 info retry will retry, error on last attempt: Error: connect ECONNREFUSED
+30 info trying registry request attempt 3 at 17:37:06
+31 http GET https://registry.npmjs.org/mocha
+32 silly lockFile b9899f31-mocha mocha@
+33 silly lockFile b9899f31-mocha mocha@
+34 error Error: connect ECONNREFUSED
+34 error     at errnoException (net.js:905:11)
+34 error     at Object.afterConnect [as oncomplete] (net.js:896:19)
+34 error  { [Error: connect ECONNREFUSED]
+34 error   code: 'ECONNREFUSED',
+34 error   errno: 'ECONNREFUSED',
+34 error   syscall: 'connect' }
+35 error If you are behind a proxy, please make sure that the
+35 error 'proxy' config is set properly.  See: 'npm help config'
+36 error System Windows_NT 6.2.9200
+37 error command "C:\\Program Files\\nodejs\\\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "-g" "install" "mocha"
+38 error cwd C:\Users\FRRR\Desktop\elmenusFeed
+39 error node -v v0.10.36
+40 error npm -v 1.4.28
+41 error syscall connect
+42 error code ECONNREFUSED
+43 error errno ECONNREFUSED
+44 error stack Error: connect ECONNREFUSED
+44 error stack     at errnoException (net.js:905:11)
+44 error stack     at Object.afterConnect [as oncomplete] (net.js:896:19)
+45 verbose exit [ 1, true ]
