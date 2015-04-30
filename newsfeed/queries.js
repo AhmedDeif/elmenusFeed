@@ -98,7 +98,7 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
     the score attribute in the LIKES_DISH relation indicates the value that
     affects the overall score of the relationship between the users.
     */
-exports.deleterLikeUserDishQuery = "MATCH (u:User {email: 'kareem2'}) , (d:Dish {dish_name: 'dish1'}) with u,d optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) with u,d,z optional match (u)-[x:LIKES_DISH]->(d) SET z.totalScore = z.totalScore - x.score delete x with u,d,z optional match (u)-[x1:LIKES_DISH]->() return x1 ";
+exports.deleterLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) with u,d optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) with u,d,z optional match (u)-[x:LIKES_DISH]->(d) SET z.totalScore = z.totalScore - x.score delete x";
 exports.deleterLikeUserDish = function(UserEmail, DishName) {
     db.query(queries.deleterLikeUserDishQuery, params = {
         ep: UserEmail,
