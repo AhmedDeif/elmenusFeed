@@ -52,7 +52,7 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->(c) return n,r,c', params = {
+        db.query('optional match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c) return n,r,c', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
@@ -937,7 +937,7 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
+        db.query('optional match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
         ep: 'khaled',
         np: 'Sushi'
     }, function(err, results) {
