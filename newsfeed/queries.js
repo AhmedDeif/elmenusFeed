@@ -813,12 +813,24 @@ exports.getNewsfeed = function (email, callback) {
         });
 }
 
-
+/*
+Sprint#2 Story 2:
+The amount of time the user spends on a certain action done by another user 
+will increase the score between the user and the cuisines.
+The function takes three inputs: 
+User1 Email (The user making an action) , 
+User2 Email (The user viewing the action made by user 2),
+TimeStamp (The amount of time user2 takes while viewing user1's action)
+The query first matches user1 with all the cuisines he has a relation with. 
+Then, it checks if there's a relation LikeCuisine between user2 and the same cuisines that user1 has a relation with 
+and sets the total score in LikeCuisine (that is between user2 and the cuisines ) to total Score + (timeStamp * "a certain factor").
+Assuming the factor is 5, the timeStamp will be multiplied by 5 and added to the total score.
+*/
 exports.UserTimeUserQuery = "MATCH (user1 {email:{u1}})-[:LikeCuisine]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LikeCuisine]->(cui) set li.totalScore = li.totalScore + (ts*5) ";
-exports.UserTimeUser = function(UserEmail, UserViewingPost, TimeStamp) {
+exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
     db.query(exports.UserTimeUserQuery, params = {
         u1: UserEmail,
-        u2: UserViewingPost,
+        u2: UserViewingAction,
         ts: TimeStamp
     }, function(err, results) {
         if (err) throw err;
