@@ -812,3 +812,22 @@ exports.getNewsfeed = function (email, callback) {
             callback(actions);
         });
 }
+exports.getCommonRestaurants = function(Restaurant, email){
+    db.query("match (n:User{email:"
+        + email "}), (c:Cuisine), (u:User) , (d:Dish),(di:Dish), (r:Restaurant{name:" + Restaurant "})
+          ,(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d),
+           (d)<-[:HAS]-(r) , (r)-[:OfferedBy]->(c), (re)-[:OfferedBy]->(c), 
+         (u)-[:LIKES_DISH]->(di), (re)-[:HAS]->(di)  WHERE re <> r  return re.name;",
+         params ={},
+         Function(err, results){
+            if(err){
+              console.log("error");
+                throw err;
+            }
+             var ress = results.map(function(result) {
+                return JSON.parse('{ ' + '\"name\":' + JSON.stringify(result['re.name']));
+            });
+            
+            callback(ress);
+         });
+}
