@@ -20,21 +20,13 @@ describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('OPTIONAL MATCH (n) , (n)-[r]-() DELETE n,r', params = {}
-        , function(err, results) {
+       db.query('CREATE (:Cuisine { name:{np} })', params = {
+                np:'Sushi'
+        }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-             db.query('CREATE (:Cuisine { name:{np} })', params = {
-                np:'Sushi'
-             }
-            , function(err, results) {
-            if (err) {
-                console.error('Error');
-                throw err;
-            } 
-            });
             test();
         }
     });
@@ -901,21 +893,13 @@ describe('I can create a cuisine', function () {
  it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('OPTIONAL MATCH (n) , (n)-[r]-() DELETE n,r', params = {}
-        , function(err, results) {
+        db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'khaled'
+        }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-             db.query('CREATE (:User { email:{ep} })', params = {
-                ep:'khaled'
-             }
-            , function(err, results) {
-            if (err) {
-                console.error('Error');
-                throw err;
-            }
-            });
             test();
         }
     });
