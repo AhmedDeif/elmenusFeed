@@ -20,12 +20,21 @@ describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match (n:User)-[]-() delete n', params = {}
+        db.query('OPTIONAL MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r', params = {}
         , function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
+             db.query('CREATE (:Cuisine { name:{np} })', params = {
+                np:'Sushi'
+             }
+            , function(err, results) {
+            if (err) {
+                console.error('Error');
+                throw err;
+            } 
+            });
             test();
         }
     });
@@ -43,7 +52,7 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->() return n,r', params = {
+        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->(c) return n,r,c', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
@@ -52,8 +61,10 @@ describe('I can sign up', function () {
         } else {
             var user = results.map(function(result) {return result['n'];});
             var relation = results.map(function(result) {return result['r'];});
+            var cuisine = results.map(function(result) {return result['c'];});
             should.exist(user[0]);
             should.exist(relation[0]);
+            should.exist(cuisine[0]);
             done();
         }
     });
@@ -177,7 +188,16 @@ describe('I can create a restaurant and link it to a certain cuisine already in 
  it('A restaurant should be created and a relation LINKEDTO between this created restaurant and the chosen cuisine', function (done) {
      initialize();
      function initialize(){
+        db.query('CREATE (:Cuisine { name:{np} })', params = {
+        np: 'Sushi'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
             test();
+        }
+    });
     }
      function test(){
         db.query(queries.createResturantQuery, params = {
@@ -885,12 +905,21 @@ describe('I can create a cuisine', function () {
  it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match (n:Cuisine)-[]-() delete n', params = {}
+        db.query('OPTIONAL MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r', params = {}
         , function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
+             db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'khaled'
+             }
+            , function(err, results) {
+            if (err) {
+                console.error('Error');
+                throw err;
+            }
+            });
             test();
         }
     });
@@ -908,17 +937,20 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('optional match (c:Cuisine { name:{np} }) ()-[r:TOTALSCORE]->(c) return c,r', params = {
+        db.query('optional match (n:User { email:{ep} }) (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
+        ep: 'khaled',
         np: 'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var cuisine = results.map(function(result) {return result['c'];});
+            var user = results.map(function(result) {return result['n'];});
             var relation = results.map(function(result) {return result['r'];});
-            should.exist(cuisine[0]);
+            var cuisine = results.map(function(result) {return result['c'];});
+            should.exist(user[0]);
             should.exist(relation[0]);
+            should.exist(cuisine[0]);
             done();
         }
     });
