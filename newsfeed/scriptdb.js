@@ -422,7 +422,7 @@ if (fs.existsSync('C:/tmp/createFavoriteUserRestaurant.csv')) {
       //importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Restaurant and row.User)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) MERGE (u) -[:FAVORITES{created_at:row.created_at}]-> (r) return r limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) MERGE (u) -[:FAVORITES{created_at:row.created_at,score:3}]-> (r) return r limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -733,7 +733,7 @@ function findCommonFollowers(){
         }
     });
 }
-var setFollowersScoreQuery = "USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= row.Follower and b.email= row.Followee WITH count(Distinct c)*f.score as total,a,b,f  SET f.totalScore = total"
+var setFollowersScoreQuery = "USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (x:User{email:row.Follower})-[f:FOLLOWS]->(y:User{email:row.Followee}) set f.totalScore=f.totalScore+f.numberOfVisits*3+5*f.commonFollowers+7*f.commonYumYuck"
 function setFollowersScore(){
    db.query(setFollowersScoreQuery, function (err,results) {
             if(err){
