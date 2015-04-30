@@ -102,8 +102,8 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
 
 
  // This part is for testing queries
-/*
-queries.createUser("test 1");
+
+/*queries.createUser("test 1");
 queries.createUser("test 2");
 queries.createUser("test 3");
 queries.createUser("test 4");
@@ -120,7 +120,6 @@ queries.createDish("Dish 4");
 queries.createDish("Dish 5");
 queries.createDish("Dish 6");
 queries.createDish("Dish 7");
-
 
 
 queries.addDishToRestaurant("Dish 1","Res 1");
