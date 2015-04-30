@@ -198,7 +198,9 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
      between the user and the photo. Another relationship "IN"
      shows that the photo is in this specific restaurant.
 */
-exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) "+
+                                    "CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantScore = "match (s:Scores),(r:Restaurant { name:{RestaurantName} })-[:HasCuisisne]->(c:Cuisine)<-[t:totalscore]-(n:User { email:{UserEmail} }) set t.score = t.score + s.addPhotoScore";                                    
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -208,7 +210,20 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         if (err) {
             console.error('Error');
             throw err;
-        } else console.log("Done");
+        } else {
+            db.query(exports.UserAddsPhotoToRestaurantScore, params = {
+                ep: UserEmail,
+                rp: RestaurantName,
+                url: photoURL
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            console.log("Done");
+        }
+    });
+        }
     });
 }
 /*  User Story 18
