@@ -210,7 +210,7 @@ describe('I can create a restaurant and link it to a certain cuisine already in 
         }
      });}
     function verify(){
-        db.query('optional MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) , (r)-[l:LINKEDTO]->(c) return r,c,l', params = {
+        db.query('OPTIONAL MATCH (r:Restaurant {name: {np}})-[rel:LINKEDTO]->(c:Cuisine {name: {cp}}) RETURN rel;', params = {
         np: 'Sushi Bay',
         cp:'Sushi'
     }, function(err, results) {
@@ -218,12 +218,10 @@ describe('I can create a restaurant and link it to a certain cuisine already in 
             console.error('Error');
             throw err;
         } else {
-            var restaurant = results.map(function(result) {return result['r'];});
-            var cuisine = results.map(function(result) {return result['c'];});
-            var relation = results.map(function(result) {return result['l'];});
-            should.exist(restaurant[0]);
-            should.exist(cuisine[0]);
-            should.exist(relation[0]);
+             var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
