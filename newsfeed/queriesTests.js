@@ -937,7 +937,7 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
+        db.query('match (n:User { email:{ep} }) , (n)-[r:TOTALSCORE]->(c:Cuisine { name:{np}}) return n,r,c', params = {
         ep: 'khaled',
         np: 'Sushi'
     }, function(err, results) {
@@ -945,7 +945,7 @@ describe('I can create a cuisine', function () {
             console.error('Error');
             throw err;
         } else {
-            console.log(results);
+            console.log(r);
             console.log(r);
             console.log(c);
             var user = results.map(function(result) {return result['n'];});
