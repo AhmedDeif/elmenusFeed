@@ -93,7 +93,7 @@ exports.createResturant = function(name,cuisine) {
     The function takes the name of the restaurant and the name of the cuisine as inputs.
     and it creates relation LINKEDTO between this restaurant and that cuisine.
 */
-exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:LINKEDTO]->(c)";
+exports.linkRestaurantToCuisineQuery = "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:HAS_CUISINE]->(c)";
 exports.linkRestaurantToCuisine = function(name,cuisine) {
     db.query(exports.linkRestaurantToCuisineQuery , params = {
         np: name,

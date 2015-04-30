@@ -210,7 +210,7 @@ describe('I can create a restaurant and link it to a certain cuisine already in 
         }
      });}
     function verify(){
-        db.query('OPTIONAL MATCH (r:Restaurant {name: {np}})-[rel:LINKEDTO]->(c:Cuisine {name: {cp}}) RETURN rel;', params = {
+        db.query('OPTIONAL MATCH (r:Restaurant {name: {np}})-[rel:HAS_CUISINE]->(c:Cuisine {name: {cp}}) RETURN rel;', params = {
         np: 'Sushi Bay',
         cp:'Sushi'
     }, function(err, results) {
