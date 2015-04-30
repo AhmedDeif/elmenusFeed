@@ -945,7 +945,7 @@ describe('I can create a cuisine', function () {
             console.error('Error');
             throw err;
         } else {
-            console.log(result['n']);
+            console.log(results);
             console.log(r);
             console.log(c);
             var user = results.map(function(result) {return result['n'];});
