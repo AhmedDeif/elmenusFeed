@@ -9,12 +9,20 @@ var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
+/*
+    Sprint 2  US 4
+    linking a user to all cuisines in the database.
+    The function takes the email of the user as an input.
+    and it creates relation TOTALSCORE between this user and each cuisine in the database
+     and setting the initial score to 0 between this user and all cuisines.
+*/
 describe('I can sign up', function () {
- it('Should add a user to the database', function (done) {
+ it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match ()-[r]-() delete r,n', params = {}
-        , function(err, results) {
+       db.query('CREATE (:Cuisine { name:{np} })', params = {
+                np:'Sushi'
+        }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
@@ -36,15 +44,17 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} })return n', params = {
+        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:TOTALSCORE]->(c:Cuisine) RETURN rel;', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var user = results.map(function(result) {return result['n'];});
-            should.exist(user[0]);
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
@@ -157,18 +167,32 @@ describe('I can create Review on a Restaurant', function () {
  });
 });
 
-    /*
-    I can create a restaurant
-    */
-describe('I can create a restaurant', function () {
- it('A restaurant should be created', function (done) {
+//creating a new restaurant and linking it to a cuisine.
+/*
+    Sprint 2  US 4
+    linking a restaurant to a certain cuisine in the database.
+    The function takes the name of the restaurant and the name of the cuisine as inputs.
+    and it creates relation LINKEDTO between this restaurant and that cuisine.
+*/
+describe('I can create a restaurant and link it to a certain cuisine already in the database', function () {
+ it('A restaurant should be created and a relation LINKEDTO between this created restaurant and the chosen cuisine', function (done) {
      initialize();
      function initialize(){
+        db.query('CREATE (:Cuisine { name:{np} })', params = {
+        np: 'Sushi'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
             test();
+        }
+    });
     }
      function test(){
         db.query(queries.createResturantQuery, params = {
-        np: 'Peking'
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -178,15 +202,18 @@ describe('I can create a restaurant', function () {
         }
      });}
     function verify(){
-        db.query('optional MATCH (Res:Restaurant { name:{np} }) return Res', params = {
-        np: 'Peking'
+        db.query('OPTIONAL MATCH (r:Restaurant {name: {np}})-[rel:HAS_CUISINE]->(c:Cuisine {name: {cp}}) RETURN rel;', params = {
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var Res = results.map(function(result) {return result['Res'];});
-            should.exist(Res[0]);
+             var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
@@ -1163,3 +1190,66 @@ describe('The user can share a dish on facebook or twitter.', function() {
         }
     });
 });
+/*
+    Sprint 1  US 21
+    createCuisine(name):
+    This function takes as input the Cuisine's
+    name and creates the corresponding cuisine in the
+    database.
+    (S2US4) linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database and setting the initial score to 0 between each user and this cuisine.
+*/
+/*
+    Sprint 2  US 4
+    linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database
+    and setting the initial score to 0 between each user and this cuisine.
+*/ 
+describe('I can create a cuisine', function () {
+ it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
+     initialize();
+     function initialize(){
+        db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'khaled'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            test();
+        }
+    });
+    }
+   function test(){
+        db.query(queries.createCuisineQuery, params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query('OPTIONAL MATCH (u:User)-[rel:TOTALSCORE]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
+            done();
+        }
+    });
+    }
+ });
+});
+
