@@ -551,7 +551,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) MERGE (u1) -[:FOLLOWS{created_at:row.Time,score:4,totalScore:0}]-> (u2)", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) Merge (u1)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5 , commonFollowers :0, commonFavourites :0, commonYumYuck :0}]->(u2)", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -677,7 +677,8 @@ if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
         else {
           console.log('User-Like_Cuisine Done');
           //Close mysql connection
-          connection.end();  
+          //connection.end();  
+          commonFavoritedRestaurants();
         }
     });
   },400);
@@ -690,3 +691,45 @@ if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
   }
 });
 }
+//////////////////////////////////////////////////////////
+function commonFavoritedRestaurants(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (u1:User{email:row.Follower})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User{email:row.Followee}),(u1)-[fol:FOLLOWS]->(u2) set fol.commonFavourites = fol.commonFavourites + 1 SET fol.totalScore = fol.totalScore + fav.score return u1,u2,fol", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('common-Favorited-Restaurants Done');
+          //Close mysql connection
+          //connection.end();  
+          UserCommonYumsUser(); 
+        }
+    });
+}
+function UserCommonYumsUser(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (user1:User {email:row.Follower})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]- (user2:User {email:row.Followee}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score set f.commonYumYuck = f.commonYumYuck + 1 return user1;", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('User-Common-Yums-User Done');
+          //Close mysql connection
+          //connection.end();  
+          findCommonFollowers(); 
+        }
+    });
+}
+
+function findCommonFollowers(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (a:User{email:row.Follower})-[f:FOLLOWS]->(b:User{email:row.Followee}) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) with f, count(Distinct c) as total set f.commonFollowers = total return total", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('find-Common-Followers Done');
+          //Close mysql connection
+          connection.end();  
+           
+        }
+    });
+}
+
