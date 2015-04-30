@@ -727,9 +727,25 @@ function findCommonFollowers(){
         else {
           console.log('find-Common-Followers Done');
           //Close mysql connection
-          connection.end();  
+         setFollowersScore();
+            
            
         }
     });
 }
+var setFollowersScoreQuery = "USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (a:User)-[f:FOLLOWS]->(b:User) , (a)-[e:FOLLOWS]->(c:User) , (b)-[d:FOLLOWS]->(c) WHERE a.email= row.Follower and b.email= row.Followee WITH count(Distinct c)*f.score as total OPTIONAL MATCH (a1:User)-[f1:FOLLOWS]->(b1:User) WHERE a1.email=row.Follower  and b1.email= row.Followee SET f1.totalScore = total"
+function setFollowersScore(){
+   db.query(setFollowersScoreQuery, params = {
+            u1:user1,
+            u2:user2
+        }, function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
+                connection.end();  
+            }
 
+    });
+    
+}
