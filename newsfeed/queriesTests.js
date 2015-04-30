@@ -945,9 +945,6 @@ describe('I can create a cuisine', function () {
             console.error('Error');
             throw err;
         } else {
-            console.log(results);
-            console.log(r);
-            console.log(c);
             var user = results.map(function(result) {return result['n'];});
             var relation = results.map(function(result) {return result['r'];});
             var cuisine = results.map(function(result) {return result['c'];});
