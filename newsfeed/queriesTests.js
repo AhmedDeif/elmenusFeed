@@ -937,7 +937,7 @@ describe('I can create a cuisine', function () {
     });
    }
     function verify(){
-        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:LINKEDTO]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
+        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:TOTALSCORE]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
         ep: 'khaled',
         np: 'Sushi'
     }, function(err, results) {
