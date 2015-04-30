@@ -9,9 +9,13 @@ var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
-//(S2US4) linking a user to all cuisines in the database.
-//The function takes the email of the user as an input.
-//and it creates relation TOTALSCORE between this user and each cuisine in the database and setting the initial score to 0 between this user and all cuisines.
+/*
+    Sprint 2  US 4
+    linking a user to all cuisines in the database.
+    The function takes the email of the user as an input.
+    and it creates relation TOTALSCORE between this user and each cuisine in the database
+     and setting the initial score to 0 between this user and all cuisines.
+*/
 describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
@@ -163,10 +167,12 @@ describe('I can create Review on a Restaurant', function () {
 });
 
 //creating a new restaurant and linking it to a cuisine.
-//(S2US4) linking a restaurant to a cuisine in the database.
-//The function takes the name of the restaurant and the name of the cuisine as inputs.
-//and it creates relation LINKEDTO between this restaurant and this cuisine in the database.
-
+/*
+    Sprint 2  US 4
+    linking a restaurant to a certain cuisine in the database.
+    The function takes the name of the restaurant and the name of the cuisine as inputs.
+    and it creates relation LINKEDTO between this restaurant and that cuisine.
+*/
 describe('I can create a restaurant and link it to a certain cuisine already in the database', function () {
  it('A restaurant should be created and a relation LINKEDTO between this created restaurant and the chosen cuisine', function (done) {
      initialize();
@@ -868,6 +874,13 @@ describe('Add a new cuisine to a restaurant', function() {
     The function takes the name of the cuisine as an input.
     and it creates relation TOTALSCORE between this cuisine and each user in the database and setting the initial score to 0 between each user and this cuisine.
 */
+/*
+    Sprint 2  US 4
+    linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database
+    and setting the initial score to 0 between each user and this cuisine.
+*/ 
 describe('I can create a cuisine', function () {
  it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
      initialize();
