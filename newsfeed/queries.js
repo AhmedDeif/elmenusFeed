@@ -237,8 +237,9 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
         } else console.log('Done');
     });
 }
-/*  User Story
+/*  User Story 38
     Sprint #-1-US-2
+    Sprint #-2-US-11
     The user can add a photo related to a specific restaurant.
     This function takes the User Email, Restaurant Name and the Photo URL as an input
     Then the node p of type Photo is created  and a relationship "addPhoto"  is created
@@ -247,7 +248,7 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
 */
 exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) "+
                                     "CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
-exports.UserAddsPhotoToRestaurantScore = "match (s:Scores),(r:Restaurant { name:{RestaurantName} })-[:HasCuisisne]->(c:Cuisine)<-[t:totalscore]-(n:User { email:{UserEmail} }) set t.score = t.score + s.addPhotoScore";                                    
+exports.UserAddsPhotoToRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisisne]->(c:Cuisine)<-[t:totalscore]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";                                    
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -613,17 +614,33 @@ exports.Get_restaurant_info = function(name, callback) {
     });
 }
 //14-I can add a restaurant to favourites.
+//BackLog user story 39
+//Sprint #2 us 12
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
+exports.createrFavouriteUserRestaurantQuery = "MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3}]->(rest) return user;"
+exports.createrFavouriteUserRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisisne]->(c:Cuisine)<-[t:totalscore]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3}]->(rest);", params = {
+    db.query(createrFavouriteUserRestaurantQuery, params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
         if (err) {
             console.log('Error');
             throw err;
-        } else console.log("Done");
+        } else {
+            db.query(createrFavouriteUserRestaurantScore, params = {
+        ep: email,
+        rp: RestaurantName
+    }, function(err, results) {
+        if (err) {
+            console.log('Error');
+            throw err;
+        } else {
+            console.log("Done");
+        }
+    });
+        }
     });
 }
 
