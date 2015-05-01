@@ -913,8 +913,39 @@ exports.createTimeDecay = function (scale) {
                 console.error("Error");
                 throw err;
             }
-            console.log("Donee");
+            console.log("Done");
         });
-        //repeat query for all relations
+        db.query("MATCH (a)-[r2:LIKES_DISH]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:FOLLOWS]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:addPhoto]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:LikeCuisine]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
     });
 }
