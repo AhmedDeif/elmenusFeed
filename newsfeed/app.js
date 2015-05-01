@@ -102,7 +102,7 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
 
 
  // This part is for testing queries
- /*
+ 
 queries.createUser("test 1");
 queries.createUser("test 2");
 queries.createUser("test 3");
