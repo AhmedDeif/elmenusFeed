@@ -900,7 +900,11 @@ exports.getNewsfeed = function (email, callback) {
             callback(actions);
         });
 }
-
+/*
+    Sprint#-2-US-5
+    getLatestActionTime: gets the timestamp of the latest action that has been created by getting
+    the maxiumum of all the created_at attributes and calls back this value.
+*/
 exports.getLatestActionTime = function (callback) {
     db.query("MATCH (:User)-[r]->() RETURN MAX(r.created_at);", function (err, results) {
         if (err)
@@ -914,7 +918,14 @@ exports.getLatestActionTime = function (callback) {
         callback(createdAt);
     });
 }
-
+/*
+    Sprint#-2-US-5
+    createTimeDecay: takes as input the scale of decay to be able to customize the time decay factor;
+    this decay specifies how fast the score should drop as it gets further from the latest action.
+    The function gets the timestamp of the latest action by calling getLatestActionTime() and then
+    does a check on the score, if it is not already multiplied by a time decay factor it does that,
+    otherwise the score stays the same, since it is already mulitplied by a time decay factor.
+*/
 exports.createTimeDecay = function (scale) {
     exports.getLatestActionTime(function(latest) {
         db.query("MATCH (a)-[r2:FAVORITES]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.favouritesScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
