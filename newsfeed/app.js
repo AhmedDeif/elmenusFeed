@@ -101,10 +101,8 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
 
-//queries.createGlobalNodeQuery(5 , 3, 6 , 2 , 5 , 3 , 5, 6 , 7 , 3 , 0); 
-//queries.changeRelationCost("LIKE",4);
-
-
+//queries.createGlobalNode(4, 9, 7, 0, 14, 13, 12, 11, 10, 8, 6);
+//queries.createTimeDecay(5000000);
  // This part is for testing queries
  /*
 queries.createUser("test 1");
@@ -208,3 +206,8 @@ queries.UserAddPhotoYums("test 1", "photo 2");
 queries.UserCommonYumsUser("test 2", "test 3");
 
 */
+
+queries.createUser("test 6");
+queries.createUser("test 7");
+
+
