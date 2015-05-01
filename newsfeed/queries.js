@@ -167,7 +167,7 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
              throw err;
           }
         else{
-            db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine), (s:Scores)  MERGE (u)-[l:LikeCuisine{score:likeCuisineScore}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LikeCuisine]->(c) set f.totalScore = f.totalScore + l.score", params = {
+            db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine), (s:Scores)  MERGE (u)-[l:LIKECUISINE{score:likeCuisineScore}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LIKECUISINE]->(c) set f.totalScore = f.totalScore + l.score", params = {
                 ep: UserEmail,
                 dnp: DishName
                 }, function(err, results) {
@@ -815,26 +815,7 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
         } else console.log("Done");
     });
 }
-/*
-    Sprint 1  US 23
-    createRelLikeCuisine(User Email,Cuisine name):
-    This function takes as input the Cuisine's 
-    name and User's email and finds them in the database when
-    they are found the function
-    create a like relation between user and
-    cuisine
-*/
-exports.createRelUserCuisine = function(UserEmail, CuisineName) {
-    db.query("MATCH (c:Cuisine),(u:User),(g:Scores) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine]->(c) set rl.Score = g.likeCuisineScore", params = {
-        cp: CuisineName,
-        np: UserEmail
-    }, function(err, results) {
-        if (err) {
-            console.error('Error');
-            throw err;
-        } else console.log("Done");
-    });
-}
+
 /*
     createRelUserResCuisines(User email, Cuisine name):
     another method that make user like all cuisines of restaurant
@@ -843,7 +824,7 @@ exports.createRelUserCuisine = function(UserEmail, CuisineName) {
     between the user and the cuisines
 */
 exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
-    db.query("MATCH (u:User),(r:Restaurant) , (s:Scores) -[HasCuisine]->(c:Cuisine) WHERE r.name={rp} AND u.email ={np} MERGE (u)-[rl:LikeCuisine{score:s.likeCuisineScore}]->(c)", params = {
+    db.query("MATCH (s:Scores), (r:Restaurant)-[HasCuisine]->(c:Cuisine)<-[l:LIKECUISINE]-(u:User) WHERE r.name={rp} AND u.email ={np} set  l.score = l.score + s.favouritesScore", params = {
         rp: RestaurantName,
         np: UserEmail
     }, function(err, results) {
