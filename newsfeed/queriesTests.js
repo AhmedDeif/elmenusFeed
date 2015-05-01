@@ -1253,3 +1253,166 @@ describe('I can create a cuisine', function () {
  });
 });
 
+
+/*  User Story 38
+    Sprint #-1-US-2
+    Sprint #-2-US-11
+    The user can add a photo related to a specific restaurant.
+    This function takes the User Email, Restaurant Name and the Photo URL as an input
+    Then the node p of type Photo is created  and a relationship "addPhoto"  is created
+    between the user and the photo. Another relationship "IN"
+    shows that the photo is in this specific restaurant.
+    
+    This query calls another query after the callback whick increases the score between 
+    the user and the cuisines of the restaurant by a value = addPhotoScore
+    which is defined in the databse.
+*/
+
+describe('Score increases between user and cuisine when he addes a photo to a restaurant', function () {
+ it('Score should increase between user and cuisine', function (done) {
+     initialize();
+     function initialize(){
+        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKE_CUISINE{score:0}]->c', params = {
+        up: 'UserCuisineScoreTest.com',
+        rp: 'ResCuisineScoreTest',
+        cp: 'CuisCuisineScoreTest'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            //test();
+            db.query(queries.createRelCuisineRestaurantQuery, params = {
+            cp: 'CuisCuisineScoreTest',
+            rp: 'ResCuisineScoreTest'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            //test();
+                db.query(queries.UserAddsPhotoToRestaurantQuery, params = {
+                    ep: 'UserCuisineScoreTest.com',
+                    rp: 'ResCuisineScoreTest',
+                    url: 'photoURL'
+                 }, function(err, results) {
+                    if (err) {
+                            console.error('Error');
+                            throw err;
+                    } else {
+                        test();
+                     }
+                });
+        }
+    });
+        }
+    });
+    }
+     function test(){
+        db.query(queries.UserAddsPhotoToRestaurantScore, params = {
+                    ep: 'UserCuisineScoreTest.com',
+                    rp: 'ResCuisineScoreTest',
+                    url: 'photoURL'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+     });}
+    function verify(){
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKE_CUISINE]->(c) return l.score', params = {
+        ep: 'UserCuisineScoreTest.com',
+        cp: 'CuisCuisineScoreTest'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var scoreAfterAdd = results.map(function(result) {return result['l.score'];});
+            should(Number(scoreAfterAdd)).be.exactly(10)
+            done();
+        }
+    });
+    }
+ });
+});
+
+
+//14-I can add a restaurant to favourites.
+//BackLog user story 39
+//Sprint #2 us 12
+//The function takes as inputs the email of the user and the name of the restaurant 
+//and it gets the nodes of the restaurant and the user and creates a new relation called 
+//FAVORITES between the two nodes.
+//In the callback of the 1st query, it calls another query which increases the score 
+//between the user and the cuisines of the restaurant by value = favouritesScore
+//which is defined in the database 
+describe('Score increases between user and cuisine when he addes this restaurant to favorites', function () {
+ it('Score should increase between user and cuisine2', function (done) {
+     initialize();
+     function initialize(){
+        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKE_CUISINE{score:0}]->c', params = {
+                up: 'UserCuisineScoreTest2.com',
+                rp: 'ResCuisineScoreTest2',
+                cp: 'CuisCuisineScoreTest2'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            db.query(queries.createRelCuisineRestaurantQuery, params = {
+                cp: 'CuisCuisineScoreTest2',
+                rp: 'ResCuisineScoreTest2'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            db.query(queries.createrFavouriteUserRestaurantQuery, params = {
+                ep: 'UserCuisineScoreTest2.com',
+                rp: 'ResCuisineScoreTest2'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            test();
+        }
+    });
+        }
+    });
+        }
+    });
+    }
+   function test(){
+        db.query(queries.createrFavouriteUserRestaurantScore, params = {
+                ep: 'UserCuisineScoreTest2.com',
+                rp: 'ResCuisineScoreTest2'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKE_CUISINE]->(c) return l.score', params = {
+        ep: 'UserCuisineScoreTest2.com',
+        cp: 'CuisCuisineScoreTest2'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var scoreAfterFav = results.map(function(result) {return result['l.score'];});
+            should(Number(scoreAfterFav)).be.exactly(10)
+            done();
+        }
+    });
+    }
+ });
+});
