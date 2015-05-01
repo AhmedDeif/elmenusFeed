@@ -1305,7 +1305,7 @@ describe('Score increases between user and cuisine depending on the time spent b
         db.query(queries.UserTimeUserQuery, params = {
                 u1: 'User1',
                 u2: 'User2',
-                ts: '20'
+                ts: 20
     }, function(err, results) {
         if (err) {
             console.error('Error');
