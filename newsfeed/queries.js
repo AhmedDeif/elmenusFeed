@@ -597,8 +597,9 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
      This function takes the User Email and the Dish Name as an input.
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
+exports.UserSharesDishQuery = "MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) , (s:Scores) with user,dish,s CREATE (user)-[:SHARE_DISH {score:s.shareDishScore}]->(dish)";
 exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) , (s:Scores) with user,dish,s CREATE (user)-[:SHARE_DISH {score:s.shareDishScore}]->(dish)", params = {
+    db.query(exports.UserSharesDishQuery, params = {
         ep: UserEmail,
         dn: DishName
     }, function(err, results) {

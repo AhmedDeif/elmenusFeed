@@ -34,7 +34,15 @@ describe('I can sign up', function () {
             console.error('Error');
             throw err;
         } else {
+            db.query('CREATE (s:Scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:6 , yum_yuckScore:3 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:8 , likeCuisineScore:3  })', params = {
+			}, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
             test();
+        }
+    });
         }
     });
         }
@@ -1129,7 +1137,7 @@ describe('I can share restaurant on facebook', function() {
             });
         }
         function verify() {
-            db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) with user,restaurant optional MATCH (user)-[y1:SHARE_RESTAURANT {score:5}]->(restaurant) return y1", params = {
+            db.query("optional MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}), (s:Scores) with user,restaurant,s optional MATCH (user)-[y1:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant) return y1", params = {
                     ep: 'kareemAdel15@mail.com',
                     rn: 'RestaurantKareem15'
             }, function(err, results) {
@@ -1184,7 +1192,7 @@ describe('The user can share a dish on facebook or twitter.', function() {
             });
         }
         function verify() {
-            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) optional MATCH (user)-[y1:SHARE_DISH {score:5}]->(dish) return y1", params = {
+            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}), (s:Scores) optional MATCH (user)-[y1:SHARE_DISH {score:s.shareDishScore}]->(dish) return y1", params = {
                     ep: 'kareemAdel16@mail.com',
                     dn: 'DishKareem16'
             }, function(err, results) {
