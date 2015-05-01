@@ -255,8 +255,8 @@ exports.createDishAndRestaurant = function(dish, restaurant) {
 */
 exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) "+
                                     "CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)";
-//exports.UserAddsPhotoToRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKE_CUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";
-exports.UserAddsPhotoToRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKE_CUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10";                                    
+//exports.UserAddsPhotoToRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";
+exports.UserAddsPhotoToRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10";                                    
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -641,8 +641,8 @@ exports.Get_restaurant_info = function(name, callback) {
 //between the user and the cuisines of the restaurant by value = favouritesScore
 //which is defined in the database 
 exports.createrFavouriteUserRestaurantQuery = "MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3}]->(rest) return user;"
-//exports.createrFavouriteUserRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKE_CUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
-exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKE_CUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10 return t.score"
+//exports.createrFavouriteUserRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
+exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10 return t.score"
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
     db.query(createrFavouriteUserRestaurantQuery, params = {
         ep: email,
