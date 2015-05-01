@@ -263,7 +263,7 @@ describe('I can dislike a dish in a specific restaurant', function () {
         }
      });}
     function verify(){
-        db.query('optional MATCH (u:User {email: {ep}}), (u1:User {email: {ep1}}) , (d:Dish {dish_name: {dnp}}), (u)-[relLikes:LIKES_DISH {likes:FALSE, score:7}]->(d), (u)-[z:FOLLOWS]-(u1) return relLikes, z.totalScore', params = {
+        db.query('optional MATCH (u:User {email: {ep}}), (u1:User {email: {ep1}}) , (d:Dish {dish_name: {dnp}}), (u)-[relLikes:LIKES_DISH {likes:FALSE}]->(d), (u)-[z:FOLLOWS]-(u1) return relLikes, z.totalScore', params = {
         ep: 'kareemAdel4@mail.com',
         ep1: 'kareemAdel5@mail.com',
         dnp: 'dish1'
