@@ -204,3 +204,8 @@ queries.UserAddPhotoYums("test 1", "photo 2");
 queries.UserCommonYumsUser("test 2", "test 3");
 
 */
+
+queries.createUser("test 6");
+queries.createUser("test 7");
+
+
