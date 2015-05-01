@@ -1034,7 +1034,7 @@ exports.createTimeDecay = function (scale) {
    the relation score is set to the score set here in the global node.
 */
 exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
-exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
+exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
          ep2: reviewScore ,
