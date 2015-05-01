@@ -20,7 +20,7 @@ describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-       db.query('match n optional match ()-[y]-() delete n,y with 1 as dummy CREATE (:Cuisine { name:{np} })', params = {
+       db.query('CREATE (:Cuisine { name:{np} })', params = {
                 np:'Sushi'
         }, function(err, results) {
         if (err) {
