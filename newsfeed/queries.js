@@ -26,14 +26,11 @@ exports.createUser = function(email) {
     Sprint 2  US 4
     linking a user to all cuisines in the database.
     The function takes the email of the user as an input.
-    and it creates relation LIKE_CUISINE between this user and each cuisine in the database
+    and it creates relation LIKECUISINE between this user and each cuisine in the database
      and setting the initial score to 0 between this user and all cuisines.
 */
-<<<<<<< HEAD
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKE_CUISINE]->(c) set k.score=0";
-=======
+
 exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKECUISINE{score:0}]->(c)";
->>>>>>> f2312163f37777d9cf419a4da5c6ae3fa8dca59f
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
@@ -938,11 +935,11 @@ User1 Email (The user making an action) ,
 User2 Email (The user viewing the action made by user 2),
 TimeStamp (The amount of time user2 takes while viewing user1's action)
 The query first matches user1 with all the cuisines he has a relation with and the node Scores
-Then, it checks if there's a relation LIKE_CUISINE between user2 and the same cuisines that user1 has a relation with 
-and sets the score in LIKE_CUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
+Then, it checks if there's a relation LIKECUISINE between user2 and the same cuisines that user1 has a relation with 
+and sets the score in LIKECUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
  The factor will be set by the Scores node which has a property called "timeFactor".
 */
-exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKE_CUISINE]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LIKE_CUISINE]->(cui) set li.score = li.score + (ts*s.timeFactor) ";
+exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKECUISINE]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LIKECUISINE]->(cui) set li.score = li.score + (ts*s.timeFactor) ";
 exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
     db.query(exports.UserTimeUserQuery, params = {
         u1: UserEmail,
