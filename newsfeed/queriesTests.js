@@ -1253,3 +1253,135 @@ describe('I can create a cuisine', function () {
  });
 });
 
+describe('score changes between user and cuisine on making yum on photo', function () {
+ it('Sscore should increases on making yums', function (done) {
+     initialize();
+     function initialize(){
+        db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+             db.query('CREATE (:Restaurant { name:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+             db.query('CREATE (:Cuisine { name:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)", params = {
+         ep: 'Hossamtest1',
+        rp: 'Hossamtest1',
+        url: 'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query( "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:HAS_CUISINE]->(c)", params = {
+                np: 'Hossamtest1',
+        		cp:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query("MATCH (u:User{email:'Hossamtest1'}),(c:Cuisine{name:'Hossamtest1'}) CREATE (u)-[:LIKECUISINE{score:0}]->(c)", params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			test();
+        }
+    });
+        }
+    });
+        }
+    });
+            
+			
+		
+        }
+    });
+        }
+    });
+        }
+    });
+    }
+   function test(){
+        db.query(queries.UserAddPhotoYumsScore, params = {
+        ep: 'Hossamtest1',url:'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query("OPTIONAL MATCH (u:User{email:'Hossamtest1'})-[rel:LIKECUISINE]->(c:Cuisine {name: {np}}) RETURN rel.score;", params = {
+        np: 'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel.score'];
+            });
+            should(Number(relationship)).be.exactly(5);
+            done();
+        }
+    });
+    }
+ });
+});
+describe('score changes between user and cuisine on making yucks on photo', function () {
+ it('Sscore should decreases on making yucks', function (done) {
+     initialize();
+     function initialize(){
+        test();
+    }
+   function test(){
+        db.query(queries.UserAddPhotoYucksScore, params = {
+        ep: 'Hossamtest1',url:'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query("OPTIONAL MATCH (u:User{email:'Hossamtest1'})-[rel:LIKECUISINE]->(c:Cuisine {name: {np}}) RETURN rel.score;", params = {
+        np: 'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel.score'];
+            });
+            should(Number(relationship)).be.exactly(0);
+            done();
+        }
+    });
+    }
+ });
+});
