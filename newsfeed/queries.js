@@ -932,10 +932,10 @@ The amount of time the user spends on a certain action done by another user
 will increase the score between the user and the cuisines.
 The function takes three inputs: 
 User1 Email (The user making an action) , 
-User2 Email (The user viewing the action made by user 2),
+User2 Email (The user viewing the action made by user 1),
 TimeStamp (The amount of time user2 takes while viewing user1's action)
 The query first matches user1 with all the cuisines he has a relation with and the node Scores
-Then, it checks if there's a relation LIKECUISINE between user2 and the same cuisines that user1 has a relation with 
+Then, it matches the relation LIKECUISINE between user2 and the same cuisines that user1 has a relation with 
 and sets the score in LIKECUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
  In here I assumed that the factor will be 4, so it will multiply the given timeStamp by 4 and add it to the score in LIKECUISINE.
 */
