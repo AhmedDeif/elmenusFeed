@@ -1110,17 +1110,16 @@ exports.createTimeDecay = function (scale) {
 /* 
 	Sprint #-2-US-6
     this function creates a new node which is a global one.
-    this function is used to change the values of all
+    it is used to change the values of all
     relations' scores.
     this node has a properties which are all the new values
     of the scores.
     it takes as an input the values of all scores
     then it sets the values.
     the values of the scores are then updates in other functions
-    by setting the score to its corresponding one in the globalNode.
-
-    
+    by setting the score to its corresponding one in the globalNode.   
 */
+
 exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
 " addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
 "shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
