@@ -1029,6 +1029,7 @@ describe('The user can add a photo yuck to a certain photo.', function() {
     });
 });
 
+
 /*
     User Story S11
     Sprint #-1-US-6
@@ -1083,6 +1084,7 @@ describe('The user can delete a photo yuck in a certain photo.', function() {
     });
 });
 
+
 /*
     User Story 14 & 15
     Sprint #-1-US-7
@@ -1136,6 +1138,7 @@ describe('I can share restaurant on facebook', function() {
         }
     });
 });
+
 
 /*
     User Story S21
