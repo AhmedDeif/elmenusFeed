@@ -324,6 +324,7 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
 var UserCommonYumsUserQuery = "MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-"+
                             "(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score "+
                             "set f.commonYumYuck = f.commonYumYuck + 1;";
+
 exports.UserCommonYumsUser  = function (UserEmail, UserEmailFollowed) {
     db.query(UserCommonYumsUserQuery, 
         params = {
@@ -470,7 +471,9 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      and replaced by a yum.
 */
 
-exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:Scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) Delete x;";
+exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;";
+exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LIKECUISINE]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}) set ts.score = ts.score+5"
+
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
@@ -479,7 +482,18 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         if (err) {
             throw err;
         }
-        console.log('done');
+        else{
+                db.query(exports.UserAddPhotoYumsScore, params = {
+                ep: UserEmail,
+                url: PhotoURL
+                }, function(err, results) {
+                if (err) {
+                    throw err;
+                }
+                console.log('done');
+                });
+        }
+        
     });
 }
 /*   Sprint #-1-US-4
@@ -512,7 +526,9 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      and replaced by a yuck.
 */
 
-exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}), (s:Scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) Delete x;";
+exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;";
+exports.UserAddPhotoYucksScore="MATCH (n:User { email:{ep} })-[ts:LIKECUISINE]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}) set ts.score = ts.score-5"
+
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYucksQuery, params = {
      ep: UserEmail,
@@ -521,7 +537,17 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
         if (err){
             throw err;
         }
-        console.log('done');
+       else{
+                db.query(exports.UserAddPhotoYucksScore, params = {
+                ep: UserEmail,
+                url: PhotoURL
+                }, function(err, results) {
+                if (err) {
+                    throw err;
+                }
+                console.log('done');
+                });
+        }
     });
 }
 /* 	 User Story S11
