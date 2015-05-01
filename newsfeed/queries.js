@@ -642,9 +642,23 @@ exports.getRelations = function(callback) {
 }
 
 
-var rel;
+
 exports.changeRelationCost = function(name, cost) {
-    db.query("MATCH (n)-[R:" + name + "]->(d) SET R.score = {c}", params = {
+    var property="";
+    switch(name){
+        case("FOLLOWS"):property="followsScore"; break;
+        case("LIKES_DISH"):property="likesDishScore";break;
+        case("HAS"):property="hasCuisineScore:";break;
+        case("Review"):property="reviewScore";break;
+        case("FAVORITES"):property="favouritesScore";break;
+        case("addPhoto"):property="addPhotoScore";break;
+        case("YUM_YUCK"):property="yum_yuckScore";break;
+        case("SHARE_RESTAURANT"):property="shareRestaurantScore";break;
+        case("SHARE_DISH"):property="shareDishScore";break;
+        case("SHARE_PHOTO"):property="sharePhotoScore";break;
+        case("LIKE"):property="likeCuisineScore";break;
+    }
+    db.query("MATCH (s:Scores) SET s."+ property +" = {c}", params = {
         c: cost
     }, function(err, results) {
         if (err) {
@@ -668,7 +682,7 @@ exports.Get_relation_info = function(r, req, res) {
         });
         data1 = ' \"Source\":' + JSON.stringify(data1);
         data2 = ' \"Destination\":' + JSON.stringify(data2);
-        rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
+        var rel = JSON.parse('{ ' + data1 + ' ,' + data2 + ' }');
         indexjs.Get_relation_info_cont(req, res, rel);
     });
     return rel;
