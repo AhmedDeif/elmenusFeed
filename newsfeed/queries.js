@@ -23,10 +23,10 @@ exports.createUser = function(email) {
     Sprint 2  US 4
     linking a user to all cuisines in the database.
     The function takes the email of the user as an input.
-    and it creates relation TOTALSCORE between this user and each cuisine in the database
+    and it creates relation LIKE_CUISINE between this user and each cuisine in the database
      and setting the initial score to 0 between this user and all cuisines.
 */
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKE_CUISINE]->(c) set k.score=0";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
@@ -915,7 +915,7 @@ Then, it checks if there's a relation LikeCuisine between user2 and the same cui
 and sets the total score in LikeCuisine (that is between user2 and the cuisines ) to total Score + (timeStamp * "a certain factor").
 Assuming the factor is 5, the timeStamp will be multiplied by 5 and added to the total score.
 */
-exports.UserTimeUserQuery = "MATCH (user1 {email:{u1}})-[:LikeCuisine]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LikeCuisine]->(cui) set li.totalScore = li.totalScore + (ts*5) ";
+exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKE_CUISINE]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LIKE_CUISINE]->(cui) set li.score = li.score + (ts*timeFactor) ";
 exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
     db.query(exports.UserTimeUserQuery, params = {
         u1: UserEmail,
@@ -936,9 +936,7 @@ exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
    then it sets the scores, then in all the previous functions,
    the relation score is set to the score set here in the global node.
 */
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,
-hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,
-shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
+exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} , hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} , shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11} , timeFactor:{ep12}  })";
 exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
@@ -951,11 +949,13 @@ exports.createUser = function(followsScore , reviewScore , likesDishScore , hasC
               ep8:shareDishScore ,
                ep9 :sharePhotoScore ,
                ep10:favouritesScore ,
-                ep11:likeCuisineScore
+                ep11:likeCuisineScore ,
+                ep12: timeFactor
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else console.log("Done");
     });
+}
 }
