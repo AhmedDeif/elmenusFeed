@@ -1255,4 +1255,3 @@ describe('I can create a cuisine', function () {
     }
  });
 });
-
