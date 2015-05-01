@@ -101,6 +101,10 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
 
+//queries.createGlobalNodeQuery(5 , 3, 6 , 2 , 5 , 3 , 5, 6 , 7 , 3 , 0); 
+//queries.changeRelationCost("LIKE",4);
+
+
  // This part is for testing queries
  /*
 queries.createUser("test 1");

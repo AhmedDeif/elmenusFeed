@@ -1262,27 +1262,20 @@ describe('The cost of Score should change', function() {
     it('set favourit cost to 7', function(done) {
         initialize();
         function initialize() {
-            db.query("CREATE (s:Scores { followsScore:'"+"5"+"' , reviewScore:'"+"4"+"' , likesDishScore:'"+"5"+"' ,hasCuisineScore:'"+"6"+"' , addPhotoScore:'"+"8"+"' , yum_yuckScore:'"+"6"+"' , shareRestaurantScore:'"+"2"+"' ,shareDishScore:'"+"4"+"' , sharePhotoScore:'"+"1"+"' , favouritesScore:'"+"2"+"', likeCuisineScore:'"+"0"+"' })",
+            db.query("CREATE (s:Scores { followsScore:5 , reviewScore:4 , likesDishScore:5 ,hasCuisineScore:6, addPhotoScore:8, yum_yuckScore:6, shareRestaurantScore:2 ,shareDishScore:4 , sharePhotoScore:1, favouritesScore:2, likeCuisineScore:0})",
              params = {}, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
                     throw err;
-                }
+                }else
                 test();
             });
         }
                function test(){
-        db.query(queries.changeRelationCost("LIKE","4"), params = {
-    }, function(err, results) {
-        if (err) {
-            console.error('Error');
-            throw err;
-        } else {
+        queries.changeRelationCost("LIKE",4);
             verify();
-        }
-    });
-   }
+    }
        function verify(){
         db.query('MATCH (s:Scores) return s.likeCuisineScore;', params = {}, function(err, results) {
         if (err) {
@@ -1293,7 +1286,8 @@ describe('The cost of Score should change', function() {
                     return result['s.likeCuisineScore'];
             });
             should.exist(Score);
-            Score.should.be("4");
+            //Score.should.be("4");
+            should(Score[0] == 4).be.ok;
             done();
         }
     });
