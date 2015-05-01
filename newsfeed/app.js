@@ -43,10 +43,10 @@ app.post('/relations', function(req, res) {
 app.get('/Get_relation_info/:tagId', routes.Get_relation_info);
 app.get('/add_dish', routes.addDish);
 app.post('/new_dish', function(req, res) {
-	var dishName = req.body.dishName;
-	var restaurant = req.param("rests");
+  var dishName = req.body.dishName;
+  var restaurant = req.param("rests");
   queries.createDishAndRestaurant(dishName, restaurant);
-	res.redirect('/add_dish');
+  res.redirect('/add_dish');
 })
 app.get('/costChange', routes.costChange);
 app.post('/costChange', function(req, res) {
@@ -100,10 +100,11 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
  app.listen(3000);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
-
+//queries.createGlobalNode(4, 9, 7, 0, 14, 13, 12, 11, 10, 8, 6);
+//queries.createTimeDecay(5000000);
  // This part is for testing queries
-
-/*queries.createUser("test 1");
+ /*
+queries.createUser("test 1");
 queries.createUser("test 2");
 queries.createUser("test 3");
 queries.createUser("test 4");
@@ -120,6 +121,7 @@ queries.createDish("Dish 4");
 queries.createDish("Dish 5");
 queries.createDish("Dish 6");
 queries.createDish("Dish 7");
+/*
 
 
 queries.addDishToRestaurant("Dish 1","Res 1");
@@ -155,7 +157,7 @@ queries.createFollowUser("test 4","test 1");
 queries.createFollowUser("test 5","test 2");
 
 
-
+/*
 
 queries.findCommonFollowers("test 1","test 2");
 queries.findCommonFollowers("test 1","test 3");
@@ -179,7 +181,6 @@ queries.setFollowersScore("test 2","test 5");
 
 
 
-
 queries.createrFavouriteUserRestaurant("test 2","Res 2");
 queries.createrFavouriteUserRestaurant("test 2","Res 1");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
@@ -188,5 +189,24 @@ queries.createrFavouriteUserRestaurant("test 4","Res 4");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
 queries.createrFavouriteUserRestaurant("test 1","Res 5");
 
-<<<<<<< HEAD
+
+queries.UserAddsPhotoToRestaurant("test 1", "Res 1", "photo 1");
+queries.UserAddsPhotoToRestaurant("test 1", "Res 2", "photo 2");
+queries.UserAddsPhotoToRestaurant("test 1", "Res 3", "photo 3");
+
+
+queries.UserAddPhotoYums("test 3", "photo 1");
+queries.UserAddPhotoYums("test 1", "photo 1");
+queries.UserAddPhotoYums("test 4", "photo 2");
+queries.UserAddPhotoYums("test 2", "photo 2");
+queries.UserAddPhotoYums("test 1", "photo 2");
+
+
+queries.UserCommonYumsUser("test 2", "test 3");
+
 */
+
+queries.createUser("test 6");
+queries.createUser("test 7");
+
+
