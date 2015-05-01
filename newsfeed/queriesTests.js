@@ -1255,3 +1255,58 @@ describe('I can create a cuisine', function () {
     }
  });
 });
+
+
+/*
+  Sprint #-2-US-2:
+*/
+describe('Increase the score between the user and cuisine depending on timeStamp ', function() {
+    it('Should increase score between user and cuisines that the user who made the action has a relation "LIKE_CUISINE" with', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {name: {u1}})-[:LIKE_CUISINE]->(:Cuisine {name: {cn}}), CREATE (:User {name: {u2}}),", params = {
+                u1: 'Rania',
+                u2: 'Nada',
+                cn: 'Chinese'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserTimeUserQuery, params = {
+                u1: 'Rania',
+                u2: 'Nada',
+                ts: '20'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("OPTIONAL MATCH (u2:User {name: {u2}})-[rel:LIKE_CUISINE]-> (c) RETURN rel;", params = {
+                u2: 'Nada',
+                cn: 'Chinese'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var relationship = results.map(function(result) {
+                    return result['rel'];
+                });
+                should.exist(relationship);
+                done();
+            });
+        }
+    });
+});
