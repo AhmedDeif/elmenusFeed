@@ -449,7 +449,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      and replaced by a yum.
 */
 
-exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:Scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) Delete x;";
+exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:Scores) with s,user,photo CREATE (user)-[:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) WITH s,user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) Delete x;";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
@@ -461,7 +461,8 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
         console.log('done');
     });
 }
-/*   Sprint #-1-US-4
+/*   User Story S9
+	 Sprint #-1-US-4
      The user can delete a photo yum in a certain photo.
      This function takes the User Email and the Photo URL as an input.
      It matches the user and the photo and deletes the relationship "YUM_YUCK" with 'value: true' between them.
@@ -491,7 +492,7 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      and replaced by a yuck.
 */
 
-exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}), (s:Scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) Delete x;";
+exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}), (s:Scores) with user,photo,s CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE}]->(photo) Delete x;";
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYucksQuery, params = {
      ep: UserEmail,
@@ -530,7 +531,7 @@ exports.UserDeletePhotoYuck = function(UserEmail, PhotoURL) {
     of 5 points that is to be added to the total score between users who follow
     each other and shared the same restaurant.
 */
-exports.UserSharesRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) , (s:Scores) MERGE (user)-[:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant)";
+exports.UserSharesRestaurantQuery = "MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}), (s:Scores) with user,restaurant,s MERGE (user)-[:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant)";
 exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
     db.query(exports.UserSharesRestaurantQuery, params = {
         ep: UserEmail,
@@ -541,13 +542,14 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
     });
 }
 
-/*  Sprint #-1-US-8
+/*   User Story S21
+	 Sprint #-1-US-8
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
 */
 exports.UserSharesDish = function(UserEmail, DishName) {
-    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) , (s:Scores) CREATE (user)-[:SHARE_DISH {score:s.shareDishScore}]->(dish)", params = {
+    db.query("MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) , (s:Scores) with user,dish,s CREATE (user)-[:SHARE_DISH {score:s.shareDishScore}]->(dish)", params = {
         ep: UserEmail,
         dn: DishName
     }, function(err, results) {
@@ -911,9 +913,7 @@ exports.getNewsfeed = function (email, callback) {
    then it sets the scores, then in all the previous functions,
    the relation score is set to the score set here in the global node.
 */
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,
-hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,
-shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
+exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
 exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
