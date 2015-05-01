@@ -910,10 +910,10 @@ The function takes three inputs:
 User1 Email (The user making an action) , 
 User2 Email (The user viewing the action made by user 2),
 TimeStamp (The amount of time user2 takes while viewing user1's action)
-The query first matches user1 with all the cuisines he has a relation with. 
-Then, it checks if there's a relation LikeCuisine between user2 and the same cuisines that user1 has a relation with 
-and sets the total score in LikeCuisine (that is between user2 and the cuisines ) to total Score + (timeStamp * "a certain factor").
-Assuming the factor is 5, the timeStamp will be multiplied by 5 and added to the total score.
+The query first matches user1 with all the cuisines he has a relation with and the node Scores
+Then, it checks if there's a relation LIKE_CUISINE between user2 and the same cuisines that user1 has a relation with 
+and sets the score in LIKE_CUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
+ The factor will be set by the Scores node which has a property called "timeFactor".
 */
 exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKE_CUISINE]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LIKE_CUISINE]->(cui) set li.score = li.score + (ts*s.timeFactor) ";
 exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
@@ -936,14 +936,8 @@ exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
    then it sets the scores, then in all the previous functions,
    the relation score is set to the score set here in the global node.
 */
-<<<<<<< HEAD
 
 exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} , hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} , shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11} , timeFactor:{ep12}  })";
-=======
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,
-hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,
-shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
->>>>>>> f3cd640241ad1c31230636e75cd9f60cc6f67bba
 exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
