@@ -1260,56 +1260,78 @@ describe('I can create a cuisine', function () {
 /*
   Sprint #-2-US-2:
 */
-describe('Increase the score between the user and cuisine depending on timeStamp ', function() {
-    it('Should increase score between user and cuisines that the user who made the action has a relation "LIKE_CUISINE" with', function(done) {
-        initialize();
-        function initialize() {
-            db.query("CREATE (:User {name: {u1}})-[:LIKE_CUISINE]->(:Cuisine {name: {cn}}), CREATE (:User {name: {u2}}),", params = {
-                u1: 'Rania',
-                u2: 'Nada',
-                cn: 'Chinese'
-            }, function(err, results) {
-                if (err)
-                {
-                    console.error('Error');
-                    throw err;
-                }
-                test();
-            });
-        }
-        function test() {
+describe('Score increases between user and cuisine depending on the time spent by that user on a certain action', function () {
+ it('Score should increase between user and cuisine', function (done) {
+     initialize();
+     function initialize(){
+        db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE(score:0}]->c', params = {
+        u1: 'User1',
+        u2: 'User2',
+        cn: 'cuis'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            //test();
             db.query(queries.UserTimeUserQuery, params = {
-                u1: 'Rania',
-                u2: 'Nada',
+                u1: 'User1',
+                u2: 'User2',
                 ts: '20'
-            }, function(err, results) {
-                if (err)
-                {
-                    console.error('Error');
-                    throw err;
-                }
-                verify();
-            });
-        }
-        function verify() {
-            db.query("OPTIONAL MATCH (u2:User {name: {u2}})-[rel:LIKE_CUISINE]-> (c) RETURN rel;", params = {
-                u2: 'Nada',
-                cn: 'Chinese'
-            }, function(err, results) {
-                if (err)
-                {
-                    console.error('Error');
-                    throw err;
-                }
-                var relationship = results.map(function(result) {
-                    return result['rel'];
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            //test();
+             db.query(queries.UserTimeUserQuery, params = {
+                u1: 'User1',
+                u2: 'User2',
+                ts: '20'
+                 }, function(err, results) {
+                    if (err) {
+                            console.error('Error');
+                            throw err;
+                    } else {
+                        test();
+                     }
                 });
-                should.exist(relationship);
-                done();
-            });
         }
     });
+        }
+    });
+    }
+     function test(){
+        db.query(queries.UserTimeUserQuery, params = {
+                u1: 'User1',
+                u2: 'User2',
+                ts: '20'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+     });}
+    function verify(){
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        u2: 'User2',
+        cp: 'cuis'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var scoreAfterAdd = results.map(function(result) {return result['l.score'];});
+            should(Number(scoreAfterAdd)).be.exactly(10)
+            done();
+        }
+    });
+    }
+ });
 });
+
 
 /*  User Story 38
     Sprint #-1-US-2

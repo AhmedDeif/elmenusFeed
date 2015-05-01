@@ -939,7 +939,7 @@ Then, it checks if there's a relation LIKECUISINE between user2 and the same cui
 and sets the score in LIKECUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
  The factor will be set by the Scores node which has a property called "timeFactor".
 */
-exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKECUISINE]->(cui:Cuisine) , MERGE (user2 {email:{u2}}) -[li:LIKECUISINE]->(cui) set li.score = li.score + (ts*s.timeFactor) ";
+exports.UserTimeUserQuery = "MATCH (s:Scores), (user1 {email:{u1}})-[:LIKECUISINE]->(cui:Cuisine)  MERGE (user2 {email:{u2}}) -[li:LIKECUISINE]->(cui) set li.score = li.score + (ts*s.timeFactor) ";
 exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
     db.query(exports.UserTimeUserQuery, params = {
         u1: UserEmail,
