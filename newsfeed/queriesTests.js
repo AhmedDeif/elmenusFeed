@@ -859,17 +859,17 @@ function formQuery(Query,params){
 Sprint2-S3
 */
 
+
 describe('A restaurant can be suggested', function () {
  it('A list of restaurants should be outputed', function (done) {
     test();
     function test(){
-        db.query(queries.getCommonRestaurants("menna@mail.com","Potato Wedges"), function(err, results) {
+        db.query(queries.getCommonRestaurants("menna@mail.com","Dumplings"), params={},function(err, results) {
                 if (err) {
-                    console.error('Error');
                     throw err;
                 } else {
-                    var resName = results.map(function(result) {return result['re.name'];});
-                    should(resName[0] == 'Burger King').be.ok;
+                    var resName = results.map(function(result) {return result['re'];});
+                    should(resName[0] == 'Spectra').be.ok;
                     should(resName[1] == 'Burger King').be.ok;
                     done();
                 }

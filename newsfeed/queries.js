@@ -377,14 +377,14 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
         } else console.log("Done");
     });
 }
-  Sprint #-1-US-25
+  /*Sprint #-1-US-25
      The user can see posts on the news feed prioritized by the common photo yums 
      between that user and other users he's following.
      This function takes two inputs, the UserEmail and the UserEmailFollowed (the user followed).
      It matches the two users having yums on the same photos, and matches the users having a FOLLOWS relationship
      between them. I'll use the f to set the total score which is a property of the relation FOLLOWS.
      This allows the total Score between two users to be increased by 3 for each photo yum-ed by both users.
-
+*/
 exports.UserCommonYumsUser = function(UserEmail, UserEmailFollowed) {
     db.query("MATCH (user1 {email:{ep1}})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]-(user2 {email:{ep2}}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score;", params = {
         ep1: UserEmail,
@@ -496,8 +496,7 @@ exports.getRelations = function(callback) {
 }
 var rel;
 exports.changeRelationCost = function(name, cost) {
-    db.query("MATCH (n)-[R:" + name + "]->(d) SET R.score = {c}", params = {
-        c: cost
+    db.query("MATCH (n)-[R:'" + name + "']->(d) SET R.score = "+cost, params = {
     }, function(err, results) {
         if (err) {
             console.log('Error');
@@ -795,11 +794,9 @@ restaurants with the same cuisine that this dish's restaurant belongs to.
 */
 exports.getCommonRestaurants = function(email, Dish) {
     var qu = "MATCH (n:User{email:'"+email+"'}), (u:User), (d:Dish{dish_name:'"+Dish
-        + "'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)<-[:LIKES]-(d), (u)<-[:LIKES]-(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:OfferedBy]->(c)<-[:OfferedBy]-(r) WHERE re <> r AND d <> di RETURN re.name;"
-    console.log(qu);
+        + "'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:OfferedBy]->(c)<-[:OfferedBy]-(r) WHERE re <> r AND d <> di RETURN DISTINCT(re);"
     db.query(qu,params={}, function(err, results) {
         if (err) {
-            console.log("error");
             throw err;
         }
 
