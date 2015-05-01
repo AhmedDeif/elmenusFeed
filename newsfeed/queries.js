@@ -2,6 +2,9 @@ var neo4j = require('neo4j');
 var indexjs = require('./routes/index.js');
 var db = new neo4j.GraphDatabase('http://localhost:7474');
 var queries = require('./queries.js');
+
+
+
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
@@ -26,7 +29,7 @@ exports.createUser = function(email) {
     and it creates relation TOTALSCORE between this user and each cuisine in the database
      and setting the initial score to 0 between this user and all cuisines.
 */
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKECUISINE{score:0}]->(c)";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
@@ -720,7 +723,7 @@ exports.Get_user_info  = function (r, req, res) {
 */
 exports.createCuisineQuery = "CREATE (:Cuisine { name:{np} })";
 exports.createCuisine = function(name) {
-    db.query(createCuisineQuery , params = {
+    db.query(exports.createCuisineQuery , params = {
         np: name
     }, function(err, results) {
         if (err) {
@@ -739,7 +742,7 @@ exports.createCuisine = function(name) {
     and it creates relation TOTALSCORE between this cuisine and each user in the database
     and setting the initial score to 0 between each user and this cuisine.
 */ 
-exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[k:TOTALSCORE]->(c) set k.score=0";
+exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[k:LIKECUISINE]->(c) set k.score=0";
 exports.newAddedCuisineToUsers = function(cuisine) {
     db.query(exports.newAddedCuisineToUsersQuery, params = {
         np: cuisine
@@ -1031,7 +1034,9 @@ exports.createTimeDecay = function (scale) {
    then it sets the scores, then in all the previous functions,
    the relation score is set to the score set here in the global node.
 */
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
+exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
+"hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
+"shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
 exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
