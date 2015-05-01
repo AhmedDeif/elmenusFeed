@@ -1264,7 +1264,7 @@ describe('Score increases between user and cuisine depending on the time spent b
  it('Score should increase between user and cuisine', function (done) {
      initialize();
      function initialize(){
-        db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE(score:0}]->c', params = {
+        db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE{score:0}]->c', params = {
         u1: 'User1',
         u2: 'User2',
         cn: 'cuis'
@@ -1315,7 +1315,7 @@ describe('Score increases between user and cuisine depending on the time spent b
         }
      });}
     function verify(){
-        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        db.query('optional MATCH (n:User { email:{u2} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
         u2: 'User2',
         cp: 'cuis'
     }, function(err, results) {
@@ -1324,7 +1324,7 @@ describe('Score increases between user and cuisine depending on the time spent b
             throw err;
         } else {
             var scoreAfterAdd = results.map(function(result) {return result['l.score'];});
-            should(Number(scoreAfterAdd)).be.exactly(10)
+            should(Number(scoreAfterAdd)).be.exactly(80)
             done();
         }
     });
