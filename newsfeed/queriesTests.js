@@ -236,7 +236,7 @@ describe('I can dislike a dish in a specific restaurant', function () {
  it('A dislike should be added and a score has to be added to follow relation', function (done) {
      initialize();
      function initialize(){
-        db.query('create(:User{email:{ep}})-[:FOLLOWS{totalScore:0,score:1}]->(u:User{email:{ep1}}),(:Restaurant{name:{rp}})-[:HAS]->(:Dish{dish_name:{dp}})<-[:LIKES_DISH{likes:FALSE, score:7}]-(u)', params = {
+        db.query('create(:User{email:{ep}})-[:FOLLOWS{totalScore:0}]->(u:User{email:{ep1}}),(:Restaurant{name:{rp}})-[:HAS]->(:Dish{dish_name:{dp}})<-[:LIKES_DISH{likes:FALSE}]-(u)', params = {
         ep: 'kareemAdel4@mail.com',
         ep1: 'kareemAdel5@mail.com',
         rp: 'Spectra',
