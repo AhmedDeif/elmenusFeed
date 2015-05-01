@@ -794,7 +794,7 @@ restaurants with the same cuisine that this dish's restaurant belongs to.
 */
 exports.getCommonRestaurants = function(email, Dish) {
     var qu = "MATCH (n:User{email:'"+email+"'}), (u:User), (d:Dish{dish_name:'"+Dish
-        + "'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:OfferedBy]->(c)<-[:OfferedBy]-(r) WHERE re <> r AND d <> di RETURN DISTINCT(re);"
+        + "'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:HasCuisine]->(c)<-[:HasCuisine]-(r) WHERE re <> r AND d <> di RETURN DISTINCT(re);"
     db.query(qu,params={}, function(err, results) {
         if (err) {
             throw err;
