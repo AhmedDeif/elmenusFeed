@@ -9,12 +9,20 @@ var db = new neo4j.GraphDatabase('http://localhost:7474');
 //(S3) I can sign up.
 //The function takes the email of the user as an input.
 //and it creates a new user.
+/*
+    Sprint 2  US 4
+    linking a user to all cuisines in the database.
+    The function takes the email of the user as an input.
+    and it creates relation TOTALSCORE between this user and each cuisine in the database
+     and setting the initial score to 0 between this user and all cuisines.
+*/
 describe('I can sign up', function () {
- it('Should add a user to the database', function (done) {
+ it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-        db.query('match n optional match ()-[r]-() delete r,n', params = {}
-        , function(err, results) {
+       db.query('CREATE (:Cuisine { name:{np} })', params = {
+                np:'Sushi'
+        }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
@@ -36,15 +44,17 @@ describe('I can sign up', function () {
     });
    }
     function verify(){
-        db.query('optional match (n:User { email:{ep} })return n', params = {
+        db.query('OPTIONAL MATCH (u:User {name: {ep}})-[rel:TOTALSCORE]->(c:Cuisine) RETURN rel;', params = {
         ep: 'kareemAdel@mail.com'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var user = results.map(function(result) {return result['n'];});
-            should.exist(user[0]);
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
@@ -157,18 +167,32 @@ describe('I can create Review on a Restaurant', function () {
  });
 });
 
-    /*
-    I can create a restaurant
-    */
-describe('I can create a restaurant', function () {
- it('A restaurant should be created', function (done) {
+//creating a new restaurant and linking it to a cuisine.
+/*
+    Sprint 2  US 4
+    linking a restaurant to a certain cuisine in the database.
+    The function takes the name of the restaurant and the name of the cuisine as inputs.
+    and it creates relation LINKEDTO between this restaurant and that cuisine.
+*/
+describe('I can create a restaurant and link it to a certain cuisine already in the database', function () {
+ it('A restaurant should be created and a relation LINKEDTO between this created restaurant and the chosen cuisine', function (done) {
      initialize();
      function initialize(){
+        db.query('CREATE (:Cuisine { name:{np} })', params = {
+        np: 'Sushi'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
             test();
+        }
+    });
     }
      function test(){
         db.query(queries.createResturantQuery, params = {
-        np: 'Peking'
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -178,15 +202,18 @@ describe('I can create a restaurant', function () {
         }
      });}
     function verify(){
-        db.query('optional MATCH (Res:Restaurant { name:{np} }) return Res', params = {
-        np: 'Peking'
+        db.query('OPTIONAL MATCH (r:Restaurant {name: {np}})-[rel:HAS_CUISINE]->(c:Cuisine {name: {cp}}) RETURN rel;', params = {
+        np: 'Sushi Bay',
+        cp:'Sushi'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            var Res = results.map(function(result) {return result['Res'];});
-            should.exist(Res[0]);
+             var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
             done();
         }
     });
@@ -623,7 +650,6 @@ describe('A user can share a photo', function () {
                     console.error('Error');
                     throw err;
                 } else {
-                        console.log('created');
                         test();
                     }
         });
@@ -638,7 +664,6 @@ describe('A user can share a photo', function () {
                     console.error('Error');
                     throw err;
                 } else {
-                    console.log('found');
                     verify();
                 }
          });
@@ -704,11 +729,13 @@ describe('A restaurant can be created', function () {
  });
 });
 
+
+//already done
 /*  
     User Story 30
     Sprint #-0-US-2
 */
-
+/*
 describe('A dish can be created', function () {
  it('', function (done) {
     test();
@@ -742,7 +769,7 @@ describe('A dish can be created', function () {
     }
  });
 });
-
+*/
 /*
     User Story 31
     Sprint #-0-US-3
@@ -782,15 +809,6 @@ describe('A User can be created', function () {
  });
 });
 
-
-function formQuery(Query,params){
-    for (var key in params) {
-    if (params.hasOwnProperty(key)) {
-    Query = Query.replace("{" + key + "}","'" + params[key] + "'");
-    }
-    }
-    return Query;
-}
 /*
     User Story 32
     Sprint #-1-US-22
@@ -814,8 +832,8 @@ describe('Add a new cuisine to a restaurant', function() {
         }
         function test() {
             db.query(queries.createRelCuisineRestaurantQuery, params = {
-                cp: 'test restaurant',
-                rp: 'test cuisine'
+                rp: 'test restaurant',
+                cp: 'test cuisine'
             }, function(err, results) {
                 if (err)
                 {
@@ -838,18 +856,403 @@ describe('Add a new cuisine to a restaurant', function() {
                 var relationship = results.map(function(result) {
                     return result['rel'];
                 });
-                should.exist(relationship);
+                should.exist(relationship[0]);
                 done();
             });
         }
     });
 });
 
-function formQuery(Query,params){
-	for (var key in params) {
-	if (params.hasOwnProperty(key)) {
-	Query = Query.replace("{" + key + "}","'" + params[key] + "'");
-	}
-	}
-	return Query;
-}
+/*
+    User Story S8
+    Sprint #-1-US-3
+*/
+
+describe('The user can add a photo yum to a certain photo', function() {
+    it('A photo yum relation is added to a certain photo', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:Photo {url: {url}}),(:User {email: {ep}})", params = {
+                url: 'myPhotoURL',
+				ep: 'kareemAdel11@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserAddPhotoYumsQuery, params = {
+				ep: 'kareemAdel11@mail.com',
+				url: 'myPhotoURL'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) optional match (user)-[y2:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1,y2", params = {
+				ep: 'kareemAdel11@mail.com',
+				url: 'myPhotoURL'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+				var y2 = results.map(function(result) {
+                    return result['y2'];
+                });
+                should.exist(y1[0]);
+				should.not.exist(y2[0]);
+                done();
+            });
+        }
+    });
+});
+
+/*
+    User Story S9
+    Sprint #-1-US-4
+*/
+
+describe('The user can delete a photo yum in a certain photo', function() {
+    it('a photo yum relation should be removed', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
+                url: 'myPhotoURL1',
+				ep: 'kareemAdel12@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserDeletePhotoYumQuery, params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) return y1", params = {
+				ep: 'kareemAdel12@mail.com',
+				url: 'myPhotoURL1'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.not.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+
+/*
+    User Story S10
+    Sprint #-1-US-5
+*/
+
+describe('The user can add a photo yuck to a certain photo.', function() {
+    it('a photo yuck relation should be added.', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {email: {ep}}),(:Photo {url: {url}})", params = {
+                url: 'myPhotoURL2',
+				ep: 'kareemAdel13@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserAddPhotoYucksQuery, params = {
+				ep: 'kareemAdel13@mail.com',
+				url: 'myPhotoURL2'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
+				ep: 'kareemAdel13@mail.com',
+				url: 'myPhotoURL2'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+
+
+/*
+    User Story S11
+    Sprint #-1-US-6
+*/
+
+describe('The user can delete a photo yuck in a certain photo.', function() {
+    it('a photo yuck relation should be deleted.', function(done) {
+        initialize();
+        function initialize() {
+            db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
+                url: 'myPhotoURL3',
+				ep: 'kareemAdel14@mail.com'
+            }, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserDeletePhotoYuckQuery, params = {
+				ep: 'kareemAdel14@mail.com',
+				url: 'myPhotoURL3'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
+				ep: 'kareemAdel14@mail.com',
+				url: 'myPhotoURL3'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.not.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+
+
+/*
+    User Story 14 & 15
+    Sprint #-1-US-7
+*/
+
+describe('I can share restaurant on facebook', function() {
+    it('Should create a relation between the restaurant and the user called [SHARE_RESTAURANT]', function(done) {
+        initialize();
+        function initialize() {
+            db.query("create (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}})", params = {
+					ep: 'kareemAdel15@mail.com',
+					rn: 'RestaurantKareem15'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserSharesRestaurantQuery, params = {
+					ep: 'kareemAdel15@mail.com',
+					rn: 'RestaurantKareem15'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) with user,restaurant optional MATCH (user)-[y1:SHARE_RESTAURANT {score:5}]->(restaurant) return y1", params = {
+					ep: 'kareemAdel15@mail.com',
+					rn: 'RestaurantKareem15'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+
+
+/*
+    User Story S21
+    Sprint #-1-US-8
+*/
+
+describe('The user can share a dish on facebook or twitter.', function() {
+    it('Should create a relation between the dish and the user called [SHARE_DISH]', function(done) {
+        initialize();
+        function initialize() {
+            db.query("create (:User {email: {ep}}), (:Dish {dish_name: {dn}})", params = {
+					ep: 'kareemAdel16@mail.com',
+					dn: 'DishKareem16'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                test();
+            });
+        }
+        function test() {
+            db.query(queries.UserSharesDishQuery, params = {
+					ep: 'kareemAdel16@mail.com',
+					dn: 'DishKareem16'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                verify();
+            });
+        }
+        function verify() {
+            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) optional MATCH (user)-[y1:SHARE_DISH {score:5}]->(dish) return y1", params = {
+					ep: 'kareemAdel16@mail.com',
+					dn: 'DishKareem16'
+			}, function(err, results) {
+                if (err)
+                {
+                    console.error('Error');
+                    throw err;
+                }
+                var y1 = results.map(function(result) {
+                    return result['y1'];
+                });
+                should.exist(y1[0]);
+                done();
+            });
+        }
+    });
+});
+/*
+    Sprint 1  US 21
+    createCuisine(name):
+    This function takes as input the Cuisine's
+    name and creates the corresponding cuisine in the
+    database.
+    (S2US4) linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database and setting the initial score to 0 between each user and this cuisine.
+*/
+/*
+    Sprint 2  US 4
+    linking a newly added cuisine to all the users in the database.
+    The function takes the name of the cuisine as an input.
+    and it creates relation TOTALSCORE between this cuisine and each user in the database
+    and setting the initial score to 0 between each user and this cuisine.
+*/ 
+describe('I can create a cuisine', function () {
+ it('Should add a cuisine to the database and connect it to all the available users in the database', function (done) {
+     initialize();
+     function initialize(){
+        db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'khaled'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            test();
+        }
+    });
+    }
+   function test(){
+        db.query(queries.createCuisineQuery, params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query('OPTIONAL MATCH (u:User)-[rel:TOTALSCORE]->(c:Cuisine {name: {np}}) RETURN rel;', params = {
+        np: 'Sushi'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel'];
+            });
+            should.exist(relationship);
+            done();
+        }
+    });
+    }
+ });
+});
+
