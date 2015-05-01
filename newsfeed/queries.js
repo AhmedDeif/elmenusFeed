@@ -924,7 +924,8 @@ exports.getLatestActionTime = function (callback) {
     this decay specifies how fast the score should drop as it gets further from the latest action.
     The function gets the timestamp of the latest action by calling getLatestActionTime() and then
     does a check on the score, if it is not already multiplied by a time decay factor it does that,
-    otherwise the score stays the same, since it is already mulitplied by a time decay factor.
+    otherwise the score stays the same, since it is already mulitplied by a time decay factor. It
+    does this for all kinds of actions/relations.
 */
 exports.createTimeDecay = function (scale) {
     exports.getLatestActionTime(function(latest) {
