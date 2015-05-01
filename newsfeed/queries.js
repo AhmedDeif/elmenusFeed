@@ -789,7 +789,8 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
     });
 }
 /*
-    Sprint 1  US 23
+    User Story 37
+    Sprint #-1-US-23
     createRelLikeCuisine(User Email,Cuisine name):
     This function takes as input the Cuisine's 
     name and User's email and finds them in the database when
@@ -809,6 +810,8 @@ exports.createRelUserCuisine = function(UserEmail, CuisineName) {
     });
 }
 /*
+	User Story 37
+    Sprint #-1-US-23
     createRelUserResCuisines(User email, Cuisine name):
     another method that make user like all cuisines of restaurant
     it finds the user and restaurant in the database then it gets
@@ -828,13 +831,13 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
 }
 
 /*
-User Story 13
-SPRINT#0 US 15
-This function removes a specific restaurant from user's favourites
-It takes as parameters the email of the user and restaurant's name.
-It matches the user by email and the restaurant by name. Then it findes if the 
-user favourites this restaurant. If so, it removes the relation [:FAVORITES]
-from the database.
+	User Story 13
+    Sprint #-0-US-15
+	This function removes a specific restaurant from user's favourites
+	It takes as parameters the email of the user and restaurant's name.
+	It matches the user by email and the restaurant by name. Then it findes if the 
+	user favourites this restaurant. If so, it removes the relation [:FAVORITES]
+	from the database.
 */
 exports.removeFavouriteResturantQuery = "MATCH (u:User)-[f:FAVORITES]->(r:Restaurant) where u.email = {e} and r.name = {r} DELETE f;";
 exports.removeFavouriteResturant = function(email, resName) {
@@ -862,7 +865,8 @@ exports.getUserFollowScore = function() {
         newScore = relationScore * commonFollowers;
     });
 }
-/*  Sprint #-1-US-1
+/*   User Story S1
+	 Sprint #-1-US-1
      The user can see his activity log.
      This function takes the User Email as an input.
      It matches the user with all other nodes that he has a relation with.
@@ -918,15 +922,15 @@ exports.getNewsfeed = function (email, callback) {
 
 
 /* 
-   Sprint #-2-US-6
-   this function creates a new node which is a global one
-   which has properties all the scores of all relations
-   in the database.
-   the function takes as an input the scores of all relations
-   then it sets the scores, then in all the previous functions,
-   the relation score is set to the score set here in the global node.
+	Sprint #-2-US-6
+    this function creates a new node which is a global one
+    which has properties all the scores of all relations
+    in the database.
+    the function takes as an input the scores of all relations
+    then it sets the scores, then in all the previous functions,
+    the relation score is set to the score set here in the global node.
 */
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
+exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}})";
 exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
