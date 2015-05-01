@@ -1551,3 +1551,4 @@ describe('score changes between user and cuisine on making yucks on photo', func
     }
  });
 });
+
