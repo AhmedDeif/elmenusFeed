@@ -1262,7 +1262,8 @@ describe('The cost of Score should change', function() {
     it('set favourit cost to 7', function(done) {
         initialize();
         function initialize() {
-            db.query(db.query("CREATE (s:Scores { followsScore:'"+"5"+"' , reviewScore:'"+"4"+"' , likesDishScore:'"+"5"+"' ,hasCuisineScore:'"+"6"+"' , addPhotoScore:'"+"8"+"' , yum_yuckScore:'"+"6"+"' , shareRestaurantScore:'"+"2"+"' ,shareDishScore:'"+"4"+"' , sharePhotoScore:'"+"1"+"' , favouritesScore:'"+"2"+"', likeCuisineScore:'"+"0"+"' })"), params = {}, function(err, results) {
+            db.query("CREATE (s:Scores { followsScore:'"+"5"+"' , reviewScore:'"+"4"+"' , likesDishScore:'"+"5"+"' ,hasCuisineScore:'"+"6"+"' , addPhotoScore:'"+"8"+"' , yum_yuckScore:'"+"6"+"' , shareRestaurantScore:'"+"2"+"' ,shareDishScore:'"+"4"+"' , sharePhotoScore:'"+"1"+"' , favouritesScore:'"+"2"+"', likeCuisineScore:'"+"0"+"' })",
+             params = {}, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
