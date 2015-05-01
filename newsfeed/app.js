@@ -103,7 +103,7 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
 
  // This part is for testing queries
  
-/*
+
 queries.createDish("Dish 1");
 queries.createDish("Dish 2");
 queries.createDish("Dish 3");
@@ -116,7 +116,7 @@ queries.createCuisine("Pasta");
 queries.createCuisine("Burger");
 
 
-*/
+/*
 
 queries.createUser("test 1");
 queries.createUser("test 2");
@@ -212,7 +212,5 @@ queries.UserCommonYumsUser("test 2", "test 3");
 
 */
 
-queries.createUser("test 6");
-queries.createUser("test 7");
 
 
