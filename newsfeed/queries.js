@@ -617,7 +617,7 @@ exports.Get_restaurant_info = function(name, callback) {
 //The function takes as inputs the email of the user and the name of the restaurant 
 //and it gets the nodes of the restaurant and the user and creates a new relation called FAVORITES between the two nodes.
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3}]->(rest);", params = {
+    db.query("MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) , (s:Scores) CREATE (user)-[:FAVORITES {score: s.favouritesScore}]->(rest);", params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
@@ -915,14 +915,13 @@ exports.getNewsfeed = function (email, callback) {
    the relation score is set to the score set here in the global node.
 */
 exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
-"hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
+" addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
 "shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
-exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
+exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore ,  addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
          ep2: reviewScore ,
-          ep3: likesDishScore ,
-           ep4: hasCuisineScore, 
+          ep3: likesDishScore , 
            ep5:addPhotoScore ,
             ep6:yum_yuckScore ,
              ep7 :shareRestaurantScore ,
