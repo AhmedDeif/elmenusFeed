@@ -917,7 +917,8 @@ exports.getLatestActionTime = function (callback) {
 
 exports.createTimeDecay = function (scale) {
     exports.getLatestActionTime(function(latest) {
-        db.query("MATCH (a)-[r2:FAVORITES]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+        db.query("MATCH (a)-[r2:FAVORITES]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.favouritesScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
             if (err)
             {
                 console.error("Error");
@@ -925,7 +926,8 @@ exports.createTimeDecay = function (scale) {
             }
             console.log("Done");
         });
-        db.query("MATCH (a)-[r2:LIKES_DISH]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+        db.query("MATCH (a)-[r2:LIKES_DISH]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.likesDishScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
             if (err)
             {
                 console.error("Error");
@@ -933,7 +935,8 @@ exports.createTimeDecay = function (scale) {
             }
             console.log("Done");
         });
-        db.query("MATCH (a)-[r2:FOLLOWS]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+        db.query("MATCH (a)-[r2:FOLLOWS]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.followsScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
             if (err)
             {
                 console.error("Error");
@@ -941,7 +944,8 @@ exports.createTimeDecay = function (scale) {
             }
             console.log("Done");
         });
-        db.query("MATCH (a)-[r2:addPhoto]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+        db.query("MATCH (a)-[r2:addPhoto]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.addPhotoScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
             if (err)
             {
                 console.error("Error");
@@ -949,7 +953,53 @@ exports.createTimeDecay = function (scale) {
             }
             console.log("Done");
         });
-        db.query("MATCH (a)-[r2:LikeCuisine]->(b) SET r2.score = r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + ")))", function (err, results) {
+        db.query("MATCH (a)-[r2:LikeCuisine]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.likeCuisineScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:YUM_YUCK]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.yum_yuckScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:SHARE_DISH]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.shareDishScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:Review]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.reviewScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:SHARE_PHOTO]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.sharePhotoScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
+            if (err)
+            {
+                console.error("Error");
+                throw err;
+            }
+            console.log("Done");
+        });
+        db.query("MATCH (a)-[r2:SHARE_RESTAURANT]->(b), (s:Scores) SET r2.score = CASE r2.score WHEN s.shareRestaurantScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+            function (err, results) {
             if (err)
             {
                 console.error("Error");
@@ -969,10 +1019,8 @@ exports.createTimeDecay = function (scale) {
    then it sets the scores, then in all the previous functions,
    the relation score is set to the score set here in the global node.
 */
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,
-hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,
-shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
-exports.createUser = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
+exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} , hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} , shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
+exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
          ep2: reviewScore ,
