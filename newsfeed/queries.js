@@ -1103,18 +1103,3 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
         } else console.log("Done");
     });
 }
-
-exports.getRecommendationsQuery = "";z
-exports.getLatestActionTime = function (callback) {
-    db.query("MATCH (:User)-[r]->() RETURN MAX(r.created_at);", function (err, results) {
-        if (err)
-        {
-            console.error("Error");
-            throw err;
-        }
-        var createdAt = results.map(function(result) {
-            return result['MAX(r.created_at)'];
-        });
-        callback(createdAt);
-    });
-}
