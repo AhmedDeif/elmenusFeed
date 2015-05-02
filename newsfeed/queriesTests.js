@@ -1597,44 +1597,28 @@ describe('A Global Node can be created', function () {
         });
    }
     function verify(){
-        db.query('match (s:Scores) where s.followsScore ={s1} , s.reviewScore ={s2} , s.likesDishScore ={s3} , s.addPhotoScore ={s5}, s.yum_yuckScore ={s6}, s.shareRestaurantScore ={s7}, s.shareDishScore ={s8} , s.sharePhotoScore= {s9} , s.favouritesScore ={s10} , s.likeCuisineScore ={s11} return s.followsScore , s.reviewScore , s.likesDishScore , s.addPhotoScore, s.yum_yuckScore , s.shareRestaurantScore , s.shareDishScore ,s.sharePhotoScore ,s.favouritesScore , s.likeCuisineScore', 
+        db.query('    match (s:Scores) where s.followsScore ={ep1} AND s.reviewScore ={ep2} AND s.likesDishScore ={ep3} AND s.addPhotoScore ={ep5} AND s.yum_yuckScore ={ep6} AND s.shareRestaurantScore ={ep7} AND s.shareDishScore ={ep8} AND s.sharePhotoScore= {ep9} AND s.favouritesScore ={ep10} AND  s.likeCuisineScore ={ep11} return s',         
             params = {
-                s1: 1,
-                s2: 2,
-                s3: 3,
-                s5: 5,
-                s6: 6,
-                s7: 7,
-                s8: 8,
-                s9: 9,
-                s10: 10,
-                s11: 11
+                ep1: 1,
+                ep2: 2,
+                ep3: 3,
+                ep5: 5,
+                ep6: 6,
+                ep7: 7,
+                ep8: 8,
+                ep9: 9,
+                ep10: 10,
+                ep11: 11
             }, function(err, results) {
                 if (err) {
                     console.error('Error');
                     throw err;
                 } else {
-                    var follow = results.map(function(result) {return result['s.followsScore'];});
-                     var review = results.map(function(result) {return result['s.reviewScore'];});
-                      var likesDish = results.map(function(result) {return result['s.likesDishScore'];});
-                       var addPhoto = results.map(function(result) {return result['s.addPhotoScore'];});
-                        var yum_yuck = results.map(function(result) {return result['s.yum_yuckScore'];});
-                         var shareRestaurant = results.map(function(result) {return result['s.shareRestaurantScore'];});
-                          var shareDish = results.map(function(result) {return result['s.shareDishScore'];});
-                           var sharePhoto = results.map(function(result) {return result['s.sharePhotoScore'];});
-                            var favourites = results.map(function(result) {return result['s.favouritesScore'];});
-                             var likeCuisine = results.map(function(result) {return result['s.likeCuisineScore'];});
-                    should(follow[0] == 1).be.ok;
-                    should(review[0] == 2).be.ok;
-                    should(likesDish[0] == 3).be.ok;
-                    should(addPhoto[0] == 5).be.ok;
-                    should(yum_yuck[0] == 6).be.ok;
-                    should(shareRestaurant[0] == 7).be.ok;
-                    should(shareDish[0] == 8).be.ok;
-                    should(sharePhoto[0] == 9).be.ok;
-                    should(favourites[0] == 10).be.ok;
-                    should(likeCuisine[0] == 11).be.ok;
-                    done();
+                      var relationship = results.map(function(result) {
+                    return result['s'];
+                 });
+                should.exist(relationship);
+                done();
                 }
         });
     }
