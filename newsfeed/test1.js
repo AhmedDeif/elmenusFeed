@@ -6,3 +6,6 @@ var queries = require('./queries.js');
 queries.createResturant('restaurant1','sushi');
 queries.createResturant('restaurant2','kabab');
 queries.createResturant('restaurant3','ma7ashi');
+
+queries.createFollowUser('kareem1@mail.com','kareem2@mail.com');
+queries.createFollowUser('kareem2@mail.com','kareem1@mail.com');
