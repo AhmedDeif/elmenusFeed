@@ -495,7 +495,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
-exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;";
+exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE}]->(photo) Delete x;";
 exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score+s.yum_yuckScore";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYumsQuery, params = {
@@ -1174,14 +1174,10 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
 }
 
 exports.NewsFeedDishes = function(user) {
-    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)<-[:FAVORITES]-(u)'
-	+' with u,c,d,p,r'
-	+' match (u)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
-	+' with u,c,d,p,r,ld'
-	+' match (u)-[lc:LikeCuisine]->(c)'
-	+' return distinct d as dish, max(ld.score*(2.718281828^(1/(({currentimestamp}*1.0/(ld.timestamp))*2.718281828^({currentimestamp}*1.0/ld.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)<-[:FAVORITES]-(u)'
+	+' return distinct d as dish, max(ld.score*ld.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1207,15 +1203,12 @@ exports.NewsFeedDishes = function(user) {
     });
 }
 
+
 exports.NewsFeedPhotos = function(user,dish) {
     db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)<-[:FAVORITES]-(u)'
-	+' with u,c,d,p,r'
-	+' match (p)<-[yy:YUM_YUCK]-(u)'
-	+' with u,c,d,p,r,yy'
-	+' match (u)-[lc:LikeCuisine]->(c)'
-	+' return distinct p as photo,max(yy.score*(2.718281828^(1/(({currentimestamp}*1.0/(yy.timestamp))*2.718281828^({currentimestamp}*1.0/yy.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)<-[:FAVORITES]-(u)'
+	+' return distinct p as photo, max(yy.score*yy.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1243,8 +1236,8 @@ exports.NewsFeedPhotos = function(user,dish) {
 exports.NewsFeedRestaurants = function(user,dish,photo) {
     db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)<-[f:FAVORITES]-(u)-[lc:LikeCuisine]->(c)'
-	+' return distinct r as restaurant, max(f.score*(2.718281828^(1/(({currentimestamp}*1.0/(f.timestamp))*2.718281828^({currentimestamp}*1.0/f.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)<-[:FAVORITES]-(u)'
+	+' return distinct r as restaurant, max(f.score*f.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
