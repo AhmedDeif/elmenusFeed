@@ -1269,6 +1269,60 @@ describe('I can create a cuisine', function () {
 });
 
 
+/*
+  Sprint #-2-US-2:
+*/
+
+describe('Score increases between user and cuisine depending on the time spent by that user on a certain action', function () {
+ it('Score should increase between user and cuisine', function (done) {
+     initialize();
+     function initialize(){
+        db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE{score:0}]->c', params = {
+        u1: 'x',
+        u2: 'y',
+        cn: 'z'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+                 test();
+                    }
+        });
+    }
+           
+     function test(){
+        db.query(queries.UserTimeUserQuery, params = {
+                u1: 'x',
+                u2: 'y',
+                ts: '20'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+     });}
+    function verify(){
+        db.query('optional MATCH (n:User { email:{u2} }),(c:Cuisine{name:{cn}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        u2: 'y',
+        cn: 'z'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var scoreAfterAdd = results.map(function(result) {return result['l.score'];});
+            should(Number(scoreAfterAdd)).be.exactly(80)
+            done();
+        }
+    });
+    }
+ });
+});
+
+
 /*  User Story 38
     Sprint #-1-US-2
     Sprint #-2-US-11
@@ -1602,3 +1656,57 @@ describe('score changes between user and cuisine on making yucks on photo', func
  });
 });
 
+//Sprint-2-US-6
+describe('A Global Node can be created', function () {
+ it('A Global node representing having all the new scores should be created', function (done) {
+    test();
+    function test(){
+        db.query(queries.createGlobalNodeQuery, 
+            params = {
+                ep1: 1,
+                ep2: 2,
+                ep3: 3,
+                ep5: 5,
+                ep6: 6,
+                ep7: 7,
+                ep8: 8,
+                ep9: 9,
+                ep10: 10,
+                ep11: 11
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    verify();
+                }
+        });
+   }
+    function verify(){
+        db.query('    match (s:Scores) where s.followsScore ={ep1} AND s.reviewScore ={ep2} AND s.likesDishScore ={ep3} AND s.addPhotoScore ={ep5} AND s.yum_yuckScore ={ep6} AND s.shareRestaurantScore ={ep7} AND s.shareDishScore ={ep8} AND s.sharePhotoScore= {ep9} AND s.favouritesScore ={ep10} AND  s.likeCuisineScore ={ep11} return s',         
+            params = {
+                ep1: 1,
+                ep2: 2,
+                ep3: 3,
+                ep5: 5,
+                ep6: 6,
+                ep7: 7,
+                ep8: 8,
+                ep9: 9,
+                ep10: 10,
+                ep11: 11
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                      var relationship = results.map(function(result) {
+                    return result['s'];
+                 });
+                should.exist(relationship);
+                done();
+                }
+        });
+    }
+ });
+});
