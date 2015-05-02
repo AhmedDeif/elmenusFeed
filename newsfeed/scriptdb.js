@@ -767,7 +767,20 @@ function LIKECUISINEuserAddToFav(){
                 console.log("error");
             } else {
                 console.log("LIKECUISINE-user-Add-To-Fav score");
-                connection.end();  
+                //connection.end();
+				LIKECUISINEuserAddPhoto();
+            }
+
+    });
+    
+}
+function LIKECUISINEuserAddPhoto(){
+   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/addToCuisineUserAddPhoto.csv\" AS row match  (s:Scores)match (:User{email:row.Email})-[l:LIKECUISINE]->(:Cuisine{name:row.Cuisine}) set l.score = l.score + (s.addPhotoScore *TOINT(row.Count))", function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("LIKECUISINE-user-Add-Photo score");
+                connection.end();
             }
 
     });
