@@ -327,7 +327,7 @@ function relUserCuisine(){
     //from restaurants, users, reviews tables and putting them in a csv file
     //that each record of reviews in one line 
     //and creating headers of reviews
-  connection.query("select 'Email','Cuisine' UNION select  u.email,c.name_en from  users u ,cuisines c INTO OUTFILE '/tmp/UsersCuisines.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n';"
+  connection.query("select \'Email\',\'Cuisine\' UNION select  u.email,c.name_en from  users u ,cuisines c INTO OUTFILE \'/tmp/UsersCuisines.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
   , function(err, rows, fields) {
   if (!err){
   //creating reviews with title and body in Neo4j database
