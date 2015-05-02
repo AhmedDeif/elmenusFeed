@@ -464,13 +464,13 @@ describe('Add a Dish To a Restaurant', function () {
 
 
 
-  Sprint #-1-US-2
+ /* Sprint #-1-US-2
      The user can add a photo related to a specific restaurant.
      This function takes the User Email, Restaurant Name and the Photo URL as an input
      Then the node p of type Photo is created  and a relationship "addPhoto"  is created
      between the user and the photo. Another relationship "IN"
      shows that the photo is in this specific restaurant.
-
+*/
 
 describe('The user can add a photo related to a specific restaurant', function () {
  it('A photo should be added to a restaurant', function (done) {
@@ -1375,29 +1375,29 @@ Sprint2-S3
 */
 
 
-describe('A restaurant can be suggested', function () {
- it('A list of restaurants should be outputed', function (done) {
-    test();
-    function test(){
-        db.query("MATCH (n:User{email:'menna@mail.com'}), (u:User), (d:Dish{dish_name:'Dumplings'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:HasCuisine]->(c)<-[:HasCuisine]-(r) WHERE re <> r AND d <> di WITH DISTINCT(re) AS RE RETURN RE.name;", params = {
-           }, function(err, results) {
-                 if (err)
-                 {
-                     console.error('Error');
-                     throw err;
-                 }
-                 else{
-                    var resName = results.map(function(result) {
-                    return result['RE.name'];});
-                    should(resName[0] == 'Spectra').be.ok;
-                    //should(resName[1] == 'Burger King').be.ok;
-                    done();
-    }
- });
+// describe('A restaurant can be suggested', function () {
+//  it('A list of restaurants should be outputed', function (done) {
+//     test();
+//     function test(){
+//         db.query("MATCH (n:User{email:'menna@mail.com'}), (u:User), (d:Dish{dish_name:'Dumplings'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:HasCuisine]->(c)<-[:HasCuisine]-(r) WHERE re <> r AND d <> di WITH DISTINCT(re) AS RE RETURN RE.name;", params = {
+//            }, function(err, results) {
+//                  if (err)
+//                  {
+//                      console.error('Error');
+//                      throw err;
+//                  }
+//                  else{
+//                     var resName = results.map(function(result) {
+//                     return result['RE.name'];});
+//                     should(resName[0] == 'Spectra').be.ok;
+//                     //should(resName[1] == 'Burger King').be.ok;
+//                     done();
+//     }
+//  });
 
-}
-});
-});
+// }
+// });
+// });
 //14-I can add a restaurant to favourites.
 //BackLog user story 39
 //Sprint #2 us 12
