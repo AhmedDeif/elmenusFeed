@@ -458,18 +458,13 @@ describe('Add a Dish To a Restaurant', function () {
 });
 
 /*  
-    add a new Dish to a Restaurant.
+    Sprint #-1-US-2
+    The user can add a photo related to a specific restaurant.
+    This function takes the User Email, Restaurant Name and the Photo URL as an input
+    Then the node p of type Photo is created  and a relationship "addPhoto"  is created
+    between the user and the photo. Another relationship "IN"
+    shows that the photo is in this specific restaurant.
 */
-
-
-
-
-  Sprint #-1-US-2
-     The user can add a photo related to a specific restaurant.
-     This function takes the User Email, Restaurant Name and the Photo URL as an input
-     Then the node p of type Photo is created  and a relationship "addPhoto"  is created
-     between the user and the photo. Another relationship "IN"
-     shows that the photo is in this specific restaurant.
 
 
 describe('The user can add a photo related to a specific restaurant', function () {
