@@ -495,7 +495,6 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      If there was a yuck on this photo, placed by the same user, then it will be deleted 
      and replaced by a yum.
 */
-
 exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;";
 exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score+s.yum_yuckScore";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
@@ -550,7 +549,6 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
-
 exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) , (s:scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) Delete x;";
 exports.UserAddPhotoYucksScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score-s.yum_yuckScore";
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
@@ -700,13 +698,11 @@ exports.Get_restaurant_info = function(name, callback) {
     between the user and the cuisines of the restaurant by value = favouritesScore
     which is defined in the database 
 */
-
-
 exports.createrFavouriteUserRestaurantQuery = "MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3, timestamp: TIMESTAMP()}]->(rest) return user;"
 //exports.createrFavouriteUserRestaurantScore = "match (s:scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
 exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }), (s:scores) set t.score = t.score + s.favouritesScore return t.score"
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
-    db.query(createrFavouriteUserRestaurantQuery, params = {
+    db.query(exports.createrFavouriteUserRestaurantQuery, params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
@@ -714,7 +710,7 @@ exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
             console.log('Error');
             throw err;
         } else {
-            db.query(createrFavouriteUserRestaurantScore, params = {
+            db.query(exports.createrFavouriteUserRestaurantScore, params = {
         ep: email,
         rp: RestaurantName
     }, function(err, results) {
@@ -1174,5 +1170,147 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
             console.error('Error');
             throw err;
         }
+    });
+}
+
+exports.NewsFeedDishes = function(user) {
+    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+	+' with u,c,d,p,r'
+	+' match (r)<-[:FAVORITES]-(u)'
+	+' with u,c,d,p,r'
+	+' match (u)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
+	+' with u,c,d,p,r,ld'
+	+' match (u)-[lc:LikeCuisine]->(c)'
+	+' return distinct d as dish, max(ld.score*(2.718281828^(1/(({currentimestamp}*1.0/(ld.timestamp))*2.718281828^({currentimestamp}*1.0/ld.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+        up: user,
+		currentimestamp: Date.now()
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			var dish = results.map(function(result) {
+            return result['dish'];
+			});
+			var score = results.map(function(result) {
+            return result['score'];
+			});
+
+			var data = [];
+			for(var i=0; i<dish.length; i++)  {
+			data[i] = {};              // creates a new object
+			data[i].dish = dish[i];
+			data[i].score = score[i];    
+			}
+			exports.NewsFeedPhotos(user,data);
+		}
+    });
+}
+
+exports.NewsFeedPhotos = function(user,dish) {
+    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+	+' with u,c,d,p,r'
+	+' match (r)<-[:FAVORITES]-(u)'
+	+' with u,c,d,p,r'
+	+' match (p)<-[yy:YUM_YUCK]-(u)'
+	+' with u,c,d,p,r,yy'
+	+' match (u)-[lc:LikeCuisine]->(c)'
+	+' return distinct p as photo,max(yy.score*(2.718281828^(1/(({currentimestamp}*1.0/(yy.timestamp))*2.718281828^({currentimestamp}*1.0/yy.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+        up: user,
+		currentimestamp: Date.now()
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			var photo = results.map(function(result) {
+            return result['photo'];
+			});
+			var score = results.map(function(result) {
+            return result['score'];
+			});
+			var data = [];
+			for(var i=0; i<photo.length; i++)  {
+			data[i] = {};              // creates a new object
+			data[i].photo = photo[i];
+			data[i].score = score[i];    
+			}
+			exports.NewsFeedRestaurants(user,dish,data);
+		}
+    });
+}
+
+exports.NewsFeedRestaurants = function(user,dish,photo) {
+    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+	+' with u,c,d,p,r'
+	+' match (r)<-[f:FAVORITES]-(u)-[lc:LikeCuisine]->(c)'
+	+' return distinct r as restaurant, max(f.score*(2.718281828^(1/(({currentimestamp}*1.0/(f.timestamp))*2.718281828^({currentimestamp}*1.0/f.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
+        up: user,
+		currentimestamp: Date.now()
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			var restaurant = results.map(function(result) {
+            return result['restaurant'];
+			});
+			var score = results.map(function(result) {
+            return result['score'];
+			});
+			
+			
+			
+			var data = [];
+			for(var i=0; i<restaurant.length; i++)  {
+			data[i] = {};              // creates a new object
+			data[i].restaurant = restaurant[i];
+			data[i].score = score[i];    
+			}
+			
+			var allData = [];
+			var count=0;
+			if(restaurant != null){
+			for(var i = 0 ; i< restaurant.length; i++)  {
+			allData[count] = {};              // creates a new object
+			allData[count].element = data[i].restaurant;
+			allData[count].score = data[i].score;    
+			count++;
+			}
+			}
+			if(dish != null){
+			for(i = 0; i< dish.length; i++)  {
+			allData[count] = {};              // creates a new object
+			allData[count].element = dish[i].dish;
+			allData[count].score = dish[i].score;    
+			count++;			
+			}
+			}
+			
+			if(photo != null){
+			for(i = 0; i< photo.length; i++)  {
+			allData[count] = {};              // creates a new object
+			allData[count].element = photo[i].photo;
+			allData[count].score = photo[i].score;       
+			count++;	
+			}
+			}
+			function compare(a,b) {
+				if (a.score < b.score)
+					return 1;
+				if (a.score > b.score)
+					return -1;
+				return 0;
+			}
+			allData = allData.sort(compare);
+			for(var i = 0 ; i< allData.length; i++)  {
+			console.log(allData[i].element.data);
+			console.log(allData[i].score);
+			console.log('---------------------');
+			}
+			//console.log(allData);
+			//allData = allData.sort(compare);
+			
+		}
     });
 }
