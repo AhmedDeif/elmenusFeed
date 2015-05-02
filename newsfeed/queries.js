@@ -1180,7 +1180,7 @@ exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
     the relation score is set to the score set here in the global node.
 */
 
-exports.createGlobalNodeQuery = "CREATE (s:Scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
+exports.createGlobalNodeQuery = "CREATE (s:scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
 "hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
 "shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
 exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
