@@ -475,7 +475,7 @@ if (fs.existsSync('C:/tmp/createFavoriteUserRestaurant.csv')) {
       //importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Restaurant and row.User)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) MERGE (u) -[:FAVORITES{created_at:row.created_at,score:3}]-> (r) return r limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) match (s:Scores) MERGE (u) -[:FAVORITES{created_at:row.created_at,score:s.favouritesScore }]-> (r) return r limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -518,7 +518,7 @@ if (fs.existsSync('C:/tmp/createLikeUserDishRestaurant.csv')) {
   //where these headers are used to find the Restaurant,Dish and the
   //User for the user to be able to like that dish in the restaurant.
     setTimeout(function(){
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createLikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:TRUE, created_at:row.created_at,score:5}]-> (d) return d limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createLikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User})match (s:Scores) MERGE (u) -[:LIKES_DISH{likes:TRUE, created_at:row.created_at,score:s.likesDishScore}]-> (d) return d limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -562,7 +562,7 @@ if (fs.existsSync('C:/tmp/createDislikeUserDishRestaurant.csv')) {
     //then importing each record from CSV and saving each record
     //one by one in 'row' then extracting information from 
     //it by using headers (row.Restaurant and row.Dish)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:FALSE,created_at:row.Time,score:5}]-> (d) return d limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) match (s:Scores) MERGE (u) -[:LIKES_DISH{likes:FALSE,created_at:row.Time,score:s.likesDishScore}]-> (d) return d limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -604,7 +604,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) Merge (u1)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5 , commonFollowers :0, commonFavourites :0, commonYumYuck :0}]->(u2)", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) match(s:Scores) Merge (u1)-[f:FOLLOWS{ score:s.followsScore, numberOfVisits :0 , totalScore :s.followsScore , commonFollowers :0, commonFavourites :0, commonYumYuck :0}]->(u2)", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
