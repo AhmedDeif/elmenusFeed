@@ -104,17 +104,8 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
 //queries.createGlobalNode(4, 9, 7, 0, 14, 13, 12, 11, 10, 8, 6);
 //queries.createTimeDecay(5000000);
  // This part is for testing queries
- /*
-queries.createUser("test 1");
-queries.createUser("test 2");
-queries.createUser("test 3");
-queries.createUser("test 4");
-queries.createUser("test 5");
-queries.createResturant("Res 1");
-queries.createResturant("Res 2");
-queries.createResturant("Res 3");
-queries.createResturant("Res 4");
-queries.createResturant("Res 5");
+ 
+
 queries.createDish("Dish 1");
 queries.createDish("Dish 2");
 queries.createDish("Dish 3");
@@ -122,9 +113,25 @@ queries.createDish("Dish 4");
 queries.createDish("Dish 5");
 queries.createDish("Dish 6");
 queries.createDish("Dish 7");
+queries.createCuisine("Pizza");
+queries.createCuisine("Pasta");
+queries.createCuisine("Burger");
+
+
 /*
 
-
+queries.createUser("test 1");
+queries.createUser("test 2");
+queries.createUser("test 3");
+queries.createUser("test 4");
+queries.createUser("test 5");
+queries.createUser("test 6");
+queries.createUser("test 7");
+queries.createResturant("Res 1");
+queries.createResturant("Res 2");
+queries.createResturant("Res 3");
+queries.createResturant("Res 4");
+queries.createResturant("Res 5");
 queries.addDishToRestaurant("Dish 1","Res 1");
 queries.addDishToRestaurant("Dish 2","Res 1");
 queries.addDishToRestaurant("Dish 3","Res 1");
@@ -144,7 +151,7 @@ queries.addDishToRestaurant("Dish 4","Res 5");
 // 
 // common 2 & 3 = 1
 // common 3 & 1 = 1
-
+/*
 queries.createFollowUser("test 1","test 2");
 queries.createFollowUser("test 1","test 3");
 queries.createFollowUser("test 1","test 4");
@@ -207,7 +214,5 @@ queries.UserCommonYumsUser("test 2", "test 3");
 
 */
 
-queries.createUser("test 6");
-queries.createUser("test 7");
 
 
