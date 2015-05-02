@@ -34,7 +34,7 @@ describe('I can sign up', function () {
             console.error('Error');
             throw err;
         } else {
-            db.query('CREATE (s:Scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:6 , yum_yuckScore:3 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:8 , likeCuisineScore:3  })', params = {
+            db.query('CREATE (s:scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:6 , yum_yuckScore:3 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:8 , likeCuisineScore:3  })', params = {
 			}, function(err, results) {
         if (err) {
             console.error('Error');
