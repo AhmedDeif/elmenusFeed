@@ -20,14 +20,31 @@ describe('I can sign up', function () {
  it('Should add a user to the database and connect it to all the available cuisines in the database', function (done) {
      initialize();
      function initialize(){
-       db.query('CREATE (:Cuisine { name:{np} })', params = {
+       db.query('match n optional match ()-[y]-() delete n,y', params = {
                 np:'Sushi'
         }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
+			db.query('CREATE (:Cuisine { name:{np} })', params = {
+                np:'Sushi'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            db.query('CREATE (s:Scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:6 , yum_yuckScore:3 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:8 , likeCuisineScore:3  })', params = {
+			}, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
             test();
+        }
+    });
+        }
+    });
         }
     });
     }
@@ -236,7 +253,7 @@ describe('I can dislike a dish in a specific restaurant', function () {
  it('A dislike should be added and a score has to be added to follow relation', function (done) {
      initialize();
      function initialize(){
-        db.query('create(:User{email:{ep}})-[:FOLLOWS{totalScore:0,score:1}]->(u:User{email:{ep1}}),(:Restaurant{name:{rp}})-[:HAS]->(:Dish{dish_name:{dp}})<-[:LIKES_DISH{likes:FALSE, score:7}]-(u)', params = {
+        db.query('create(:User{email:{ep}})-[:FOLLOWS{totalScore:0}]->(u:User{email:{ep1}}),(:Restaurant{name:{rp}})-[:HAS]->(:Dish{dish_name:{dp}})<-[:LIKES_DISH{likes:FALSE}]-(u)', params = {
         ep: 'kareemAdel4@mail.com',
         ep1: 'kareemAdel5@mail.com',
         rp: 'Spectra',
@@ -263,7 +280,7 @@ describe('I can dislike a dish in a specific restaurant', function () {
         }
      });}
     function verify(){
-        db.query('optional MATCH (u:User {email: {ep}}), (u1:User {email: {ep1}}) , (d:Dish {dish_name: {dnp}}), (u)-[relLikes:LIKES_DISH {likes:FALSE, score:7}]->(d), (u)-[z:FOLLOWS]-(u1) return relLikes, z.totalScore', params = {
+        db.query('optional MATCH (u:User {email: {ep}}), (u1:User {email: {ep1}}) , (d:Dish {dish_name: {dnp}}), (u)-[relLikes:LIKES_DISH {likes:FALSE}]->(d), (u)-[z:FOLLOWS]-(u1) return relLikes, z.totalScore', params = {
         ep: 'kareemAdel4@mail.com',
         ep1: 'kareemAdel5@mail.com',
         dnp: 'dish1'
@@ -874,7 +891,7 @@ describe('The user can add a photo yum to a certain photo', function() {
         function initialize() {
             db.query("CREATE (:Photo {url: {url}}),(:User {email: {ep}})", params = {
                 url: 'myPhotoURL',
-				ep: 'kareemAdel11@mail.com'
+                ep: 'kareemAdel11@mail.com'
             }, function(err, results) {
                 if (err)
                 {
@@ -886,9 +903,9 @@ describe('The user can add a photo yum to a certain photo', function() {
         }
         function test() {
             db.query(queries.UserAddPhotoYumsQuery, params = {
-				ep: 'kareemAdel11@mail.com',
-				url: 'myPhotoURL'
-			}, function(err, results) {
+                ep: 'kareemAdel11@mail.com',
+                url: 'myPhotoURL'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -899,9 +916,9 @@ describe('The user can add a photo yum to a certain photo', function() {
         }
         function verify() {
             db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) optional match (user)-[y2:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1,y2", params = {
-				ep: 'kareemAdel11@mail.com',
-				url: 'myPhotoURL'
-			}, function(err, results) {
+                ep: 'kareemAdel11@mail.com',
+                url: 'myPhotoURL'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -910,11 +927,11 @@ describe('The user can add a photo yum to a certain photo', function() {
                 var y1 = results.map(function(result) {
                     return result['y1'];
                 });
-				var y2 = results.map(function(result) {
+                var y2 = results.map(function(result) {
                     return result['y2'];
                 });
                 should.exist(y1[0]);
-				should.not.exist(y2[0]);
+                should.not.exist(y2[0]);
                 done();
             });
         }
@@ -932,7 +949,7 @@ describe('The user can delete a photo yum in a certain photo', function() {
         function initialize() {
             db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
                 url: 'myPhotoURL1',
-				ep: 'kareemAdel12@mail.com'
+                ep: 'kareemAdel12@mail.com'
             }, function(err, results) {
                 if (err)
                 {
@@ -944,9 +961,9 @@ describe('The user can delete a photo yum in a certain photo', function() {
         }
         function test() {
             db.query(queries.UserDeletePhotoYumQuery, params = {
-				ep: 'kareemAdel12@mail.com',
-				url: 'myPhotoURL1'
-			}, function(err, results) {
+                ep: 'kareemAdel12@mail.com',
+                url: 'myPhotoURL1'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -957,9 +974,9 @@ describe('The user can delete a photo yum in a certain photo', function() {
         }
         function verify() {
             db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) return y1", params = {
-				ep: 'kareemAdel12@mail.com',
-				url: 'myPhotoURL1'
-			}, function(err, results) {
+                ep: 'kareemAdel12@mail.com',
+                url: 'myPhotoURL1'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -986,7 +1003,7 @@ describe('The user can add a photo yuck to a certain photo.', function() {
         function initialize() {
             db.query("CREATE (:User {email: {ep}}),(:Photo {url: {url}})", params = {
                 url: 'myPhotoURL2',
-				ep: 'kareemAdel13@mail.com'
+                ep: 'kareemAdel13@mail.com'
             }, function(err, results) {
                 if (err)
                 {
@@ -998,9 +1015,9 @@ describe('The user can add a photo yuck to a certain photo.', function() {
         }
         function test() {
             db.query(queries.UserAddPhotoYucksQuery, params = {
-				ep: 'kareemAdel13@mail.com',
-				url: 'myPhotoURL2'
-			}, function(err, results) {
+                ep: 'kareemAdel13@mail.com',
+                url: 'myPhotoURL2'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1011,9 +1028,9 @@ describe('The user can add a photo yuck to a certain photo.', function() {
         }
         function verify() {
             db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
-				ep: 'kareemAdel13@mail.com',
-				url: 'myPhotoURL2'
-			}, function(err, results) {
+                ep: 'kareemAdel13@mail.com',
+                url: 'myPhotoURL2'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1041,7 +1058,7 @@ describe('The user can delete a photo yuck in a certain photo.', function() {
         function initialize() {
             db.query("CREATE (:User {email: {ep}})-[:YUM_YUCK {value: FALSE, score: 3}]->(:Photo {url: {url}})", params = {
                 url: 'myPhotoURL3',
-				ep: 'kareemAdel14@mail.com'
+                ep: 'kareemAdel14@mail.com'
             }, function(err, results) {
                 if (err)
                 {
@@ -1053,9 +1070,9 @@ describe('The user can delete a photo yuck in a certain photo.', function() {
         }
         function test() {
             db.query(queries.UserDeletePhotoYuckQuery, params = {
-				ep: 'kareemAdel14@mail.com',
-				url: 'myPhotoURL3'
-			}, function(err, results) {
+                ep: 'kareemAdel14@mail.com',
+                url: 'myPhotoURL3'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1066,9 +1083,9 @@ describe('The user can delete a photo yuck in a certain photo.', function() {
         }
         function verify() {
             db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
-				ep: 'kareemAdel14@mail.com',
-				url: 'myPhotoURL3'
-			}, function(err, results) {
+                ep: 'kareemAdel14@mail.com',
+                url: 'myPhotoURL3'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1095,9 +1112,9 @@ describe('I can share restaurant on facebook', function() {
         initialize();
         function initialize() {
             db.query("create (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}})", params = {
-					ep: 'kareemAdel15@mail.com',
-					rn: 'RestaurantKareem15'
-			}, function(err, results) {
+                    ep: 'kareemAdel15@mail.com',
+                    rn: 'RestaurantKareem15'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1108,9 +1125,9 @@ describe('I can share restaurant on facebook', function() {
         }
         function test() {
             db.query(queries.UserSharesRestaurantQuery, params = {
-					ep: 'kareemAdel15@mail.com',
-					rn: 'RestaurantKareem15'
-			}, function(err, results) {
+                    ep: 'kareemAdel15@mail.com',
+                    rn: 'RestaurantKareem15'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1120,10 +1137,10 @@ describe('I can share restaurant on facebook', function() {
             });
         }
         function verify() {
-            db.query("MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}) with user,restaurant optional MATCH (user)-[y1:SHARE_RESTAURANT {score:5}]->(restaurant) return y1", params = {
-					ep: 'kareemAdel15@mail.com',
-					rn: 'RestaurantKareem15'
-			}, function(err, results) {
+            db.query("optional MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}), (s:Scores) with user,restaurant,s optional MATCH (user)-[y1:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant) return y1", params = {
+                    ep: 'kareemAdel15@mail.com',
+                    rn: 'RestaurantKareem15'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1150,9 +1167,9 @@ describe('The user can share a dish on facebook or twitter.', function() {
         initialize();
         function initialize() {
             db.query("create (:User {email: {ep}}), (:Dish {dish_name: {dn}})", params = {
-					ep: 'kareemAdel16@mail.com',
-					dn: 'DishKareem16'
-			}, function(err, results) {
+                    ep: 'kareemAdel16@mail.com',
+                    dn: 'DishKareem16'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1163,9 +1180,9 @@ describe('The user can share a dish on facebook or twitter.', function() {
         }
         function test() {
             db.query(queries.UserSharesDishQuery, params = {
-					ep: 'kareemAdel16@mail.com',
-					dn: 'DishKareem16'
-			}, function(err, results) {
+                    ep: 'kareemAdel16@mail.com',
+                    dn: 'DishKareem16'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1175,10 +1192,10 @@ describe('The user can share a dish on facebook or twitter.', function() {
             });
         }
         function verify() {
-            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}) optional MATCH (user)-[y1:SHARE_DISH {score:5}]->(dish) return y1", params = {
-					ep: 'kareemAdel16@mail.com',
-					dn: 'DishKareem16'
-			}, function(err, results) {
+            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}), (s:Scores) optional MATCH (user)-[y1:SHARE_DISH {score:s.shareDishScore}]->(dish) return y1", params = {
+                    ep: 'kareemAdel16@mail.com',
+                    dn: 'DishKareem16'
+            }, function(err, results) {
                 if (err)
                 {
                     console.error('Error');
@@ -1275,7 +1292,7 @@ describe('Score increases between user and cuisine when he addes a photo to a re
  it('Score should increase between user and cuisine', function (done) {
      initialize();
      function initialize(){
-        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKE_CUISINE{score:0}]->c', params = {
+        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKECUISINE{score:0}]->c', params = {
         up: 'UserCuisineScoreTest.com',
         rp: 'ResCuisineScoreTest',
         cp: 'CuisCuisineScoreTest'
@@ -1325,7 +1342,7 @@ describe('Score increases between user and cuisine when he addes a photo to a re
         }
      });}
     function verify(){
-        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKE_CUISINE]->(c) return l.score', params = {
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
         ep: 'UserCuisineScoreTest.com',
         cp: 'CuisCuisineScoreTest'
     }, function(err, results) {
@@ -1356,7 +1373,7 @@ describe('Score increases between user and cuisine when he addes this restaurant
  it('Score should increase between user and cuisine2', function (done) {
      initialize();
      function initialize(){
-        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKE_CUISINE{score:0}]->c', params = {
+        db.query('create (:Restaurant{name:{rp}}),(u:User{email:{up}}), (c:Cuisine{name:{cp}}), u-[:LIKECUISINE{score:0}]->c', params = {
                 up: 'UserCuisineScoreTest2.com',
                 rp: 'ResCuisineScoreTest2',
                 cp: 'CuisCuisineScoreTest2'
@@ -1403,7 +1420,7 @@ describe('Score increases between user and cuisine when he addes this restaurant
     });
    }
     function verify(){
-        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKE_CUISINE]->(c) return l.score', params = {
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
         ep: 'UserCuisineScoreTest2.com',
         cp: 'CuisCuisineScoreTest2'
     }, function(err, results) {
@@ -1413,6 +1430,138 @@ describe('Score increases between user and cuisine when he addes this restaurant
         } else {
             var scoreAfterFav = results.map(function(result) {return result['l.score'];});
             should(Number(scoreAfterFav)).be.exactly(10)
+            done();
+        }
+    });
+    }
+ });
+});
+describe('score changes between user and cuisine on making yum on photo', function () {
+ it('Sscore should increases on making yums', function (done) {
+     initialize();
+     function initialize(){
+        db.query('CREATE (:User { email:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+             db.query('CREATE (:Restaurant { name:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+             db.query('CREATE (:Cuisine { name:{ep} })', params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query("MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) CREATE (p:Photo { url : {url}}), (n) -[:addPhoto]->(p)-[:IN]->(r)", params = {
+         ep: 'Hossamtest1',
+        rp: 'Hossamtest1',
+        url: 'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query( "MATCH (r:Restaurant { name:{np} }) , (c:Cuisine { name:{cp} }) CREATE (r)-[:HAS_CUISINE]->(c)", params = {
+                np: 'Hossamtest1',
+        		cp:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			db.query("MATCH (u:User{email:'Hossamtest1'}),(c:Cuisine{name:'Hossamtest1'}) CREATE (u)-[:LIKECUISINE{score:0}]->(c)", params = {
+                ep:'Hossamtest1'
+        }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+			test();
+        }
+    });
+        }
+    });
+        }
+    });
+            
+			
+		
+        }
+    });
+        }
+    });
+        }
+    });
+    }
+   function test(){
+        db.query(queries.UserAddPhotoYumsScore, params = {
+        ep: 'Hossamtest1',url:'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query("OPTIONAL MATCH (u:User{email:'Hossamtest1'})-[rel:LIKECUISINE]->(c:Cuisine {name: {np}}) RETURN rel.score;", params = {
+        np: 'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel.score'];
+            });
+            should(Number(relationship)).be.exactly(5);
+            done();
+        }
+    });
+    }
+ });
+});
+describe('score changes between user and cuisine on making yucks on photo', function () {
+ it('Sscore should decreases on making yucks', function (done) {
+     initialize();
+     function initialize(){
+        test();
+    }
+   function test(){
+        db.query(queries.UserAddPhotoYucksScore, params = {
+        ep: 'Hossamtest1',url:'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+    });
+   }
+    function verify(){
+        db.query("OPTIONAL MATCH (u:User{email:'Hossamtest1'})-[rel:LIKECUISINE]->(c:Cuisine {name: {np}}) RETURN rel.score;", params = {
+        np: 'Hossamtest1'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var relationship = results.map(function(result) {
+                    return result['rel.score'];
+            });
+            should(Number(relationship)).be.exactly(0);
             done();
         }
     });

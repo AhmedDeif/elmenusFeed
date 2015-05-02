@@ -100,7 +100,8 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
  app.listen(3000);
  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 
-
+//queries.createGlobalNode(4, 9, 7, 0, 14, 13, 12, 11, 10, 8, 6);
+//queries.createTimeDecay(5000000);
  // This part is for testing queries
  
 
