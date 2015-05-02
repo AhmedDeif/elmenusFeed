@@ -687,6 +687,10 @@ exports.Get_restaurant_info = function(name, callback) {
     });
 }
 
+
+//exports.createrFavouriteUserRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
+//exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10 return t.score"
+
 /*
     Sprint #-2-US12 and
     Sprint #-1-US-9
@@ -1142,22 +1146,25 @@ exports.createTimeDecay = function (scale) {
 
 /* 
 	Sprint #-2-US-6
-    this function creates a new node which is a global one
-    which has properties all the scores of all relations
-    in the database.
-    the function takes as an input the scores of all relations
-    then it sets the scores, then in all the previous functions,
-    the relation score is set to the score set here in the global node.
+    this function creates a new node which is a global one.
+    it is used to change the values of all
+    relations' scores.
+    this node has a properties which are all the new values
+    of the scores.
+    it takes as an input the values of all scores
+    then it sets the values.
+    the values of the scores are then updates in other functions
+    by setting the score to its corresponding one in the globalNode.   
 */
+
 exports.createGlobalNodeQuery = "CREATE (s:scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
-"hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
+" addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
 "shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
-exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
+exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
          ep2: reviewScore ,
           ep3: likesDishScore ,
-           ep4: hasCuisineScore, 
            ep5:addPhotoScore ,
             ep6:yum_yuckScore ,
              ep7 :shareRestaurantScore ,
