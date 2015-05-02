@@ -762,7 +762,7 @@ function setFollowersScore(){
 
 
 function LIKECUISINEuserAddToFav(){
-   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/addScoreInLIKECUISINEfavorites.csv\" AS row match (:User{email:row.Email})-[l:LIKECUISINE]->(:Cuisine{name:row.Cuisine}) match (s:Score) set l.score = l.score + (s.favouritesScore*TOINT(row.Count))", function (err,results) {
+   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/addScoreInLIKECUISINEfavorites.csv\" AS row match  (s:Scores)match (:User{email:row.Email})-[l:LIKECUISINE]->(:Cuisine{name:row.Cuisine}) set l.score = l.score + (s.favouritesScore*TOINT(row.Count))", function (err,results) {
             if(err){
                 console.log("error");
             } else {
