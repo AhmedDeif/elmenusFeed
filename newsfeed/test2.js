@@ -6,14 +6,18 @@ var queries = require('./queries.js');
 queries.createDishAndRestaurant('dish1','restaurant1');
 queries.createDishAndRestaurant('dish2','restaurant1');
 queries.createDishAndRestaurant('dish3','restaurant1');
+queries.createDishAndRestaurant('dish10','restaurant1');
+queries.createDishAndRestaurant('dish11','restaurant1');
+queries.createDishAndRestaurant('dish12','restaurant1');
+queries.createDishAndRestaurant('dish13','restaurant1');
 
-queries.createDishAndRestaurant('dish1','restaurant2');
-queries.createDishAndRestaurant('dish2','restaurant2');
-queries.createDishAndRestaurant('dish3','restaurant2');
+queries.createDishAndRestaurant('dish4','restaurant2');
+queries.createDishAndRestaurant('dish5','restaurant2');
+queries.createDishAndRestaurant('dish6','restaurant2');
 
-queries.createDishAndRestaurant('dish1','restaurant3');
-queries.createDishAndRestaurant('dish2','restaurant3');
-queries.createDishAndRestaurant('dish3','restaurant3');
+queries.createDishAndRestaurant('dish7','restaurant3');
+queries.createDishAndRestaurant('dish8','restaurant3');
+queries.createDishAndRestaurant('dish9','restaurant3');
 
 queries.UserAddsPhotoToRestaurant('kareem1@mail.com','restaurant1','photo1');
 queries.UserAddsPhotoToRestaurant('kareem1@mail.com','restaurant2','photo2');

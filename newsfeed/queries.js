@@ -472,7 +472,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      and replaced by a yum.
 */
 
-exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: TRUE, score: 3, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE, score: 3}]->(photo) Delete x;";
+exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}), (s:Scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score: s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo,s MATCH (user)-[x:YUM_YUCK {value: FALSE}]->(photo) Delete x;";
 exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:Scores) set ts.score = ts.score+s.yum_yuckScore"
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYumsQuery, params = {
@@ -527,7 +527,7 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
-exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) CREATE (user)-[:YUM_YUCK {value: FALSE, score: 3, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: 3}]->(photo) Delete x;";
+exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}), (s:Scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE}]->(photo) Delete x;";
 exports.UserAddPhotoYucksScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:Scores) set ts.score = ts.score-s.yum_yuckScore"
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYucksQuery, params = {
@@ -1147,8 +1147,8 @@ exports.NewsFeedDishes = function(user) {
 	+' with u,c,d,p,r'
 	+' match (u)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
 	+' with u,c,d,p,r,ld'
-	+' match (u)-[lc:LikeCuisine]->(c) where lc.score <> 0'
-	+' return distinct d as dish, (ld.score*(ld.timestamp*1.0/({currentimestamp}))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (u)-[lc:LikeCuisine]->(c)'
+	+' return distinct d as dish, max(ld.score*(2.718281828^(1/(({currentimestamp}*1.0/(ld.timestamp))*2.718281828^({currentimestamp}*1.0/ld.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1181,8 +1181,8 @@ exports.NewsFeedPhotos = function(user,dish) {
 	+' with u,c,d,p,r'
 	+' match (p)<-[yy:YUM_YUCK]-(u)'
 	+' with u,c,d,p,r,yy'
-	+' match (u)-[lc:LikeCuisine]->(c) where lc.score <> 0'
-	+' return distinct p as photo,(yy.score*(yy.timestamp*1.0/({currentimestamp}))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (u)-[lc:LikeCuisine]->(c)'
+	+' return distinct p as photo,max(yy.score*(2.718281828^(1/(({currentimestamp}*1.0/(yy.timestamp))*2.718281828^({currentimestamp}*1.0/yy.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1210,8 +1210,8 @@ exports.NewsFeedPhotos = function(user,dish) {
 exports.NewsFeedRestaurants = function(user,dish,photo) {
     db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)<-[f:FAVORITES]-(u)-[lc:LikeCuisine]->(c) where lc.score <> 0'
-	+' return distinct r as restaurant, (f.score*(f.timestamp*1.0/({currentimestamp}))*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)<-[f:FAVORITES]-(u)-[lc:LikeCuisine]->(c)'
+	+' return distinct r as restaurant, max(f.score*(2.718281828^(1/(({currentimestamp}*1.0/(f.timestamp))*2.718281828^({currentimestamp}*1.0/f.timestamp*1.0))))*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
