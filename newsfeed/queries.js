@@ -182,7 +182,6 @@ exports.createDish = function(name) {
         } 
     });
 }
-
 /*
     User Story 4
     Sprint #0-US-5
@@ -256,7 +255,6 @@ exports.getRestaurants = function(callback) {
         callback(restaurants);
     });
 }
-
 
 /*  User Story 38
     Sprint #-1-US-2
@@ -560,7 +558,7 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
      ep: UserEmail,
         url: PhotoURL
     }, function(err, results) {
-        if (err){
+        if (err) {
             throw err;
         }
        else{
@@ -615,9 +613,11 @@ exports.UserSharesRestaurant = function(UserEmail, RestaurantName) {
     });
 }
 
+
 /*   
 	 User Story S21
 	 Sprint #-1-US-8
+
      The user can share a dish on facebook or twitter.
      This function takes the User Email and the Dish Name as an input.
      It matches the user and the dish and creates the relationship "SHARE_DISH" between them.
@@ -654,9 +654,9 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
     });
 }
 
-
 /*  
 	Get_restaurant_info(name, req, res):
+
     This function takes as an input the name of 
     the restaurant that the user is requesting
     then the reviews are fetched from the database.
@@ -744,8 +744,7 @@ exports.getRelations = function(callback) {
 }
 
 exports.changeRelationCost = function(name, cost) {
-    db.query("MATCH (n)-[R:" + name + "]->(d) SET R.score = {c}", params = {
-        c: cost
+    db.query("MATCH (n)-[R:'" + name + "']->(d) SET R.score = "+cost, params = {
     }, function(err, results) {
         if (err) {
             console.log('Error');
@@ -777,11 +776,9 @@ exports.Get_relation_info = function(r, req, res) {
     return rel;
 }
 
-
-
 exports.getUsers = function(callback) {
     db.query("MATCH (user:User) return distinct user.email;", params = {}, function(err, results) {
-        if (err){
+        if (err) {
             console.error('Error');
             throw err;
         }
@@ -793,25 +790,24 @@ exports.getUsers = function(callback) {
         callback(users);
     });
 }
-
 var usr;
-exports.Get_user_info  = function (r, req, res) {
-    var query = "match (u:User {email: {mail}}) return u.email ", params = {mail:r};
-     db.query(query, params, function (err, results) {
-         if (err){  
+exports.Get_user_info = function(r, req, res) {
+    var query = "match (u:User {email: {mail}}) return u.email ",
+        params = {
+            mail: r
+        };
+    db.query(query, params, function(err, results) {
+        if (err) {
             console.error('Error');
             throw err;
         }
-                
-            data1 = results.map(function (result) {
-             return result['u.email'];
-            });
-            data1 = ' \"Source\":' + JSON.stringify(data1);
-            usr = JSON.parse('{ ' + data1 + ' }');
-           indexjs.Get_user_info_cont(req, res, usr);
-     });
-    
-    
+        data1 = results.map(function(result) {
+            return result['u.email'];
+        });
+        data1 = ' \"Source\":' + JSON.stringify(data1);
+        usr = JSON.parse('{ ' + data1 + ' }');
+        indexjs.Get_user_info_cont(req, res, usr);
+    });
     return usr;
 }
 
@@ -820,6 +816,7 @@ exports.Get_user_info  = function (r, req, res) {
 	User Story S32
     Sprint #-1-US-21
     createCuisine(name):
+
     This function takes as input the Cuisine's
     name and creates the corresponding cuisine in the
     database.
@@ -923,7 +920,6 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
         }
     });
 }
-
 /*
 	User Story 13
     Sprint #-0-US-15
@@ -978,7 +974,6 @@ exports.showOldActionsHistory = function(UserEmail) {
     });
 }
 
-
 exports.checkUserExists = function(email, callback) {
     db.query("MATCH (n:User {email: {email}}) RETURN DISTINCT COUNT(n);", params = {
         email: email
@@ -993,28 +988,42 @@ exports.checkUserExists = function(email, callback) {
         callback(count[0]);
     });
 }
-
-exports.getNewsfeed = function (email, callback) {
-    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),x order by f.totalScore DESC", 
-        params = {
-            email:email
-        }, function(err, results) {
-            if(err){
-                console.log("error");
-                throw err;
-            }
-            console.log("newsfeed fetched");
-
-            var actions = results.map(function(result) {
-                return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) 
-                    + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
-            });
-            
-            callback(actions);
+exports.getNewsfeed = function(email, callback) {
+    db.query("MATCH (n:User)-[f:FOLLOWS]->(u:User) , (u)-[z]->(x) WHERE n.email = {email} return u.email,type(z),x order by f.totalScore DESC", params = {
+        email: email
+    }, function(err, results) {
+        if (err) {
+            console.log("error");
+            throw err;
+        }
+        console.log("newsfeed fetched");
+        var actions = results.map(function(result) {
+            return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
         });
+        callback(actions);
+    });
 }
 /*
-    Sprint#-2-US-5
+Sprint2-S3
+the query takes two params. the dish name and the user email to get similar ]
+restaurants with the same cuisine that this dish's restaurant belongs to.
+*/
+exports.getCommonRestaurants = function(email, Dish) {
+    var qu = "MATCH (n:User{email:'"+email+"'}), (u:User), (d:Dish{dish_name:'"+Dish
+        + "'}), (c:Cuisine), (di:Dish), (r:Restaurant),(re:Restaurant), (n)-[:FOLLOWS]->(u),(n)-[:LIKES_DISH]->(d), (u)-[:LIKES_DISH]->(di), (d)<-[:Has]-(r), (di)<-[:Has]-(re), (re)-[:HasCuisine]->(c)<-[:HasCuisine]-(r) WHERE re <> r AND d <> di RETURN DISTINCT(re);"
+    db.query(qu,params={}, function(err, results) {
+        if (err) {
+            throw err;
+        }
+
+        var ress = results.map(function(result) {
+            return JSON.parse('{ ' + '\"name\":' + JSON.stringify(result['re.name']));
+        });
+        console.log(ress);
+        callback(ress);
+    });
+}
+/*    Sprint#-2-US-5
     getLatestActionTime: gets the timestamp of the latest action that has been created by getting
     the maxiumum of all the created_at attributes and calls back this value.
 */
