@@ -1277,52 +1277,30 @@ describe('I can create a cuisine', function () {
 /*
   Sprint #-2-US-2:
 */
+
 describe('Score increases between user and cuisine depending on the time spent by that user on a certain action', function () {
  it('Score should increase between user and cuisine', function (done) {
      initialize();
      function initialize(){
         db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE{score:0}]->c', params = {
-        u1: 'User1',
-        u2: 'User2',
-        cn: 'cuis'
+        u1: 'x',
+        u2: 'y',
+        cn: 'z'
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
         } else {
-            //test();
-            db.query(queries.UserTimeUserQuery, params = {
-                u1: 'User1',
-                u2: 'User2',
-                ts: '20'
-    }, function(err, results) {
-        if (err) {
-            console.error('Error');
-            throw err;
-        } else {
-            //test();
-             db.query(queries.UserTimeUserQuery, params = {
-                u1: 'User1',
-                u2: 'User2',
-                ts: '20'
-                 }, function(err, results) {
-                    if (err) {
-                            console.error('Error');
-                            throw err;
-                    } else {
-                        test();
-                     }
-                });
-        }
-    });
-        }
-    });
+                 test();
+                    }
+        });
     }
+           
      function test(){
         db.query(queries.UserTimeUserQuery, params = {
-                u1: 'User1',
-                u2: 'User2',
-                ts: 20
+                u1: 'x',
+                u2: 'y',
+                ts: '20'
     }, function(err, results) {
         if (err) {
             console.error('Error');
@@ -1332,9 +1310,9 @@ describe('Score increases between user and cuisine depending on the time spent b
         }
      });}
     function verify(){
-        db.query('optional MATCH (n:User { email:{u2} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
-        u2: 'User2',
-        cp: 'cuis'
+        db.query('optional MATCH (n:User { email:{u2} }),(c:Cuisine{name:{cn}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        u2: 'y',
+        cn: 'z'
     }, function(err, results) {
         if (err) {
             console.error('Error');
