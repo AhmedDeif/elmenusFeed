@@ -305,13 +305,54 @@ function cuisines(){
           console.log('Cuisines Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
-          dishesInRestaurants();
+          relUserCuisine();
         }
     });
 
 }
   else{
       throw err;
+  }
+});
+}
+//----------------------------------------------------------------------------------------
+//create relation LIKECUISINE between user and cuisine
+function relUserCuisine(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/UsersCuisines.csv')) {
+    fs.unlinkSync('C:/tmp/UsersCuisines.csv');
+}
+    //selecting reviews on restaurants from mysql database
+    //from restaurants, users, reviews tables and putting them in a csv file
+    //that each record of reviews in one line 
+    //and creating headers of reviews
+  connection.query("select 'Email','Cuisine' UNION select  u.email,c.name_en from  users u ,cuisines c INTO OUTFILE '/tmp/UsersCuisines.csv' FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating reviews with title and body in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.title)(row.body)
+  //and finding the reviewer and the restaurant to insert the review by  (row.Restaurant)(row.User)
+    setTimeout(function(){
+      db.query("USING PERIODIC COMMIT 100 LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/UsersCuisines.csv\" AS row match (u:User{email:row.Email}),(c:Cuisine{name:row.Cuisine}) create (u)-[:LIKECUISINE{score:0}]->(c)", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Reviews-Restaurants Done');
+      //calling next method to make code run synchronous
+          dishesInRestaurants();
+        }
+    });
+  },400);
+          
+      
+
+}
+  else{
+    throw err;
   }
 });
 }
