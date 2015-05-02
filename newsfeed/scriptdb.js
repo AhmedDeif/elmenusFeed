@@ -752,6 +752,21 @@ function setFollowersScore(){
                 console.log("error");
             } else {
                 console.log("updated total score");
+                //connection.end();  
+                LIKECUISINEuserAddToFav();
+            }
+
+    });
+    
+}
+
+
+function LIKECUISINEuserAddToFav(){
+   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/addScoreInLIKECUISINEfavorites.csv\" AS row match (:User{email:row.Email})-[l:LIKECUISINE]->(:Cuisine{name:row.Cuisine}) match (s:Score) set l.score = l.score + s.favouritesScore", function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
                 connection.end();  
             }
 
