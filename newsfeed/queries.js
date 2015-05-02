@@ -1168,7 +1168,7 @@ exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
         if (err) throw err;
         console.log('done');
     });
-
+}
 
 /* 
 	Sprint #-2-US-6
@@ -1209,8 +1209,8 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
 exports.NewsFeedDishes = function(user) {
     db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)<-[:FAVORITES]-(u)'
-	+' return distinct d as dish, max(ld.score*ld.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
+	+' return u2 as otherUser,ld as relType, d as dish, max(ld.score*ld.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1221,6 +1221,12 @@ exports.NewsFeedDishes = function(user) {
 			var dish = results.map(function(result) {
             return result['dish'];
 			});
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
 			var score = results.map(function(result) {
             return result['score'];
 			});
@@ -1230,6 +1236,8 @@ exports.NewsFeedDishes = function(user) {
 			data[i] = {};              // creates a new object
 			data[i].dish = dish[i];
 			data[i].score = score[i];    
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 
 			}
 			exports.NewsFeedPhotos(user,data);
 		}
@@ -1238,10 +1246,10 @@ exports.NewsFeedDishes = function(user) {
 
 
 exports.NewsFeedPhotos = function(user,dish) {
-    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)<-[:FAVORITES]-(u)'
-	+' return distinct p as photo, max(yy.score*yy.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)'
+	+' return u2 as otherUser,yy as relType, p as photo, max(yy.score*yy.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1255,22 +1263,32 @@ exports.NewsFeedPhotos = function(user,dish) {
 			var score = results.map(function(result) {
             return result['score'];
 			});
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
+			
 			var data = [];
 			for(var i=0; i<photo.length; i++)  {
 			data[i] = {};              // creates a new object
 			data[i].photo = photo[i];
 			data[i].score = score[i];    
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 
 			}
+			
 			exports.NewsFeedRestaurants(user,dish,data);
 		}
     });
 }
 
 exports.NewsFeedRestaurants = function(user,dish,photo) {
-    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
 	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)<-[:FAVORITES]-(u)'
-	+' return distinct r as restaurant, max(f.score*f.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)'
+	+' return u2 as otherUser,f as relType, r as restaurant, max(f.score*f.timestamp*lc.score) as score ORDER BY score DESC', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1284,14 +1302,21 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			var score = results.map(function(result) {
             return result['score'];
 			});
-			
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
 			
 			
 			var data = [];
 			for(var i=0; i<restaurant.length; i++)  {
 			data[i] = {};              // creates a new object
 			data[i].restaurant = restaurant[i];
-			data[i].score = score[i];    
+			data[i].score = score[i];  
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 			
 			}
 			
 			var allData = [];
@@ -1301,6 +1326,8 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			allData[count] = {};              // creates a new object
 			allData[count].element = data[i].restaurant;
 			allData[count].score = data[i].score;    
+			allData[count].user = data[i].user;
+			allData[count].relType = data[i].relType; 	
 			count++;
 			}
 			}
@@ -1309,6 +1336,8 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			allData[count] = {};              // creates a new object
 			allData[count].element = dish[i].dish;
 			allData[count].score = dish[i].score;    
+			allData[count].user = dish[i].user;
+			allData[count].relType = dish[i].relType; 	
 			count++;			
 			}
 			}
@@ -1317,7 +1346,9 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			for(i = 0; i< photo.length; i++)  {
 			allData[count] = {};              // creates a new object
 			allData[count].element = photo[i].photo;
-			allData[count].score = photo[i].score;       
+			allData[count].score = photo[i].score;     
+			allData[count].user = photo[i].user;
+			allData[count].relType = photo[i].relType; 	
 			count++;	
 			}
 			}
@@ -1330,13 +1361,14 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			}
 			allData = allData.sort(compare);
 			for(var i = 0 ; i< allData.length; i++)  {
-			console.log(allData[i].element.data);
-			console.log(allData[i].score);
 			console.log('---------------------');
+			console.log('');
+			console.log('Entity name\t:\t' + JSON.stringify(allData[i].element.data));
+			console.log('User\t\t:\t' + JSON.stringify(allData[i].user.data));
+			console.log('Relation name\t:\t' + JSON.stringify(allData[i].relType._data.metadata.type));
+			console.log('Score Achieved\t:\t' + JSON.stringify(allData[i].score));
+			console.log('');
 			}
-			//console.log(allData);
-			//allData = allData.sort(compare);
-			
 		}
     });
 }
