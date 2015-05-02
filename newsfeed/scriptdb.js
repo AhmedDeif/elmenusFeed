@@ -12,9 +12,21 @@ var connection = mysql.createConnection({
 connection.connect();
 // To delete old CSVs
 var fs = require('fs');  
+ 
+createGlobalNode(); 
 
-uniqueUser(); 
-
+//---------------------------------------------------------------------------------
+function createGlobalNode(){
+  db.query("MERGE (s:Scores { followsScore:5 , reviewScore:4 , likesDishScore:3 , hasCuisineScore:2 , addPhotoScore:11 , yum_yuckScore:10 , shareRestaurantScore:8 , shareDishScore:7 , sharePhotoScore:6, favouritesScore:9 , likeCuisineScore:1  }) return s", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Create-Global-Node Done');
+          uniqueUser();
+        }
+    });
+}
 
 //---------------------------------------------------------------------------------
 //Create constrains
@@ -293,13 +305,54 @@ function cuisines(){
           console.log('Cuisines Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
-          dishesInRestaurants();
+          relUserCuisine();
         }
     });
 
 }
   else{
       throw err;
+  }
+});
+}
+//----------------------------------------------------------------------------------------
+//create relation LIKECUISINE between user and cuisine
+function relUserCuisine(){
+    //check if the csv file exists if it exists delete
+    //it as it isnt deleted mysql will crash
+  if (fs.existsSync('C:/tmp/UsersCuisines.csv')) {
+    fs.unlinkSync('C:/tmp/UsersCuisines.csv');
+}
+    //selecting reviews on restaurants from mysql database
+    //from restaurants, users, reviews tables and putting them in a csv file
+    //that each record of reviews in one line 
+    //and creating headers of reviews
+  connection.query("select \'Email\',\'Cuisine\' UNION select  u.email,c.name_en from  users u ,cuisines c INTO OUTFILE \'/tmp/UsersCuisines.csv\' FIELDS TERMINATED BY \',\' ENCLOSED BY \'\"\' LINES TERMINATED BY \'\n\';"
+  , function(err, rows, fields) {
+  if (!err){
+  //creating reviews with title and body in Neo4j database
+    //by importing each record from CSV and saving each record
+    //one by one in 'row' then extracting information from 
+    //it by using headers (row.title)(row.body)
+  //and finding the reviewer and the restaurant to insert the review by  (row.Restaurant)(row.User)
+    setTimeout(function(){
+      db.query("USING PERIODIC COMMIT 100 LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/UsersCuisines.csv\" AS row match (u:User{email:row.Email}),(c:Cuisine{name:row.Cuisine}) create (u)-[:LIKECUISINE{score:0}]->(c)", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Reviews-Restaurants Done');
+      //calling next method to make code run synchronous
+          dishesInRestaurants();
+        }
+    });
+  },400);
+          
+      
+
+}
+  else{
+    throw err;
   }
 });
 }
@@ -422,7 +475,7 @@ if (fs.existsSync('C:/tmp/createFavoriteUserRestaurant.csv')) {
       //importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Restaurant and row.User)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) MERGE (u) -[:FAVORITES{created_at:row.created_at}]-> (r) return r limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFavoriteUserRestaurant.csv\" AS row match (r:Restaurant {name:row.Restaurant}) match (u:User {email:row.User}) MERGE (u) -[:FAVORITES{created_at:row.created_at,score:3}]-> (r) return r limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -465,7 +518,7 @@ if (fs.existsSync('C:/tmp/createLikeUserDishRestaurant.csv')) {
   //where these headers are used to find the Restaurant,Dish and the
   //User for the user to be able to like that dish in the restaurant.
     setTimeout(function(){
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createLikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:TRUE, created_at:row.created_at}]-> (d) return d limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createLikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:TRUE, created_at:row.created_at,score:5}]-> (d) return d limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -509,7 +562,7 @@ if (fs.existsSync('C:/tmp/createDislikeUserDishRestaurant.csv')) {
     //then importing each record from CSV and saving each record
     //one by one in 'row' then extracting information from 
     //it by using headers (row.Restaurant and row.Dish)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:FALSE,created_at:row.Time}]-> (d) return d limit 1;", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createDislikeUserDishRestaurant.csv\" AS row match (Restaurant {name:row.Restaurant})-[:HAS]->(d:Dish {dish_name:row.Dish}) match (u:User {email:row.User}) MERGE (u) -[:LIKES_DISH{likes:FALSE,created_at:row.Time,score:5}]-> (d) return d limit 1;", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -551,7 +604,7 @@ if (fs.existsSync('C:/tmp/createFollowUserUser.csv')) {
       //then importing each record from CSV and saving each record
       //one by one in 'row' then extracting information from 
       //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) MERGE (u1) -[:FOLLOWS{created_at:row.Time,score:4,totalScore:0}]-> (u2)", params = {}, function (err, results) {
+      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (u1:User {email:row.Follower}) match (u2:User {email:row.Followee}) Merge (u1)-[f:FOLLOWS{ numberOfVisits :0 , totalScore :5 , commonFollowers :0, commonFavourites :0, commonYumYuck :0}]->(u2)", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
@@ -639,7 +692,7 @@ function CreatePhoto(){
           console.log('Photos Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
-          LikeCuisine();
+          commonFavoritedRestaurants();
         }
     });
 
@@ -649,44 +702,74 @@ function CreatePhoto(){
   }
 });
 }
-function LikeCuisine(){
-    //check if the csv file exists if it exists delete
-    //it as it isnt deleted mysql will crash
-if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
-    fs.unlinkSync('C:/tmp/createUserLikeCuisine.csv');
-}
-    //selecting follower's email and followee's email
-    //then linking them by using inner joins
-    // between users and followers tables
-    // then creating headers of (Follower and Followee) and
-    //putting it in a csv file that each 
-    // record of follower's email and followee's email  in one line
-  connection.query("SELECT \'Email\', \'Cuisine\' UNION SELECT u.email, c.name_en FROM users u, items i, restaurants r, menus m, cuisines c, restaurants_cuisines rc, items_likes il where i.menu_id = m.id AND m.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id AND il.user_id = u.id AND i.id = il.item_id UNION  SELECT u.email, c.name_en FROM users u, restaurants r, user_favorites uf, cuisines c, restaurants_cuisines rc WHERE uf.user_id = u.id AND uf.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id INTO OUTFILE \'/tmp/createUserLikeCuisine.csv\'  FIELDS TERMINATED BY \',\'  ENCLOSED BY \'\"\'  LINES TERMINATED BY \'\n\';"
-  , function(err, rows, fields) {
-  if (!err){
-    setTimeout(function(){
-      //creating relations between follower and followee of [:Follow] in Neo4j database
-      //by matching follower's email and followee's email
-      //then importing each record from CSV and saving each record
-      //one by one in 'row' then extracting information from 
-      //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createUserLikeCuisine.csv\" AS row match (u:User{email:row.Email}), (c:Cuisine{name:row.Cuisine}) MERGE (u)-[:LikeCuisine{score:5}]->(c) return c limit 1;", params = {}, function (err, results) {
+
+//////////////////////////////////////////////////////////
+function commonFavoritedRestaurants(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (u1:User{email:row.Follower})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User{email:row.Followee}),(u1)-[fol:FOLLOWS]->(u2) set fol.commonFavourites = fol.commonFavourites + 1 SET fol.totalScore = fol.totalScore + fav.score return u1,u2,fol", params = {}, function (err, results) {
         if (err){  
                     throw err;
                 }
         else {
-          console.log('User-Like_Cuisine Done');
+          console.log('common-Favorited-Restaurants Done');
           //Close mysql connection
-          connection.end();  
+          //connection.end();  
+          UserCommonYumsUser(); 
         }
     });
-  },400);
-          
-      
-
 }
-  else{
-    throw err;
-  }
-});
+function UserCommonYumsUser(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (user1:User {email:row.Follower})-[:YUM_YUCK {value: TRUE}]->(photo:Photo)<- [y:YUM_YUCK {value: TRUE}]- (user2:User {email:row.Followee}),  (user1)-[f:FOLLOWS]-> (user2) set f.totalScore = f.totalScore+ y.score set f.commonYumYuck = f.commonYumYuck + 1 return user1;", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('User-Common-Yums-User Done');
+          //Close mysql connection
+          //connection.end();  
+          findCommonFollowers(); 
+        }
+    });
+}
+
+function findCommonFollowers(){
+  db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (a:User{email:row.Follower})-[f:FOLLOWS]->(b:User{email:row.Followee}) , (a)-[:FOLLOWS]->(c:User) , (b)-[:FOLLOWS]->(c) with f, count(Distinct c) as total set f.commonFollowers = total return total", params = {}, function (err, results) {
+        if (err){  
+                    throw err;
+                }
+        else {
+          console.log('find-Common-Followers Done');
+          //Close mysql connection
+         setFollowersScore();
+            
+           
+        }
+    });
+}
+var setFollowersScoreQuery = "USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row match (x:User{email:row.Follower})-[f:FOLLOWS]->(y:User{email:row.Followee}) set f.totalScore=f.totalScore+f.numberOfVisits*3+5*f.commonFollowers+7*f.commonYumYuck"
+function setFollowersScore(){
+   db.query(setFollowersScoreQuery, function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("updated total score");
+                //connection.end();  
+                LIKECUISINEuserAddToFav();
+            }
+
+    });
+    
+}
+
+
+function LIKECUISINEuserAddToFav(){
+   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/addScoreInLIKECUISINEfavorites.csv\" AS row match (:User{email:row.Email})-[l:LIKECUISINE]->(:Cuisine{name:row.Cuisine}) match (s:Score) set l.score = l.score + (s.favouritesScore*TOINT(row.Count))", function (err,results) {
+            if(err){
+                console.log("error");
+            } else {
+                console.log("LIKECUISINE-user-Add-To-Fav score");
+                connection.end();  
+            }
+
+    });
+    
 }
