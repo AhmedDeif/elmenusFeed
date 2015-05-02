@@ -12,9 +12,21 @@ var connection = mysql.createConnection({
 connection.connect();
 // To delete old CSVs
 var fs = require('fs');  
+ 
+createGlobalNode(); 
 
-uniqueUser(); 
-
+//---------------------------------------------------------------------------------
+function createGlobalNode(){
+  db.query("MERGE (s:Scores { followsScore:5 , reviewScore:4 , likesDishScore:3 , hasCuisineScore:2 , addPhotoScore:11 , yum_yuckScore:10 , shareRestaurantScore:8 , shareDishScore:7 , sharePhotoScore:6, favouritesScore:9 , likeCuisineScore:1  }) return s", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Create-Global-Node Done');
+          uniqueUser();
+        }
+    });
+}
 
 //---------------------------------------------------------------------------------
 //Create constrains
@@ -639,7 +651,7 @@ function CreatePhoto(){
           console.log('Photos Done');
       //calling next method to make code run synchronous
           //dishesInRestaurants();
-          LikeCuisine();
+          commonFavoritedRestaurants();
         }
     });
 
@@ -649,48 +661,7 @@ function CreatePhoto(){
   }
 });
 }
-function LikeCuisine(){
-    //check if the csv file exists if it exists delete
-    //it as it isnt deleted mysql will crash
-if (fs.existsSync('C:/tmp/createUserLikeCuisine.csv')) {
-    fs.unlinkSync('C:/tmp/createUserLikeCuisine.csv');
-}
-    //selecting follower's email and followee's email
-    //then linking them by using inner joins
-    // between users and followers tables
-    // then creating headers of (Follower and Followee) and
-    //putting it in a csv file that each 
-    // record of follower's email and followee's email  in one line
-  connection.query("SELECT \'Email\', \'Cuisine\' UNION SELECT u.email, c.name_en FROM users u, items i, restaurants r, menus m, cuisines c, restaurants_cuisines rc, items_likes il where i.menu_id = m.id AND m.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id AND il.user_id = u.id AND i.id = il.item_id UNION  SELECT u.email, c.name_en FROM users u, restaurants r, user_favorites uf, cuisines c, restaurants_cuisines rc WHERE uf.user_id = u.id AND uf.restaurant_id = r.id AND rc.cuisine_id = c.id AND rc.restaurant_id = r.id INTO OUTFILE \'/tmp/createUserLikeCuisine.csv\'  FIELDS TERMINATED BY \',\'  ENCLOSED BY \'\"\'  LINES TERMINATED BY \'\n\';"
-  , function(err, rows, fields) {
-  if (!err){
-    setTimeout(function(){
-      //creating relations between follower and followee of [:Follow] in Neo4j database
-      //by matching follower's email and followee's email
-      //then importing each record from CSV and saving each record
-      //one by one in 'row' then extracting information from 
-      //it by using headers (row.Follower and row.Followee)
-      db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createUserLikeCuisine.csv\" AS row match (u:User{email:row.Email}), (c:Cuisine{name:row.Cuisine}) MERGE (u)-[:LikeCuisine{score:5}]->(c) return c limit 1;", params = {}, function (err, results) {
-        if (err){  
-                    throw err;
-                }
-        else {
-          console.log('User-Like_Cuisine Done');
-          //Close mysql connection
-          //connection.end();  
-          commonFavoritedRestaurants();
-        }
-    });
-  },400);
-          
-      
 
-}
-  else{
-    throw err;
-  }
-});
-}
 //////////////////////////////////////////////////////////
 function commonFavoritedRestaurants(){
   db.query("USING PERIODIC COMMIT LOAD CSV WITH HEADERS FROM \"file:///C:/tmp/createFollowUserUser.csv\" AS row MATCH (u1:User{email:row.Follower})-[:FAVORITES]->(r:Restaurant)<-[fav:FAVORITES]-(u2:User{email:row.Followee}),(u1)-[fol:FOLLOWS]->(u2) set fol.commonFavourites = fol.commonFavourites + 1 SET fol.totalScore = fol.totalScore + fav.score return u1,u2,fol", params = {}, function (err, results) {
