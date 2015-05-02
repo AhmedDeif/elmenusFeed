@@ -269,8 +269,8 @@ exports.getRestaurants = function(callback) {
     which is defined in the databse.
 */
 
-exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }) "+
-"CREATE (p:Photo { url : {url}}), (n)-[:addPhoto {timestamp: TIMESTAMP()}]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }),(s:scores) "+
+"CREATE (p:Photo { url : {url}}), (n)-[:addPhoto {timestamp: TIMESTAMP(), score: TIMESTAMP()*s.addPhotoScore}]->(p)-[:IN]->(r)";
 
 exports.UserAddsPhotoToRestaurantScore = "match (s:scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";
 //exports.UserAddsPhotoToRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }) set t.score = t.score + 10";
