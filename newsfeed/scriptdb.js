@@ -13,9 +13,20 @@ connection.connect();
 // To delete old CSVs
 var fs = require('fs');  
 
-uniqueUser(); 
+createGlobalNode(); 
 
-
+//---------------------------------------------------------------------------------
+function createGlobalNode(){
+  db.query("CREATE (s:Scores { followsScore:5 , reviewScore:4 , likesDishScore:3 , hasCuisineScore:2 , addPhotoScore:11 , yum_yuckScore:10 , shareRestaurantScore:8 , shareDishScore:7 , sharePhotoScore:6, favouritesScore:9 , likeCuisineScore:1  }) return s", params = {}, function (err, results) {
+        if (err){  
+                  throw err;
+                }
+        else {
+          console.log('Create-Global-Node Done');
+          uniqueUser();
+        }
+    });
+}
 //---------------------------------------------------------------------------------
 //Create constrains
 /*
