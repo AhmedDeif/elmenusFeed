@@ -10,6 +10,20 @@ queries.createCuisine('sushi');
 queries.createCuisine('kabab');
 queries.createCuisine('ma7ashi');
 
+queries.createDish('dish1');
+queries.createDish('dish2');
+queries.createDish('dish3');
+queries.createDish('dish4');
+queries.createDish('dish5');
+queries.createDish('dish6');
+queries.createDish('dish7');
+queries.createDish('dish8');
+queries.createDish('dish9');
+queries.createDish('dish10');
+queries.createDish('dish11');
+queries.createDish('dish12');
+queries.createDish('dish13');
+
 
 
 
