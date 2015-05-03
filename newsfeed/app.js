@@ -131,6 +131,7 @@ queries.createResturant("Res 2");
 queries.createResturant("Res 3");
 queries.createResturant("Res 4");
 queries.createResturant("Res 5");
+/*
 queries.addDishToRestaurant("Dish 1","Res 1");
 queries.addDishToRestaurant("Dish 2","Res 1");
 queries.addDishToRestaurant("Dish 3","Res 1");
@@ -272,8 +273,7 @@ queries.createFollowUser("test 3","test 4");
 queries.createFollowUser("test 4","test 1");
 queries.createFollowUser("test 5","test 2");
 
-
-
+*/
 queries.createrFavouriteUserRestaurant("test 2","Res 2");
 queries.createrFavouriteUserRestaurant("test 2","Res 1");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
@@ -281,13 +281,17 @@ queries.createrFavouriteUserRestaurant("test 3","Res 1");
 queries.createrFavouriteUserRestaurant("test 4","Res 4");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
 queries.createrFavouriteUserRestaurant("test 1","Res 5");
-*/
-/*
 
+
+
+
+
+queries.UserAddsPhotoToRestaurant("test 2", "Res 2", "photo 4");
+
+queries.UserAddsPhotoToRestaurant("test 4", "Res 3", "photo 8");
 queries.UserAddsPhotoToRestaurant("test 1", "Res 1", "photo 1");
 queries.UserAddsPhotoToRestaurant("test 1", "Res 2", "photo 2");
 queries.UserAddsPhotoToRestaurant("test 1", "Res 3", "photo 3");
-
 
 /*
 queries.UserAddPhotoYums("test 3", "photo 1");
@@ -295,10 +299,5 @@ queries.UserAddPhotoYums("test 1", "photo 1");
 queries.UserAddPhotoYums("test 4", "photo 2");
 queries.UserAddPhotoYums("test 2", "photo 2");
 queries.UserAddPhotoYums("test 1", "photo 2");
+
 */
-
-
-//queries.UserAddsPhotoToRestaurant("test 2", "Res 2", "photo 1");
-
-queries.UserAddsPhotoToRestaurant("test 4", "Res 3", "photo 8");
-

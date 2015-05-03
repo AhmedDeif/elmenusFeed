@@ -36,7 +36,7 @@ exports.createUser = function(email) {
      and setting the initial score to 0 between this user and all cuisines.
 */
 
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKECUISINE{score:0, timestamp: TIMESTAMP()}]->(c)";
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LikeCuisine{score:0, timestamp: TIMESTAMP()}]->(c)";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
