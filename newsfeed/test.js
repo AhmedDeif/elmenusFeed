@@ -5,10 +5,9 @@ var queries = require('./queries.js');
 
 queries.createUser('kareem1@mail.com');
 queries.createUser('kareem2@mail.com');
+queries.createUser('kareem3@mail.com');
 
-queries.createCuisine('sushi');
-queries.createCuisine('kabab');
-queries.createCuisine('ma7ashi');
+
 
 queries.createDish('dish1');
 queries.createDish('dish2');
