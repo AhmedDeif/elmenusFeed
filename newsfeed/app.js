@@ -104,7 +104,7 @@ app.get('/newsfeed/:email', routes.showNewsfeed);
 //queries.createTimeDecay(5000000);
  // This part is for testing queries
  
-
+/*
 queries.createDish("Dish 1");
 queries.createDish("Dish 2");
 queries.createDish("Dish 3");
@@ -117,7 +117,7 @@ queries.createCuisine("Pasta");
 queries.createCuisine("Burger");
 
 
-/*
+
 
 queries.createUser("test 1");
 queries.createUser("test 2");
@@ -214,4 +214,91 @@ queries.UserCommonYumsUser("test 2", "test 3");
 */
 
 
+//  First run
+/*
+queries.createGlobalNode(1,6,5,8,10,9,7,4,3,2,1);
+queries.createDish("Dish 1");
+queries.createDish("Dish 2");
+queries.createDish("Dish 3");
+queries.createDish("Dish 4");
+queries.createDish("Dish 5");
+queries.createDish("Dish 6");
+queries.createDish("Dish 7");
+queries.createCuisine("Pizza");
+queries.createCuisine("Pasta");
+queries.createCuisine("Burger");
+queries.createCuisine("Pie");
+
+
+// Second run
+
+queries.createUser("test 1");
+queries.createUser("test 2");
+queries.createUser("test 3");
+queries.createUser("test 4");
+queries.createUser("test 5");
+queries.createUser("test 6");
+queries.createUser("test 7");
+
+queries.createResturant("Res 1","Pizza");
+queries.createResturant("Res 2","Pizza");
+queries.createResturant("Res 3","Pasta");
+queries.createResturant("Res 4","Pie");
+queries.createResturant("Res 5","Burger");
+
+
+
+queries.addDishToRestaurant("Dish 1","Res 1");
+queries.addDishToRestaurant("Dish 2","Res 1");
+queries.addDishToRestaurant("Dish 3","Res 1");
+queries.addDishToRestaurant("Dish 4","Res 2");
+queries.addDishToRestaurant("Dish 5","Res 2");
+queries.addDishToRestaurant("Dish 6","Res 3");
+queries.addDishToRestaurant("Dish 7","Res 3");
+queries.addDishToRestaurant("Dish 1","Res 3");
+queries.addDishToRestaurant("Dish 2","Res 4");
+queries.addDishToRestaurant("Dish 3","Res 5");
+queries.addDishToRestaurant("Dish 4","Res 5");
+
+queries.createFollowUser("test 1","test 2");
+queries.createFollowUser("test 1","test 3");
+queries.createFollowUser("test 1","test 4");
+queries.createFollowUser("test 1","test 5");
+queries.createFollowUser("test 2","test 1");
+queries.createFollowUser("test 2","test 3");
+queries.createFollowUser("test 2","test 4");
+queries.createFollowUser("test 3","test 1");
+queries.createFollowUser("test 3","test 4");
+queries.createFollowUser("test 4","test 1");
+queries.createFollowUser("test 5","test 2");
+
+
+
+queries.createrFavouriteUserRestaurant("test 2","Res 2");
+queries.createrFavouriteUserRestaurant("test 2","Res 1");
+queries.createrFavouriteUserRestaurant("test 2","Res 3");
+queries.createrFavouriteUserRestaurant("test 3","Res 1");
+queries.createrFavouriteUserRestaurant("test 4","Res 4");
+queries.createrFavouriteUserRestaurant("test 2","Res 3");
+queries.createrFavouriteUserRestaurant("test 1","Res 5");
+*/
+/*
+
+queries.UserAddsPhotoToRestaurant("test 1", "Res 1", "photo 1");
+queries.UserAddsPhotoToRestaurant("test 1", "Res 2", "photo 2");
+queries.UserAddsPhotoToRestaurant("test 1", "Res 3", "photo 3");
+
+
+/*
+queries.UserAddPhotoYums("test 3", "photo 1");
+queries.UserAddPhotoYums("test 1", "photo 1");
+queries.UserAddPhotoYums("test 4", "photo 2");
+queries.UserAddPhotoYums("test 2", "photo 2");
+queries.UserAddPhotoYums("test 1", "photo 2");
+*/
+
+
+//queries.UserAddsPhotoToRestaurant("test 2", "Res 2", "photo 1");
+
+queries.UserAddsPhotoToRestaurant("test 4", "Res 3", "photo 8");
 
