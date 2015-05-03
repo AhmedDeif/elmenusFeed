@@ -32,10 +32,11 @@ exports.createUser = function(email) {
     Sprint #2-US-4
     linking a user to all cuisines in the database.
     The function takes the email of the user as an input.
-    and it creates relation TOTALSCORE between this user and each cuisine in the database
+    and it creates relation LIKECUISINE between this user and each cuisine in the database
      and setting the initial score to 0 between this user and all cuisines.
 */
-exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LikeCuisine{score:0, timestamp: TIMESTAMP()}]->(c)";
+
+exports.linkUserToCuisinesQuery = "MATCH (c:Cuisine) , (n:User { email:{ep}}) CREATE (n)-[k:LIKECUISINE{score:0, timestamp: TIMESTAMP()}]->(c)";
 exports.linkUserToCuisines = function(email) {
     db.query(exports.linkUserToCuisinesQuery, params = {
         ep: email
@@ -44,6 +45,7 @@ exports.linkUserToCuisines = function(email) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -66,6 +68,7 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 /*
@@ -91,6 +94,7 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -135,6 +139,7 @@ exports.linkRestaurantToCuisine = function(name,cuisine) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -160,7 +165,10 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         dnp: DishName
     }, function(err, results) {
         if (err) throw err;
-    });
+		console.log("done");
+    }
+	
+	);
 }
 /*  
     User Story 30
@@ -180,6 +188,7 @@ exports.createDish = function(name) {
             console.error('Error');
             throw err;
         } 
+		console.log('done');
     });
 }
 /*
@@ -194,7 +203,7 @@ exports.createDish = function(name) {
     affects the overall score of the relationship between the users.
 */
 
-exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) , (s:scores)  merge (u)-[li:LIKES_DISH]->(d) set li.timestamp = TIMESTAMP() set li.likes=TRUE set li.score=s.likesDishScore with u,d,li optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + li.score return u limit 1";
+exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) , (s:scores)  merge (u)-[li:LIKES_DISH]->(d) set li.timestamp = TIMESTAMP() set li.likes=TRUE set li.score=s.likesDishScore with u,d,li optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + li.score";
 exports.createrLikeUserDish = function(UserEmail, DishName) {
     db.query(exports.createrLikeUserDishQuery, params = {
         ep: UserEmail,
@@ -204,13 +213,14 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
              throw err;
           }
         else{
-            db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine), (s:scores)  MERGE (u)-[l:LikeCuisine{score:l.score + s.likesDishScore}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LikeCuisine]->(c) set f.totalScore = f.totalScore + l.score", params = {
+            db.query("MATCH (u:User{email:{ep}}), (d:Dish {dish_name: {dnp}})<-[:HAS]-(r:Restaurant)-[:HasCuisine]->(c:Cuisine), (s:scores)  MERGE (u)-[l:LIKECUISINE{score:l.score + s.likesDishScore}]->(c) WITH u, c, d, l Optional Match (u)-[f:FOLLOWS]-(uf:User)-[:LIKECUISINE]->(c) set f.totalScore = f.totalScore + l.score", params = {
                 ep: UserEmail,
                 dnp: DishName
                 }, function(err, results) {
                     if (err) { 
                         throw err;
                     }
+					console.log('done');
             });
         }
     });
@@ -253,6 +263,7 @@ exports.getRestaurants = function(callback) {
         restaurants = JSON.stringify(restaurants);
         restaurants = JSON.parse(restaurants);
         callback(restaurants);
+		console.log('done');
     });
 }
 
@@ -273,6 +284,11 @@ exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User),(r:Restaurant),(s:score
 "where n.email = {ep} and r.name = {rp} set t.score = t.score + s.addPhotoScore "+
 "CREATE (p:Photo { url : {url}}), (n)-[:addPhoto {timestamp: TIMESTAMP(), score: TIMESTAMP()*s.addPhotoScore}]->(p)-[:IN]->(r);";
 
+<<<<<<< HEAD
+=======
+exports.UserAddsPhotoToRestaurantScore = "match (s:scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";
+//exports.UserAddsPhotoToRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10";
+>>>>>>> master
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -283,6 +299,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
             console.error('Error');
             throw err;
         } 
+		console.log('done');
     });
 }
 
@@ -311,6 +328,7 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
             exports.UserCommonYucksUser(FollowerEmail,FolloweeEmail);
             exports.findCommonFollowers(FollowerEmail,FolloweeEmail);
             exports.setFollowersScore(FollowerEmail,FolloweeEmail);
+			console.log('done');
         }
     });
 }
@@ -389,6 +407,7 @@ exports.commonFavoritedRestaurants = function(user1, user2) {
             console.log('Error');
             throw err;
         } 
+		console.log('done');
     });
 }
 
@@ -416,6 +435,7 @@ exports.findCommonFollowers = function(firstUser, secondUser) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -437,6 +457,7 @@ exports.setFollowersScore = function(user1,user2) {
             if(err){
                 console.log("error");
             } 
+			console.log('done');
     });
 }
 
@@ -484,7 +505,7 @@ exports.visitFollowUser = function(FollowerEmail, FolloweeEmail) {
      and replaced by a yum.
 */
 exports.UserAddPhotoYumsQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) ,(s:scores) CREATE (user)-[:YUM_YUCK {value: TRUE, score:s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: FALSE}]->(photo) Delete x;";
-exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score+s.yum_yuckScore";
+exports.UserAddPhotoYumsScore="MATCH (n:User { email:{ep} })-[ts:LIKECUISINE]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score+s.yum_yuckScore";
 exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYumsQuery, params = {
         ep: UserEmail,
@@ -501,6 +522,7 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
                 if (err) {
                     throw err;
                 }
+				console.log('done');
                 });
         }
         
@@ -537,8 +559,8 @@ exports.UserDeletePhotoYum = function(UserEmail, PhotoURL) {
      If there was a yum on this photo, placed by the same user, then it will be deleted 
      and replaced by a yuck.
 */
-exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) , (s:scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo MATCH (user)-[x:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) Delete x;";
-exports.UserAddPhotoYucksScore="MATCH (n:User { email:{ep} })-[ts:LikeCuisine]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score-s.yum_yuckScore";
+exports.UserAddPhotoYucksQuery = "MATCH (user:User {email: {ep}}), (photo:Photo {url: {url}}) , (s:scores) CREATE (user)-[:YUM_YUCK {value: FALSE, score: s.yum_yuckScore, timestamp: TIMESTAMP()}]->(photo) WITH user,photo,s MATCH (user)-[x:YUM_YUCK {value: TRUE, score: s.yum_yuckScore}]->(photo) Delete x;";
+exports.UserAddPhotoYucksScore="MATCH (n:User { email:{ep} })-[ts:LIKECUISINE]-(c:Cuisine)<-[:HAS_CUISINE]-(r:Restaurant)<-[:IN]-(p:Photo{url: {url}}), (s:scores) set ts.score = ts.score-s.yum_yuckScore";
 exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
     db.query(exports.UserAddPhotoYucksQuery, params = {
      ep: UserEmail,
@@ -555,6 +577,7 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
                 if (err) {
                     throw err;
                 }
+				console.log('done');
                 });
         }
     });
@@ -615,6 +638,7 @@ exports.UserSharesDish = function(UserEmail, DishName) {
         dn: DishName
     }, function(err, results) {
         if (err) throw err;
+		console.log('done');
     });
 }
 
@@ -637,6 +661,7 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -675,6 +700,10 @@ exports.Get_restaurant_info = function(name, callback) {
     });
 }
 
+
+//exports.createrFavouriteUserRestaurantScore = "match (s:Scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
+//exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + 10 return t.score"
+
 /*
     Sprint #-2-US12 and
     Sprint #-1-US-9
@@ -688,7 +717,7 @@ exports.Get_restaurant_info = function(name, callback) {
 */
 exports.createrFavouriteUserRestaurantQuery = "MATCH (user:User {email: {ep}}), (rest:Restaurant {name: {rp}}) CREATE (user)-[:FAVORITES {score: 3, timestamp: TIMESTAMP()}]->(rest) return user;"
 //exports.createrFavouriteUserRestaurantScore = "match (s:scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }) set t.score = t.score + s.favouritesScore "
-exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }), (s:scores) set t.score = t.score + s.favouritesScore return t.score"
+exports.createrFavouriteUserRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LIKECUISINE]-(n:User { email:{ep} }), (s:scores) set t.score = t.score + s.favouritesScore return t.score"
 exports.createrFavouriteUserRestaurant = function(email, RestaurantName) {
     db.query(exports.createrFavouriteUserRestaurantQuery, params = {
         ep: email,
@@ -724,6 +753,7 @@ exports.getRelations = function(callback) {
             return result['type(r)'];
         });
         callback(relations);
+		console.log('done');
     });
 }
 
@@ -734,6 +764,7 @@ exports.changeRelationCost = function(name, cost) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -772,6 +803,7 @@ exports.getUsers = function(callback) {
         users = JSON.stringify(users);
         users = JSON.parse(users);
         callback(users);
+		console.log('done');
     });
 }
 var usr;
@@ -791,6 +823,7 @@ exports.Get_user_info = function(r, req, res) {
         data1 = ' \"Source\":' + JSON.stringify(data1);
         usr = JSON.parse('{ ' + data1 + ' }');
         indexjs.Get_user_info_cont(req, res, usr);
+		console.log('done');
     });
     return usr;
 }
@@ -827,7 +860,7 @@ exports.createCuisine = function(name) {
     and it creates relation TOTALSCORE between this cuisine and each user in the database
     and setting the initial score to 0 between each user and this cuisine.
 */ 
-exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[k:LikeCuisine {timestamp:TIMESTAMP()}]->(c) set k.score=0";
+exports.newAddedCuisineToUsersQuery = "MATCH (c:Cuisine{name:{np}}) , (n:User) CREATE (n)-[k:LIKECUISINE {timestamp:TIMESTAMP()}]->(c) set k.score=0";
 exports.newAddedCuisineToUsers = function(cuisine) {
     db.query(exports.newAddedCuisineToUsersQuery, params = {
         np: cuisine
@@ -858,14 +891,15 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
         if (err) {
             console.error('Error');
             throw err;
-        } 
+        }
+console.log('done');		
     });
 }
 
 /*
     User Story 37
     Sprint #-1-US-23
-    createRelLikeCuisine(User Email,Cuisine name):
+    createRelLIKECUISINE(User Email,Cuisine name):
     This function takes as input the Cuisine's 
     name and User's email and finds them in the database when
     they are found the function
@@ -873,14 +907,15 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
     cuisine
 */
 exports.createRelUserCuisine = function(UserEmail, CuisineName) {
-    db.query("MATCH (c:Cuisine),(u:User),(g:scores) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LikeCuisine]->(c) set rl.Score = g.likeCuisineScore", params = {
+    db.query("MATCH (c:Cuisine),(u:User),(g:scores) WHERE c.Name={cp} AND u.email ={np} CREATE (u)-[rl:LIKECUISINE]->(c) set rl.Score = g.likeCuisineScore", params = {
         cp: CuisineName,
         np: UserEmail
     }, function(err, results) {
         if (err) {
             console.error('Error');
             throw err;
-        } 
+        }
+		console.log('done');
     });
 }
 
@@ -902,6 +937,7 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 /*
@@ -923,7 +959,7 @@ exports.removeFavouriteResturant = function(email, resName) {
             console.log("Error removing resturant from favourites");
             throw err;
         } else {
-            console.log("resturant removed form favourites successfully");
+            console.log('done');
         }
     });
 }
@@ -937,6 +973,7 @@ exports.getUserFollowScore = function() {
             return result['f.score']
         });
         newScore = relationScore * commonFollowers;
+		console.log('done');
     });
 }
 /*   User Story S1
@@ -955,6 +992,7 @@ exports.showOldActionsHistory = function(UserEmail) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -970,6 +1008,7 @@ exports.checkUserExists = function(email, callback) {
             return result['COUNT(n)'];
         });
         callback(count[0]);
+		console.log('done');
     });
 }
 exports.getNewsfeed = function(email, callback) {
@@ -980,11 +1019,11 @@ exports.getNewsfeed = function(email, callback) {
             console.log("error");
             throw err;
         }
-        console.log("newsfeed fetched");
         var actions = results.map(function(result) {
             return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
         });
         callback(actions);
+		console.log('done');
     });
 }
 /*
@@ -1003,7 +1042,7 @@ exports.getCommonRestaurants = function(email, Dish) {
         var ress = results.map(function(result) {
             return JSON.parse('{ ' + '\"name\":' + JSON.stringify(result['re.name']));
         });
-        console.log(ress);
+        console.log('done');
         callback(ress);
     });
 }
@@ -1022,6 +1061,7 @@ exports.getLatestActionTime = function (callback) {
             return result['MAX(r.created_at)'];
         });
         callback(createdAt);
+		console.log('done');
     });
 }
 /*
@@ -1071,7 +1111,7 @@ exports.createTimeDecay = function (scale) {
             }
             console.log("Done");
         });
-        db.query("MATCH (a)-[r2:LikeCuisine]->(b), (s:scores) SET r2.score = CASE r2.score WHEN s.likeCuisineScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
+        db.query("MATCH (a)-[r2:LIKECUISINE]->(b), (s:scores) SET r2.score = CASE r2.score WHEN s.likeCuisineScore THEN r2.score*EXP(-((ABS(TOINT(r2.created_at) - " + latest + ")/" + scale + "))) ELSE r2.score END", 
             function (err, results) {
             if (err)
             {
@@ -1128,24 +1168,52 @@ exports.createTimeDecay = function (scale) {
     });
 }
 
+/*
+Sprint#2 Story 2:
+The amount of time the user spends on a certain action done by another user 
+will increase the score between the user and the cuisines.
+The function takes three inputs: 
+User1 Email (The user making an action) , 
+User2 Email (The user viewing the action made by user 1),
+TimeStamp (The amount of time user2 takes while viewing user1's action)
+The query first matches user1 with all the cuisines he has a relation with and the node Scores
+Then, it matches the relation LIKECUISINE between user2 and the same cuisines that user1 has a relation with 
+and sets the score in LIKECUISINE (that is between user2 and the cuisines ) to score + (timeStamp * "a certain factor").
+ In here I assumed that the factor will be 4, so it will multiply the given timeStamp by 4 and add it to the score in LIKECUISINE.
+*/
+exports.UserTimeUserQuery = "MATCH (user1 {email:{u1}})-[:LIKECUISINE]->(cui:Cuisine)  MATCH (user2 {email:{u2}}) -[li:LIKECUISINE]->(cui) set li.score = li.score + (toInt({ts})*4) ";
+exports.UserTimeUser = function(UserEmail, UserViewingAction, TimeStamp) {
+    db.query(exports.UserTimeUserQuery, params = {
+        u1: UserEmail,
+        u2: UserViewingAction,
+        ts: TimeStamp
+    }, function(err, results) {
+        if (err) throw err;
+        console.log('done');
+    });
+}
+
 /* 
 	Sprint #-2-US-6
-    this function creates a new node which is a global one
-    which has properties all the scores of all relations
-    in the database.
-    the function takes as an input the scores of all relations
-    then it sets the scores, then in all the previous functions,
-    the relation score is set to the score set here in the global node.
+    this function creates a new node which is a global one.
+    it is used to change the values of all
+    relations' scores.
+    this node has a properties which are all the new values
+    of the scores.
+    it takes as an input the values of all scores
+    then it sets the values.
+    the values of the scores are then updates in other functions
+    by setting the score to its corresponding one in the globalNode.   
 */
+
 exports.createGlobalNodeQuery = "CREATE (s:scores { followsScore:{ep1} , reviewScore:{ep2} , likesDishScore:{ep3} ,"+
-"hasCuisineScore:{ep4} , addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
+" addPhotoScore:{ep5} , yum_yuckScore:{ep6} , shareRestaurantScore:{ep7} ,"+
 "shareDishScore:{ep8} , sharePhotoScore:{ep9} , favouritesScore:{ep10} , likeCuisineScore:{ep11}  })";
-exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , hasCuisineScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
+exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore , addPhotoScore , yum_yuckScore , shareRestaurantScore , shareDishScore , sharePhotoScore , favouritesScore , likeCuisineScore) {
     db.query(exports.createGlobalNodeQuery, params = {
         ep1: followsScore ,
          ep2: reviewScore ,
           ep3: likesDishScore ,
-           ep4: hasCuisineScore, 
            ep5:addPhotoScore ,
             ep6:yum_yuckScore ,
              ep7 :shareRestaurantScore ,
@@ -1162,10 +1230,10 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
 }
 
 exports.NewsFeedDishes = function(user) {
-    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)<-[:FAVORITES]-(u)'
-	+' return distinct d as dish, max(ld.score*ld.timestamp*lc.score) as score ORDER BY score DESC', params = {
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(r:Restaurant),(s:scores)'
+	+' with u,c,d,r,s'
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
+	+' return distinct u2.email as otherUser,type(ld) as relType, d.dish_name as dish, s.likesDishScore*ld.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1176,6 +1244,12 @@ exports.NewsFeedDishes = function(user) {
 			var dish = results.map(function(result) {
             return result['dish'];
 			});
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
 			var score = results.map(function(result) {
             return result['score'];
 			});
@@ -1185,6 +1259,8 @@ exports.NewsFeedDishes = function(user) {
 			data[i] = {};              // creates a new object
 			data[i].dish = dish[i];
 			data[i].score = score[i];    
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 
 			}
 			exports.NewsFeedPhotos(user,data);
 		}
@@ -1193,10 +1269,10 @@ exports.NewsFeedDishes = function(user) {
 
 
 exports.NewsFeedPhotos = function(user,dish) {
-    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)<-[:FAVORITES]-(u)'
-	+' return distinct p as photo, max(yy.score*yy.timestamp*lc.score) as score ORDER BY score DESC', params = {
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(p:Photo),(r:Restaurant),(s:scores)'
+	+' with u,c,p,r,s'
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)'
+	+' return distinct u2.email as otherUser,type(yy) as relType, p.url as photo, s.yum_yuckScore*yy.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1210,22 +1286,32 @@ exports.NewsFeedPhotos = function(user,dish) {
 			var score = results.map(function(result) {
             return result['score'];
 			});
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
+			
 			var data = [];
 			for(var i=0; i<photo.length; i++)  {
 			data[i] = {};              // creates a new object
 			data[i].photo = photo[i];
 			data[i].score = score[i];    
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 
 			}
+			
 			exports.NewsFeedRestaurants(user,dish,data);
 		}
     });
 }
 
 exports.NewsFeedRestaurants = function(user,dish,photo) {
-    db.query('match (u:User{email:{up}}),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
-	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LikeCuisine]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)<-[:FAVORITES]-(u)'
-	+' return distinct r as restaurant, max(f.score*f.timestamp*lc.score) as score ORDER BY score DESC', params = {
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(r:Restaurant),(s:scores)'
+	+' with u2,u,c,r,s'
+	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)'
+	+' return distinct u2.email as otherUser,type(f) as relType, r.name as restaurant, s.favouritesScore*f.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1239,14 +1325,21 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			var score = results.map(function(result) {
             return result['score'];
 			});
-			
+			var otherUser = results.map(function(result) {
+            return result['otherUser'];
+			});
+			var relType = results.map(function(result) {
+            return result['relType'];
+			});
 			
 			
 			var data = [];
 			for(var i=0; i<restaurant.length; i++)  {
 			data[i] = {};              // creates a new object
 			data[i].restaurant = restaurant[i];
-			data[i].score = score[i];    
+			data[i].score = score[i];  
+			data[i].user = otherUser[i];
+			data[i].relType = relType[i]; 			
 			}
 			
 			var allData = [];
@@ -1256,6 +1349,8 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			allData[count] = {};              // creates a new object
 			allData[count].element = data[i].restaurant;
 			allData[count].score = data[i].score;    
+			allData[count].user = data[i].user;
+			allData[count].relType = data[i].relType; 	
 			count++;
 			}
 			}
@@ -1264,6 +1359,8 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			allData[count] = {};              // creates a new object
 			allData[count].element = dish[i].dish;
 			allData[count].score = dish[i].score;    
+			allData[count].user = dish[i].user;
+			allData[count].relType = dish[i].relType; 	
 			count++;			
 			}
 			}
@@ -1272,7 +1369,9 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			for(i = 0; i< photo.length; i++)  {
 			allData[count] = {};              // creates a new object
 			allData[count].element = photo[i].photo;
-			allData[count].score = photo[i].score;       
+			allData[count].score = photo[i].score;     
+			allData[count].user = photo[i].user;
+			allData[count].relType = photo[i].relType; 	
 			count++;	
 			}
 			}
@@ -1285,13 +1384,14 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			}
 			allData = allData.sort(compare);
 			for(var i = 0 ; i< allData.length; i++)  {
-			console.log(allData[i].element.data);
-			console.log(allData[i].score);
 			console.log('---------------------');
+			console.log('');
+			console.log('Entity name\t:\t' + JSON.stringify(allData[i].element));
+			console.log('User\t\t:\t' + JSON.stringify(allData[i].user));
+			console.log('Relation name\t:\t' + JSON.stringify(allData[i].relType));
+			console.log('Score Achieved\t:\t' + JSON.stringify(allData[i].score));
+			console.log('');
 			}
-			//console.log(allData);
-			//allData = allData.sort(compare);
-			
 		}
     });
 }

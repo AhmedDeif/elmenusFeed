@@ -34,7 +34,7 @@ describe('I can sign up', function () {
             console.error('Error');
             throw err;
         } else {
-            db.query('CREATE (s:Scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:6 , yum_yuckScore:3 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:8 , likeCuisineScore:3  })', params = {
+            db.query('CREATE (s:scores { followsScore:5, reviewScore:3 , likesDishScore:7 ,hasCuisineScore:6 , addPhotoScore:10 , yum_yuckScore:5 , shareRestaurantScore:2 ,shareDishScore:2 , sharePhotoScore:2 , favouritesScore:10 , likeCuisineScore:3  })', params = {
 			}, function(err, results) {
         if (err) {
             console.error('Error');
@@ -910,7 +910,7 @@ describe('The user can add a photo yum to a certain photo', function() {
             });
         }
         function verify() {
-            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE, score: 3}]->(photo) optional match (user)-[y2:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1,y2", params = {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: TRUE}]->(photo) optional match (user)-[y2:YUM_YUCK {value: FALSE}]->(photo) return y1,y2", params = {
                 ep: 'kareemAdel11@mail.com',
                 url: 'myPhotoURL'
             }, function(err, results) {
@@ -1022,7 +1022,7 @@ describe('The user can add a photo yuck to a certain photo.', function() {
             });
         }
         function verify() {
-            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE, score: 3}]->(photo) return y1", params = {
+            db.query("optional match (user:User {email: {ep}}), (photo:Photo {url: {url}}) optional match (user)-[y1:YUM_YUCK {value: FALSE}]->(photo) return y1", params = {
                 ep: 'kareemAdel13@mail.com',
                 url: 'myPhotoURL2'
             }, function(err, results) {
@@ -1132,7 +1132,7 @@ describe('I can share restaurant on facebook', function() {
             });
         }
         function verify() {
-            db.query("optional MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}), (s:Scores) with user,restaurant,s optional MATCH (user)-[y1:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant) return y1", params = {
+            db.query("optional MATCH (user:User {email: {ep}}), (restaurant:Restaurant {name: {rn}}), (s:scores) with user,restaurant,s optional MATCH (user)-[y1:SHARE_RESTAURANT {score:s.shareRestaurantScore}]->(restaurant) return y1", params = {
                     ep: 'kareemAdel15@mail.com',
                     rn: 'RestaurantKareem15'
             }, function(err, results) {
@@ -1187,7 +1187,7 @@ describe('The user can share a dish on facebook or twitter.', function() {
             });
         }
         function verify() {
-            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}), (s:Scores) optional MATCH (user)-[y1:SHARE_DISH {score:s.shareDishScore}]->(dish) return y1", params = {
+            db.query("optional MATCH (user:User {email: {ep}}), (dish:Dish {dish_name: {dn}}), (s:scores) optional MATCH (user)-[y1:SHARE_DISH {score:s.shareDishScore}]->(dish) return y1", params = {
                     ep: 'kareemAdel16@mail.com',
                     dn: 'DishKareem16'
             }, function(err, results) {
@@ -1269,6 +1269,60 @@ describe('I can create a cuisine', function () {
 });
 
 
+/*
+  Sprint #-2-US-2:
+*/
+
+describe('Score increases between user and cuisine depending on the time spent by that user on a certain action', function () {
+ it('Score should increase between user and cuisine', function (done) {
+     initialize();
+     function initialize(){
+        db.query('create (u:User{email:{u1}}), (c:Cuisine{name:{cn}}), u-[:LIKECUISINE{score:0}]->c, (us:User{email:{u2}}), us-[:LIKECUISINE{score:0}]->c', params = {
+        u1: 'x',
+        u2: 'y',
+        cn: 'z'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+                 test();
+                    }
+        });
+    }
+           
+     function test(){
+        db.query(queries.UserTimeUserQuery, params = {
+                u1: 'x',
+                u2: 'y',
+                ts: '20'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            verify();
+        }
+     });}
+    function verify(){
+        db.query('optional MATCH (n:User { email:{u2} }),(c:Cuisine{name:{cn}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        u2: 'y',
+        cn: 'z'
+    }, function(err, results) {
+        if (err) {
+            console.error('Error');
+            throw err;
+        } else {
+            var scoreAfterAdd = results.map(function(result) {return result['l.score'];});
+            should(Number(scoreAfterAdd)).be.exactly(80)
+            done();
+        }
+    });
+    }
+ });
+});
+
+
 /*  User Story 38
     Sprint #-1-US-2
     Sprint #-2-US-11
@@ -1337,7 +1391,7 @@ describe('Score increases between user and cuisine when he addes a photo to a re
         }
      });}
     function verify(){
-        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n) -[l:LIKECUISINE]->(c) return l.score', params = {
+        db.query('optional MATCH (n:User { email:{ep} }),(c:Cuisine{name:{cp}}), (n)-[l:LIKECUISINE]->(c) return l.score', params = {
         ep: 'UserCuisineScoreTest.com',
         cp: 'CuisCuisineScoreTest'
     }, function(err, results) {
@@ -1602,3 +1656,57 @@ describe('score changes between user and cuisine on making yucks on photo', func
  });
 });
 
+//Sprint-2-US-6
+describe('A Global Node can be created', function () {
+ it('A Global node representing having all the new scores should be created', function (done) {
+    test();
+    function test(){
+        db.query(queries.createGlobalNodeQuery, 
+            params = {
+                ep1: 1,
+                ep2: 2,
+                ep3: 3,
+                ep5: 5,
+                ep6: 6,
+                ep7: 7,
+                ep8: 8,
+                ep9: 9,
+                ep10: 10,
+                ep11: 11
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                    verify();
+                }
+        });
+   }
+    function verify(){
+        db.query('    match (s:scores) where s.followsScore ={ep1} AND s.reviewScore ={ep2} AND s.likesDishScore ={ep3} AND s.addPhotoScore ={ep5} AND s.yum_yuckScore ={ep6} AND s.shareRestaurantScore ={ep7} AND s.shareDishScore ={ep8} AND s.sharePhotoScore= {ep9} AND s.favouritesScore ={ep10} AND  s.likeCuisineScore ={ep11} return s',         
+            params = {
+                ep1: 1,
+                ep2: 2,
+                ep3: 3,
+                ep5: 5,
+                ep6: 6,
+                ep7: 7,
+                ep8: 8,
+                ep9: 9,
+                ep10: 10,
+                ep11: 11
+            }, function(err, results) {
+                if (err) {
+                    console.error('Error');
+                    throw err;
+                } else {
+                      var relationship = results.map(function(result) {
+                    return result['s'];
+                 });
+                should.exist(relationship);
+                done();
+                }
+        });
+    }
+ });
+});
