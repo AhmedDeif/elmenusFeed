@@ -281,22 +281,24 @@ queries.createrFavouriteUserRestaurant("test 3","Res 1");
 queries.createrFavouriteUserRestaurant("test 4","Res 4");
 queries.createrFavouriteUserRestaurant("test 2","Res 3");
 queries.createrFavouriteUserRestaurant("test 1","Res 5");
-
+*/
+/*
 
 queries.UserAddsPhotoToRestaurant("test 1", "Res 1", "photo 1");
 queries.UserAddsPhotoToRestaurant("test 1", "Res 2", "photo 2");
 queries.UserAddsPhotoToRestaurant("test 1", "Res 3", "photo 3");
 
 
-
+/*
 queries.UserAddPhotoYums("test 3", "photo 1");
 queries.UserAddPhotoYums("test 1", "photo 1");
 queries.UserAddPhotoYums("test 4", "photo 2");
 queries.UserAddPhotoYums("test 2", "photo 2");
 queries.UserAddPhotoYums("test 1", "photo 2");
-
 */
 
-queries.UserAddsPhotoToRestaurant("test 2", "Res 2", "photo 1");
 
+//queries.UserAddsPhotoToRestaurant("test 2", "Res 2", "photo 1");
+
+queries.UserAddsPhotoToRestaurant("test 4", "Res 3", "photo 8");
 

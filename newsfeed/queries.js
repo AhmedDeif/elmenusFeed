@@ -269,11 +269,10 @@ exports.getRestaurants = function(callback) {
     which is defined in the databse.
 */
 
-exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User { email:{ep} }),(r:Restaurant { name:{rp} }),(s:scores) "+
-"CREATE (p:Photo { url : {url}}), (n)-[:addPhoto {timestamp: TIMESTAMP(), score: TIMESTAMP()*s.addPhotoScore}]->(p)-[:IN]->(r)";
+exports.UserAddsPhotoToRestaurantQuery = "MATCH (n:User),(r:Restaurant),(s:scores),(r)-[:HAS_CUISINE]->(c:Cuisine)<-[t:LikeCuisine]-(n) "+
+"where n.email = {ep} and r.name = {rp} set t.score = t.score + s.addPhotoScore "+
+"CREATE (p:Photo { url : {url}}), (n)-[:addPhoto {timestamp: TIMESTAMP(), score: TIMESTAMP()*s.addPhotoScore}]->(p)-[:IN]->(r);";
 
-exports.UserAddsPhotoToRestaurantScore = "match (s:scores),(r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }) set t.score = t.score + s.addPhotoScore";
-//exports.UserAddsPhotoToRestaurantScore = "match (r:Restaurant { name:{rp} })-[:HasCuisine]->(c:Cuisine)<-[t:LikeCuisine]-(n:User { email:{ep} }) set t.score = t.score + 10";
 exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL) {
     db.query(exports.UserAddsPhotoToRestaurantQuery, params = {
         ep: UserEmail,
@@ -283,18 +282,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
         if (err) {
             console.error('Error');
             throw err;
-        } else {
-            db.query(exports.UserAddsPhotoToRestaurantScore, params = {
-                ep: UserEmail,
-                rp: RestaurantName,
-                url: photoURL
-    }, function(err, results) {
-        if (err) {
-            console.error('Error');
-            throw err;
         } 
-    });
-        }
     });
 }
 
@@ -906,7 +894,7 @@ exports.createRelUserCuisine = function(UserEmail, CuisineName) {
     between the user and the cuisines
 */
 exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
-    db.query("MATCH (s:scores), (r:Restaurant)-[HasCuisine]->(c:Cuisine)<-[l:LIKECUISINE]-(u:User) WHERE r.name={rp} AND u.email ={np} set  l.score = l.score + s.favouritesScore", params = {
+    db.query("MATCH (s:scores), (r:Restaurant)-[HasCuisine]->(c:Cuisine)<-[l:LikeCuisine]-(u:User) WHERE r.name={rp} AND u.email ={np} set  l.score = l.score + s.favouritesScore", params = {
         rp: RestaurantName,
         np: UserEmail
     }, function(err, results) {
