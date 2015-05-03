@@ -12,7 +12,8 @@ var connection = mysql.createConnection({
 connection.connect();
 // To delete old CSVs
 var fs = require('fs');  
- 
+var begin1 = new Date();
+var begin2 = begin1.getTime(); 
 createGlobalNode(); 
 
 //---------------------------------------------------------------------------------
@@ -781,6 +782,9 @@ function LIKECUISINEuserAddPhoto(){
             } else {
                 console.log("LIKECUISINE-user-Add-Photo score");
                 connection.end();
+                var end1 = new Date();
+                var end2 = end1.getTime();
+                Console.log(end2 - begin2);
             }
 
     });
