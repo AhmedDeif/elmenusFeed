@@ -45,6 +45,7 @@ exports.linkUserToCuisines = function(email) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -67,6 +68,7 @@ exports.deleterFollowUserUser = function(FollowerEmail, FolloweeEmail) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 /*
@@ -92,6 +94,7 @@ exports.createrReviewUserToRestaurant = function(UserEmail, RestaurantName, Revi
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -136,6 +139,7 @@ exports.linkRestaurantToCuisine = function(name,cuisine) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -161,7 +165,10 @@ exports.createrDisLikeUserDish = function(UserEmail, DishName) {
         dnp: DishName
     }, function(err, results) {
         if (err) throw err;
-    });
+		console.log("done");
+    }
+	
+	);
 }
 /*  
     User Story 30
@@ -181,6 +188,7 @@ exports.createDish = function(name) {
             console.error('Error');
             throw err;
         } 
+		console.log('done');
     });
 }
 /*
@@ -195,7 +203,7 @@ exports.createDish = function(name) {
     affects the overall score of the relationship between the users.
 */
 
-exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) , (s:scores)  merge (u)-[li:LIKES_DISH]->(d) set li.timestamp = TIMESTAMP() set li.likes=TRUE set li.score=s.likesDishScore with u,d,li optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + li.score return u limit 1";
+exports.createrLikeUserDishQuery = "MATCH (u:User {email: {ep}}) , (d:Dish {dish_name: {dnp}}) , (s:scores)  merge (u)-[li:LIKES_DISH]->(d) set li.timestamp = TIMESTAMP() set li.likes=TRUE set li.score=s.likesDishScore with u,d,li optional MATCH (u)-[:LIKES_DISH{likes:TRUE}]-> (d) <-[:LIKES_DISH{likes:TRUE}]-(y:User), (u)-[z:FOLLOWS]-(y) SET z.totalScore = z.totalScore + li.score";
 exports.createrLikeUserDish = function(UserEmail, DishName) {
     db.query(exports.createrLikeUserDishQuery, params = {
         ep: UserEmail,
@@ -212,6 +220,7 @@ exports.createrLikeUserDish = function(UserEmail, DishName) {
                     if (err) { 
                         throw err;
                     }
+					console.log('done');
             });
         }
     });
@@ -254,6 +263,7 @@ exports.getRestaurants = function(callback) {
         restaurants = JSON.stringify(restaurants);
         restaurants = JSON.parse(restaurants);
         callback(restaurants);
+		console.log('done');
     });
 }
 
@@ -294,6 +304,7 @@ exports.UserAddsPhotoToRestaurant = function(UserEmail, RestaurantName, photoURL
             console.error('Error');
             throw err;
         } 
+		console.log('done');
     });
         }
     });
@@ -324,6 +335,7 @@ exports.createFollowUser = function(FollowerEmail, FolloweeEmail) {
             exports.UserCommonYucksUser(FollowerEmail,FolloweeEmail);
             exports.findCommonFollowers(FollowerEmail,FolloweeEmail);
             exports.setFollowersScore(FollowerEmail,FolloweeEmail);
+			console.log('done');
         }
     });
 }
@@ -402,6 +414,7 @@ exports.commonFavoritedRestaurants = function(user1, user2) {
             console.log('Error');
             throw err;
         } 
+		console.log('done');
     });
 }
 
@@ -429,6 +442,7 @@ exports.findCommonFollowers = function(firstUser, secondUser) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -450,6 +464,7 @@ exports.setFollowersScore = function(user1,user2) {
             if(err){
                 console.log("error");
             } 
+			console.log('done');
     });
 }
 
@@ -514,6 +529,7 @@ exports.UserAddPhotoYums = function(UserEmail, PhotoURL) {
                 if (err) {
                     throw err;
                 }
+				console.log('done');
                 });
         }
         
@@ -568,6 +584,7 @@ exports.UserAddPhotoYucks = function(UserEmail, PhotoURL) {
                 if (err) {
                     throw err;
                 }
+				console.log('done');
                 });
         }
     });
@@ -628,6 +645,7 @@ exports.UserSharesDish = function(UserEmail, DishName) {
         dn: DishName
     }, function(err, results) {
         if (err) throw err;
+		console.log('done');
     });
 }
 
@@ -650,6 +668,7 @@ exports.UserSharesPhoto = function(UserEmail, PhotoURL) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -741,6 +760,7 @@ exports.getRelations = function(callback) {
             return result['type(r)'];
         });
         callback(relations);
+		console.log('done');
     });
 }
 
@@ -751,6 +771,7 @@ exports.changeRelationCost = function(name, cost) {
             console.log('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -789,6 +810,7 @@ exports.getUsers = function(callback) {
         users = JSON.stringify(users);
         users = JSON.parse(users);
         callback(users);
+		console.log('done');
     });
 }
 var usr;
@@ -808,6 +830,7 @@ exports.Get_user_info = function(r, req, res) {
         data1 = ' \"Source\":' + JSON.stringify(data1);
         usr = JSON.parse('{ ' + data1 + ' }');
         indexjs.Get_user_info_cont(req, res, usr);
+		console.log('done');
     });
     return usr;
 }
@@ -875,7 +898,8 @@ exports.createRelCuisineRestaurant = function(RestaurantName, CuisineName) {
         if (err) {
             console.error('Error');
             throw err;
-        } 
+        }
+console.log('done');		
     });
 }
 
@@ -897,7 +921,8 @@ exports.createRelUserCuisine = function(UserEmail, CuisineName) {
         if (err) {
             console.error('Error');
             throw err;
-        } 
+        }
+		console.log('done');
     });
 }
 
@@ -919,6 +944,7 @@ exports.createRelUserResCuisines = function(UserEmail, RestaurantName) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 /*
@@ -940,7 +966,7 @@ exports.removeFavouriteResturant = function(email, resName) {
             console.log("Error removing resturant from favourites");
             throw err;
         } else {
-            console.log("resturant removed form favourites successfully");
+            console.log('done');
         }
     });
 }
@@ -954,6 +980,7 @@ exports.getUserFollowScore = function() {
             return result['f.score']
         });
         newScore = relationScore * commonFollowers;
+		console.log('done');
     });
 }
 /*   User Story S1
@@ -972,6 +999,7 @@ exports.showOldActionsHistory = function(UserEmail) {
             console.error('Error');
             throw err;
         }
+		console.log('done');
     });
 }
 
@@ -987,6 +1015,7 @@ exports.checkUserExists = function(email, callback) {
             return result['COUNT(n)'];
         });
         callback(count[0]);
+		console.log('done');
     });
 }
 exports.getNewsfeed = function(email, callback) {
@@ -997,11 +1026,11 @@ exports.getNewsfeed = function(email, callback) {
             console.log("error");
             throw err;
         }
-        console.log("newsfeed fetched");
         var actions = results.map(function(result) {
             return JSON.parse('{ ' + '\"email\":' + JSON.stringify(result['u.email']) + ', \"rel\":' + JSON.stringify(result['type(z)']) + ', \"node\":' + JSON.stringify(result['x'].data) + ', \"label\":' + JSON.stringify(result['x']._data.metadata.labels) + ' }');
         });
         callback(actions);
+		console.log('done');
     });
 }
 /*
@@ -1020,7 +1049,7 @@ exports.getCommonRestaurants = function(email, Dish) {
         var ress = results.map(function(result) {
             return JSON.parse('{ ' + '\"name\":' + JSON.stringify(result['re.name']));
         });
-        console.log(ress);
+        console.log('done');
         callback(ress);
     });
 }
@@ -1039,6 +1068,7 @@ exports.getLatestActionTime = function (callback) {
             return result['MAX(r.created_at)'];
         });
         callback(createdAt);
+		console.log('done');
     });
 }
 /*
@@ -1207,10 +1237,10 @@ exports.createGlobalNode = function(followsScore , reviewScore , likesDishScore 
 }
 
 exports.NewsFeedDishes = function(user) {
-    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(r:Restaurant),(s:scores)'
+	+' with u,c,d,r,s'
 	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[ld:LIKES_DISH]->(d)<-[:HAS]-(r)'
-	+' return u2 as otherUser,ld as relType, d as dish, max(ld.score*ld.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' return distinct u2.email as otherUser,type(ld) as relType, d.dish_name as dish, s.likesDishScore*ld.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1246,10 +1276,10 @@ exports.NewsFeedDishes = function(user) {
 
 
 exports.NewsFeedPhotos = function(user,dish) {
-    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(p:Photo),(r:Restaurant),(s:scores)'
+	+' with u,c,p,r,s'
 	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[yy:YUM_YUCK]->(p)-[:IN]->(r)'
-	+' return u2 as otherUser,yy as relType, p as photo, max(yy.score*yy.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' return distinct u2.email as otherUser,type(yy) as relType, p.url as photo, s.yum_yuckScore*yy.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1285,10 +1315,10 @@ exports.NewsFeedPhotos = function(user,dish) {
 }
 
 exports.NewsFeedRestaurants = function(user,dish,photo) {
-    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(d:Dish),(p:Photo),(r:Restaurant)'
-	+' with u,c,d,p,r'
+    db.query('match (u:User{email:{up}}),(u2:User),(c:Cuisine),(r:Restaurant),(s:scores)'
+	+' with u2,u,c,r,s'
 	+' match (r)-[:HAS_CUISINE]->(c)<-[lc:LIKECUISINE]-(u)-[:FOLLOWS]->(u2)-[f:FAVORITES]->(r)'
-	+' return u2 as otherUser,f as relType, r as restaurant, max(f.score*f.timestamp*lc.score) as score ORDER BY score DESC', params = {
+	+' return distinct u2.email as otherUser,type(f) as relType, r.name as restaurant, s.favouritesScore*f.timestamp*lc.score as score', params = {
         up: user,
 		currentimestamp: Date.now()
     }, function(err, results) {
@@ -1363,9 +1393,9 @@ exports.NewsFeedRestaurants = function(user,dish,photo) {
 			for(var i = 0 ; i< allData.length; i++)  {
 			console.log('---------------------');
 			console.log('');
-			console.log('Entity name\t:\t' + JSON.stringify(allData[i].element.data));
-			console.log('User\t\t:\t' + JSON.stringify(allData[i].user.data));
-			console.log('Relation name\t:\t' + JSON.stringify(allData[i].relType._data.metadata.type));
+			console.log('Entity name\t:\t' + JSON.stringify(allData[i].element));
+			console.log('User\t\t:\t' + JSON.stringify(allData[i].user));
+			console.log('Relation name\t:\t' + JSON.stringify(allData[i].relType));
 			console.log('Score Achieved\t:\t' + JSON.stringify(allData[i].score));
 			console.log('');
 			}
